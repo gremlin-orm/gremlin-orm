@@ -7,8 +7,8 @@ class Gorm {
     this.dialect = dialect;
   }
 
-  define(model, schema) {
-    return new VertexModel(model, schema);
+  define(type, schema) {
+    return new VertexModel(type, schema, this.client);
   }
 
 }
