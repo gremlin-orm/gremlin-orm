@@ -5,4 +5,4 @@ function Gorm(port, url, options) {
 
 }
 
-module exports = Gorm;
+module.exports = Gorm;
