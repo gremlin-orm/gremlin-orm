@@ -2,9 +2,11 @@
   "name": "gremlin-orm",
   "version": "0.1.0",
   "description": "Gremlin ORM for Node.js",
-  "main": "lib/gremlin-orm.js",
+  "main": "dist/gremlin-orm.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src --presets babel-preset-es2015 --out-dir dist",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -60,5 +62,9 @@
   ],
   "dependencies": {
     "gremlin": "^2.6.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1"
   }
 }
