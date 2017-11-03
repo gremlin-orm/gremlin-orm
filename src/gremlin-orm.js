@@ -1,7 +1,15 @@
 const Gremlin = require('gremlin');
+const VertexModel = require('./vertex-model')
 
-function Gorm(port, url, options) {
-  const client = Gremlin.createClient(port, url, options);
+class Gorm {
+  constructor(port, url, options, dialect) {
+    this.client = Gremlin.createClient(port, url, options);
+    this.dialect = dialect;
+  }
+
+  define(model, schema) {
+    return new VertexModel(model, schema);
+  }
 
 }
 
