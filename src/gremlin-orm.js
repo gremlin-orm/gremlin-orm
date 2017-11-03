@@ -8,7 +8,7 @@ class Gorm {
   }
 
   define(model, schema) {
-    return new VertexModel(model, schema);
+    return new VertexModel(model, schema, this.client);
   }
 
 }
