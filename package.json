@@ -1,0 +1,64 @@
+{
+  "name": "gremlin-orm",
+  "version": "0.1.0",
+  "description": "Gremlin ORM for Node.js",
+  "main": "lib/gremlin-orm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gremlin-orm/gremlin-orm.git"
+  },
+  "keywords": [
+    "orm",
+    "gremlin",
+    "query",
+    "graph",
+    "graph database",
+    "neo4j",
+    "azure",
+    "cosmos",
+    "db"
+  ],
+  "author": {
+    "email": "gremlin.orm@gmail.com",
+    "name": "gremlin-orm"
+  },
+  "bugs": {
+    "url": "https://github.com/gremlin-orm/gremlin-orm/issues"
+  },
+  "contributors": [
+    {
+      "email": "f@frmn.io",
+      "name": "Freeman Chen"
+    },
+    {
+      "email": "godronus@gmail.com",
+      "name": "Gordon Farquharson"
+    },
+    {
+      "email": "jeremysanglee@gmail.com",
+      "name": "Jeremy Lee"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/gremlin-orm/gremlin-orm#readme",
+  "maintainers": [
+    {
+      "email": "f@frmn.io",
+      "name": "Freeman Chen"
+    },
+    {
+      "email": "godronus@gmail.com",
+      "name": "Gordon Farquharson"
+    },
+    {
+      "email": "jeremysanglee@gmail.com",
+      "name": "Jeremy Lee"
+    }
+  ],
+  "dependencies": {
+    "gremlin": "^2.6.0"
+  }
+}
