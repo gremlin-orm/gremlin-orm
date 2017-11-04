@@ -28,8 +28,9 @@ class EdgeModel {
       inVValue = inV.value;
     }
 
-    let gremlinStr = `g.V().has('${outVKey}', ${this.g.stringifyValue(outVValue)})`;
-    gremlinStr += `.addE('${this.label}')${this.g.hasProps(props)}.to(g.V().has('${inVKey}', ${this.g.stringifyValue(inVValue)}))`;
+    let gremlinStr = `g.V().has('${outVKey}',${this.g.stringifyValue(outVValue)})`;
+    gremlinStr += `.addE('${this.label}')` + this.g.actionBuilder('property', props);
+    gremlinStr += `.to(g.V().has('${inVKey}',${this.g.stringifyValue(inVValue)}))`;
     this.g.client.execute(gremlinStr, (err, result) => {
       if (err) {
         callback({'error': err});

@@ -24,7 +24,7 @@ class Gorm {
       this.dialect = dialect;
     }
     this.makeNormalJSON = this.makeNormalJSON.bind(this);
-    this.hasProps = QueryBuilders.hasProps;
+    this.actionBuilder = QueryBuilders.actionBuilder;
     this.stringifyValue = QueryBuilders.stringifyValue;
   }
 
