@@ -3,11 +3,14 @@ class VertexModel {
     this.type = type;
     this.schema = schema;
     this.client = client;
+
+    checkSchema = checkSchema.bind(this);
+    stringifyValue = stringifyValue.bind(this);
   }
 
   create(props, callback) {
     // convert props to query string
-    if (!checkSchema()) {
+    if (!checkSchema(schema, props, true)) {
       callback("ERORR");
       return;
     }
@@ -32,18 +35,5 @@ class VertexModel {
     // callback(err, obj);
   }
 }
-
-function checkSchema(props) {
-  return true;
-}
-
-function stringifyValue(value) {
-  if (typeof value === 'string') {
-    return `'${value}'`;
-  } else {
-    return `${value}`;
-  }
-}
-
 
 module.exports = VertexModel;
