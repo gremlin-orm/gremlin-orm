@@ -8,17 +8,14 @@ class VertexModel {
   create(props, callback) {
     // convert props to query string
     if (!checkSchema()) {
-      callback("ERORR");
+      callback("ERROR");
       return;
     }
 
     let gremlinStr = `g.addV('${this.type}')`;
     const propsArr = Object.entries(props); 
     propsArr.forEach(keyValuePair => gremlinStr += `.property('${keyValuePair[0]}', ${stringifyValue(keyValuePair[1])})`)
-  
     this.client.execute(gremlinStr, callback);
-
-    
   }
 
   find(props, callback) {
