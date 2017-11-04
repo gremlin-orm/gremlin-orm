@@ -1,9 +1,9 @@
 module.exports = {
   
-  hasProps: function(props) {
+  actionBuilder: function(action, props) {
     let propsStr = '';
     const keys = Object.keys(props);
-    keys.forEach(key => propsStr += `.property('${key}',${this.stringifyValue(props[key])})`);
+    keys.forEach(key => propsStr += `.${action}('${key}',${this.stringifyValue(props[key])})`);
     return propsStr;
   },
 

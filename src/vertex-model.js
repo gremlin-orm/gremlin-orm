@@ -17,8 +17,7 @@ class VertexModel {
     if (this.g.dialect === this.g.AZURE) {
       gremlinStr += `.property('${this.g.partition}', '${props[Object.keys(props)[0]]}')`;
     }
-    const propsKeys = Object.keys(props);
-    propsKeys.forEach(key => {gremlinStr += `.property('${key}', ${this.g.stringifyValue(props[key])})`})
+    gremlinStr += this.g.actionBuilder('property', props);
     this.g.client.execute(gremlinStr, (err, result) => {
       if (err) {
         callback({'error': err});
@@ -31,11 +30,8 @@ class VertexModel {
     });
   }
 
-  find(props, callback) {
-    let gremlinStr = `g.V()`;
-    Object.keys(props).forEach((key) => {
-      gremlinStr += `.has('${key}', ${this.g.stringifyValue(props[key])})`
-    });
+  find(props, callback) { // { name: 'bob' , age: 2}
+    let gremlinStr = 'g.V()' + this.g.actionBuilder('has', props);
     this.g.client.execute(gremlinStr, (err, result) => {
       if (err) {
         callback({'error': err});
