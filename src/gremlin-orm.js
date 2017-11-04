@@ -45,6 +45,7 @@ class Gorm {
       object.label = grem.label;
 
       let currentPartition = this.partition ? this.partition : '';
+
       Object.keys(grem.properties).forEach((propKey) => {
         if (propKey != currentPartition) {
           object[propKey] = grem.properties[propKey][0].value;
