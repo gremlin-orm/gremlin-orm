@@ -21,11 +21,7 @@ class VertexModel {
   }
 
   find(props, callback) {
-    let gremlinStr = `g.V()`;
-    Object.keys(props).forEach((key) => {
-      gremlinStr += `.has('${key}', ${this.g.stringifyValue(props[key])})`
-    });
-
+    let gremlinStr = 'g.V()' + this.g.actionBuilder('has', props);
     if (callback) executeQuery(gremlinStr, this, callback);
     else {
       let response = Object.create(this);
@@ -46,7 +42,7 @@ class VertexModel {
       return response;
     }
   }
-  
+
   delete(id, callback) {
     let gremlinStr = `g.V().has('id', '${id}').drop()`;
     this.g.client.execute(gremlinStr, (err, result) => {
