@@ -1,9 +1,11 @@
 const Gremlin = require('gremlin');
 const VertexModel = require('./vertex-model');
 const EdgeModel = require('./edge-model');
+const QueryBuilders = require('./query-builders');
 
 class Gorm {
   constructor(dialect, port, url, options) {
+    const AZURE = 'azure';
     const argLength = arguments.length;
     if (argLength === 0) {
       return null;
@@ -14,7 +16,6 @@ class Gorm {
     } else {
       this.client = Gremlin.createClient(port, url, options);
     }
-
     if (Array.isArray(dialect)) {
       this.dialect = dialect[0];
       this.partition = dialect[1];
@@ -23,6 +24,8 @@ class Gorm {
       this.dialect = dialect;
     }
     this.makeNormalJSON = this.makeNormalJSON.bind(this);
+    this.actionBuilder = QueryBuilders.actionBuilder;
+    this.stringifyValue = QueryBuilders.stringifyValue;
   }
 
   define(label, schema) {
@@ -37,14 +40,15 @@ class Gorm {
     return new EdgeModel(label, schema, this);
   }
 
-  makeNormalJSON(gremlinResponse) {
+  makeNormalJSON(gremlinResponse, parentClass) {
+    parentClass = parentClass || this;
     let data = [];
     gremlinResponse.forEach((grem) => {
-      let object = Object.create(this);
+      let object = Object.create(parentClass);
       object.id = grem.id;
       object.label = grem.label;
 
-      let currentPartition = this.partition ? this.partition : '';
+      let currentPartition = parentClass.partition ? parentClass.partition : '';
 
       Object.keys(grem.properties).forEach((propKey) => {
         if (propKey != currentPartition) {
@@ -59,7 +63,6 @@ class Gorm {
   checkSchema(schema, props, checkRequired) {
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
-
     if (checkRequired) {
       schemaKeys.forEach(key => {
         if ((schema[key].allowNull !== undefined) && (schema[key].allowNull === false)) {
@@ -67,24 +70,12 @@ class Gorm {
         }
       });
     }
-
     propsKeys.forEach(key => {
       if (!schemaKeys.includes(key)) return false;
       if (props[key].constructor !== schema[key].type) return false;
     });
-
     return true;
   }
-
-  stringifyValue(value) {
-    if (typeof value === 'string') {
-      return `'${value}'`;
-    } else {
-      return `${value}`;
-    }
-  }
-
-
 }
 
 module.exports = Gorm;
