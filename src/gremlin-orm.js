@@ -27,16 +27,36 @@ class Gorm {
 
   define(label, schema) {
     return defineVertex(label, schema);
+
   }
 
   defineVertex(label, schema) {
-    return new VertexModel(label, schema, this.client, this.dialect, this.partition);
+    return new VertexModel(label, schema, this);
   }
 
   defineEdge(label, schema) {
-    return new EdgeModel(label, schema, this.client, this.dialect, this.partition);
+    return new EdgeModel(label, schema, this);
   }
 
+  function makeNormalJSON(gremlinResponse, parentClass) {
+  let data = [];
+  gremlinResponse.forEach((grem) => {
+    let object = Object.create(parentClass);
+    object.id = grem.id;
+    object.label = grem.label;
+
+    let currentPartition = parentClass.partition ? parentClass.partition : '';
+    Object.keys(grem.properties).forEach((propKey) => {
+      if (propKey != currentPartition) {
+        object[propKey] = grem.properties[propKey][0].value;
+      }
+    });
+    data.push(object);
+  })
+  return data;
+}
+
+ 
   checkSchema(schema, props, checkRequired) {
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
@@ -64,6 +84,7 @@ class Gorm {
       return `${value}`;
     }
   }
+
 
 }
 

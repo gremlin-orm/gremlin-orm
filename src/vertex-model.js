@@ -1,16 +1,18 @@
 class VertexModel {
-  constructor(label, schema, client, dialect, partition) {
+  constructor(label, schema, client, dialect, partition, gorm) {
     this.label = label;
     this.schema = schema;
-    this.client = client;
-    this.dialect = dialect;
-    this.partition = partition;
+    this.client = gorm.client;
+    this.dialect = gorm.dialect;
+    this.partition = gorm.partition;
+    this.g = gorm;
   }
 
   create(props, callback) {
     // convert props to query string
 
     if (!checkSchema()) {
+
       callback({'error': 'Object properties do not match schema.'});
       return;
     }
