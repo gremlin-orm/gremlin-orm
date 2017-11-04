@@ -35,14 +35,20 @@ class VertexModel {
   }
 
   find(props, callback) {
-    // convert props to query string
+    let gremlinStr = `g.V()`;
+    Object.keys(props).forEach((key) => {
+      gremlinStr += `.has('${key}', ${stringifyValue(props[key])})`
+    });
+    this.client.execute(gremlinStr, (err, result) => {
+      if (err) {
+        callback({'error': err});
+        return;
+      }
+      // Create nicer Object
+      let response = makeNormalJSON(result, this);
 
-    // let response = this.client(query)
-
-    // convert response to javascript obje
-    // let obj;
-
-    // callback(err, obj);
+      callback(null, response);
+    });
   }
 }
 
