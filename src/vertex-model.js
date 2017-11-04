@@ -15,8 +15,8 @@ class VertexModel {
     if (this.g.dialect === this.g.AZURE) {
       gremlinStr += `.property('${this.g.partition}', '${props[Object.keys(props)[0]]}')`;
     }
-    const propsKeys = Object.keys(props);
-    propsKeys.forEach(key => {gremlinStr += `.property('${key}', ${this.g.stringifyValue(props[key])})`})
+
+    gremlinStr += this.g.actionBuilder('property', props);
     executeQuery(gremlinStr, this, callback);
   }
 
@@ -45,6 +45,18 @@ class VertexModel {
       response.gremlinStr = gremlinStr;
       return response;
     }
+  }
+  
+  delete(id, callback) {
+    let gremlinStr = `g.V().has('id', '${id}').drop()`;
+    this.g.client.execute(gremlinStr, (err, result) => {
+      if (err) {
+        callback({'error': err});
+        return;
+      }
+      let response = `${id} deleted successfully`;
+      callback(null, response);
+    });
   }
 }
 
@@ -75,7 +87,6 @@ const familiarizeAndPrototype = (gremlinResponse, parentClass) => {
         object[propKey] = grem.properties[propKey][0].value;
       }
     });
-
     data.push(object);
   })
   return data;

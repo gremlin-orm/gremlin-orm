@@ -7,11 +7,11 @@ class Gorm {
   constructor(dialect, port, url, options) {
     const AZURE = 'azure';
     const argLength = arguments.length;
-    if (argLength == 0) {
+    if (argLength === 0) {
       return null;
-    } else if (argLength == 1) {
+    } else if (argLength === 1) {
       this.client = Gremlin.createClient();
-    } else if (argLength == 3) {
+    } else if (argLength === 3) {
       this.client = Gremlin.createClient(port, url);
     } else {
       this.client = Gremlin.createClient(port, url, options);
@@ -24,6 +24,7 @@ class Gorm {
       this.dialect = dialect;
     }
     this.hasProps = QueryBuilders.hasProps;
+    this.actionBuilder = QueryBuilders.actionBuilder;
     this.stringifyValue = QueryBuilders.stringifyValue;
   }
 
