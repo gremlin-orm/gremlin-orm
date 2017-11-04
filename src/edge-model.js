@@ -13,7 +13,7 @@ class EdgeModel {
     }
 
     console.log('this', this);
-    console.log('instanceof this', instanceof this );
+    // console.log('instanceof this', instanceof this );
 
     // let gremlinStr = `g.addV('${this.label}')`;
     // if (this.dialect = 'azure') {
