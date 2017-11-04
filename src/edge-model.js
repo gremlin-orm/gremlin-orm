@@ -1,39 +1,55 @@
 class EdgeModel {
   constructor(label, schema, gorm) {
-    this.label = label;
+    this.type = type;
     this.schema = schema;
     this.g = gorm;
   }
 
   create(outV, inV, props, callback) {
-    // convert props to query string
-    if (!g.checkSchema(this.schema, props, true)) {
+    if (!(outV && inV)) {
+      callback({'error': 'Need both an inV and an outV.'});
+      return;
+    }
+
+    if (!this.g.checkSchema(this.schema, props, true)) {
       callback({'error': 'Object properties do not match schema.'});
       return;
     }
 
-    console.log('this', this);
-    // console.log('instanceof this', instanceof this );
+    // console.log('this', this);
+    // // console.log('instanceof this', instanceof this );
+    let outVKey = 'id';
+    let outVValue = outV; 
+    let inVKey = 'id'; 
+    let inVValue = inV;
 
-    // let gremlinStr = `g.addV('${this.label}')`;
-    // if (this.dialect = 'azure') {
-    //   gremlinStr += `.property('${this.partition}', '${props[Object.keys(props)[0]]}')`;
-    // }
+    if (outV.constructor === Object) {
+      outVKey = outV.key;
+      outVValue = outV.value;
+    } 
+
+    if (inV.constructor === Object) {
+      inVKey = inV.key;
+      inVValue = inV.value;
+    } 
+
+    // g.V().has('name','sarah').addE('knows').to(g.V().has('name','susan'))
+    let gremlinStr = `g.V().has('${outVKey}', ${this.g.stringifyValue(outVValue)})`;
+    gremlinStr += `.addE('${this.label}').to(g.V().has('${inVKey}', ${this.g.stringifyValue(inVValue)}))`
+    //THIS NEEDS TO NOW DEAL WITH PROPS ON THE EDGE
     // const propsKeys = Object.keys(props);
     // propsKeys.forEach(key => {gremlinStr += `.property('${key}', ${stringifyValue(props[key])})`})
+    this.g.client.execute(gremlinStr, (err, result) => {
+      if (err) {
+        callback({'error': err});
+        return;
+      }
+      // Create nicer Object
+      // let response = this.g.makeNormalJSON(result, this);
 
-    // this.client.execute(gremlinStr, (err, result) => {
-    //   if (err) {
-    //     callback({'error': err});
-    //     return;
-    //   }
-    //   // Create nicer Object
-    //   let response = makeNormalJSON(result, this);
-
-    //   callback(null, response);
-    // });
+      callback(null, result);
+    });
   }
-
 }
 
 module.exports = EdgeModel;
