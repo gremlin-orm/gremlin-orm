@@ -1,5 +1,6 @@
 const Gremlin = require('gremlin');
 const VertexModel = require('./vertex-model');
+const EdgeModel = require('./edge-model');
 
 class Gorm {
   constructor(dialect, port, url, options) {
@@ -25,8 +26,34 @@ class Gorm {
   }
 
   define(label, schema) {
-    return new VertexModel(label, schema, this.client, this.dialect, this.partition);
+    return defineVertex(label, schema);
   }
+
+  defineVertex(label, schema) {
+    return new VertexModel(label, schema, this);
+  }
+
+  defineEdge(label, schema) {
+    return new EdgeModel(label, schema, this);
+  }
+
+  function makeNormalJSON(gremlinResponse, parentClass) {
+  let data = [];
+  gremlinResponse.forEach((grem) => {
+    let object = Object.create(parentClass);
+    object.id = grem.id;
+    object.label = grem.label;
+
+    let currentPartition = parentClass.partition ? parentClass.partition : '';
+    Object.keys(grem.properties).forEach((propKey) => {
+      if (propKey != currentPartition) {
+        object[propKey] = grem.properties[propKey][0].value;
+      }
+    });
+    data.push(object);
+  })
+  return data;
+}
 
 }
 
