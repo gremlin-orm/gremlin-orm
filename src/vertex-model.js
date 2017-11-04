@@ -6,8 +6,6 @@ class VertexModel {
   }
 
   create(props, callback) {
-    // convert props to query string
-
     if (!this.g.checkSchema(this.schema, props, true)) {
       callback({'error': 'Object properties do not match schema.'});
       return;
@@ -19,16 +17,7 @@ class VertexModel {
     }
     const propsKeys = Object.keys(props);
     propsKeys.forEach(key => {gremlinStr += `.property('${key}', ${this.g.stringifyValue(props[key])})`})
-    this.g.client.execute(gremlinStr, (err, result) => {
-      if (err) {
-        callback({'error': err});
-        return;
-      }
-      // Create nicer Object
-      let response = this.g.makeNormalJSON(result, this);
-
-      callback(null, response);
-    });
+    executeQuery(gremlinStr, this, callback);
   }
 
   find(props, callback) {
@@ -36,38 +25,60 @@ class VertexModel {
     Object.keys(props).forEach((key) => {
       gremlinStr += `.has('${key}', ${this.g.stringifyValue(props[key])})`
     });
-    this.g.client.execute(gremlinStr, (err, result) => {
-      if (err) {
-        callback({'error': err});
-        return;
-      }
-      // Create nicer Object
-      let response = this.g.makeNormalJSON(result, this);
 
-      callback(null, response);
-    });
+    if (callback) executeQuery(gremlinStr, this, callback);
+    else {
+      let response = Object.create(this);
+      response.gremlinStr = gremlinStr;
+      return response;
+    }
   }
 
   findE(label, props, depth, callback) {
-    // g.V().has('id', '2e3fa69a-d130-4b26-99be-0a9cd98a9efb').out('knows').out('knows')
     let curr = this;
-    let gremlinStr = `g.V().has('id', '${curr.id}').out('${label}')`;
-    if (depth > 1) {
-      for (let i = 0; i < depth - 1; i += 1) {
-        gremlinStr += `.out('${label}')`;
-      }
+    let gremlinStr = 'g.v()';
+    if (curr.gremlinStr) gremlinStr = curr.gremlinStr;
+    gremlinStr += `.out('${label}')`;
+    if (callback) executeQuery(gremlinStr, this, callback);
+    else {
+      let response = Object.create(this);
+      response.gremlinStr = gremlinStr;
+      return response;
     }
-    this.g.client.execute(gremlinStr, (err, result) => {
-      if (err) {
-        callback({'error': err});
-        return;
-      }
-      // Create nicer Object
-      let response = this.g.makeNormalJSON(result, this);
-
-      callback(null, response);
-    });
   }
+}
+
+const executeQuery = (query, parentClass, callback) => {
+  parentClass.g.client.execute(query, (err, result) => {
+    if (err) {
+      callback({'error': err});
+      return;
+    }
+    // Create nicer Object
+    let response = familiarizeAndPrototype(result, parentClass);
+
+    callback(null, response);
+  });
+}
+
+const familiarizeAndPrototype = (gremlinResponse, parentClass) => {
+  parentClass = parentClass || this;
+  let data = [];
+  gremlinResponse.forEach((grem) => {
+    let object = Object.create(parentClass);
+    object.id = grem.id;
+    object.label = grem.label;
+    let currentPartition = parentClass.partition ? parentClass.partition : '';
+
+    Object.keys(grem.properties).forEach((propKey) => {
+      if (propKey != currentPartition) {
+        object[propKey] = grem.properties[propKey][0].value;
+      }
+    });
+
+    data.push(object);
+  })
+  return data;
 }
 
 module.exports = VertexModel;
