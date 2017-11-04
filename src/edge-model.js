@@ -1,6 +1,6 @@
 class EdgeModel {
   constructor(label, schema, gorm) {
-    this.type = type;
+    this.label = label;
     this.schema = schema;
     this.g = gorm;
   }
@@ -17,19 +17,19 @@ class EdgeModel {
     }
 
     let outVKey = 'id';
-    let outVValue = outV; 
-    let inVKey = 'id'; 
+    let outVValue = outV;
+    let inVKey = 'id';
     let inVValue = inV;
 
     if (outV.constructor === Object) {
       outVKey = outV.key;
       outVValue = outV.value;
-    } 
+    }
 
     if (inV.constructor === Object) {
       inVKey = inV.key;
       inVValue = inV.value;
-    } 
+    }
 
     // g.V().has('name','sarah').addE('knows').to(g.V().has('name','susan'))
     let gremlinStr = `g.V().has('${outVKey}', ${this.g.stringifyValue(outVValue)})`;
