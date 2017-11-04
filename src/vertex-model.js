@@ -47,6 +47,19 @@ class VertexModel {
       callback(null, response);
     });
   }
+
+  delete(id, callback) {
+    let gremlinStr = `g.V().has('id', '${id}').drop()`;
+    this.g.client.execute(gremlinStr, (err, result) => {
+      if (err) {
+        callback({'error': err});
+        return;
+      }
+      let response = `${id} deleted successfully`;
+      callback(null, response);
+    });
+  }
+
 }
 
 module.exports = VertexModel;
