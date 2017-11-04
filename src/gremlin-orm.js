@@ -15,7 +15,7 @@ class Gorm {
       this.client = Gremlin.createClient(port, url, options);
     }
 
-   if (Array.isArray(dialect)) {
+    if (Array.isArray(dialect)) {
       this.dialect = dialect[0];
       this.partition = dialect[1];
     }

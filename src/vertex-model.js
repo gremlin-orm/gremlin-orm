@@ -1,27 +1,37 @@
 class VertexModel {
-  constructor(type, schema, client) {
-    this.type = type;
+  constructor(label, schema, client, dialect, partition) {
+    this.label = label;
     this.schema = schema;
     this.client = client;
-
-    checkSchema = checkSchema.bind(this);
-    stringifyValue = stringifyValue.bind(this);
+    this.dialect = dialect;
+    this.partition = partition;
   }
 
   create(props, callback) {
     // convert props to query string
-    if (!checkSchema(schema, props, true)) {
-      callback("ERORR");
+
+    if (!checkSchema()) {
+      callback({'error': 'Object properties do not match schema.'});
       return;
     }
 
-    let gremlinStr = `g.addV('${this.type}')`;
-    const propsArr = Object.entries(props); 
-    propsArr.forEach(keyValuePair => gremlinStr += `.property('${keyValuePair[0]}', ${stringifyValue(keyValuePair[1])})`)
-  
-    this.client.execute(gremlinStr, callback);
+    let gremlinStr = `g.addV('${this.label}')`;
+    if (this.dialect = 'azure') {
+      gremlinStr += `.property('${this.partition}', '${props[Object.keys(props)[0]]}')`;
+    }
+    const propsKeys = Object.keys(props);
+    propsKeys.forEach(key => {gremlinStr += `.property('${key}', ${stringifyValue(props[key])})`})
 
-    
+    this.client.execute(gremlinStr, (err, result) => {
+      if (err) {
+        callback({'error': err});
+        return;
+      }
+      // Create nicer Object
+      let response = makeNormalJSON(result, this);
+
+      callback(null, response);
+    });
   }
 
   find(props, callback) {
@@ -34,6 +44,24 @@ class VertexModel {
 
     // callback(err, obj);
   }
+}
+
+function makeNormalJSON(gremlinResponse, parentClass) {
+  let data = [];
+  gremlinResponse.forEach((grem) => {
+    let object = Object.create(parentClass);
+    object.id = grem.id;
+    object.label = grem.label;
+
+    let currentPartition = parentClass.partition ? parentClass.partition : '';
+    Object.keys(grem.properties).forEach((propKey) => {
+      if (propKey != currentPartition) {
+        object[propKey] = grem.properties[propKey][0].value;
+      }
+    });
+    data.push(object);
+  })
+  return data;
 }
 
 module.exports = VertexModel;
