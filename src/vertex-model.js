@@ -9,6 +9,7 @@ class VertexModel {
 
   create(props, callback) {
     // convert props to query string
+
     if (!checkSchema()) {
       callback({'error': 'Object properties do not match schema.'});
       return;
@@ -42,18 +43,6 @@ class VertexModel {
     // let obj;
 
     // callback(err, obj);
-  }
-}
-
-function checkSchema(props) {
-  return true;
-}
-
-function stringifyValue(value) {
-  if (typeof value === 'string') {
-    return `'${value}'`;
-  } else {
-    return `${value}`;
   }
 }
 
