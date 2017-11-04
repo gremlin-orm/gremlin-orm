@@ -2,13 +2,22 @@ const Gremlin = require('gremlin');
 const VertexModel = require('./vertex-model')
 
 class Gorm {
-  constructor(port, url, options, dialect) {
-    this.client = Gremlin.createClient(port, url, options);
+  constructor(dialect, port, url, options) {
+    const argLength = arguments.length;
+    if (argLength == 0) {
+      return null;
+    } else if (argLength == 1) {
+      this.client = Gremlin.createClient();
+    } else if (argLength == 3) {
+      this.client = Gremlin.createClient(port, url);
+    } else {
+      this.client = Gremlin.createClient(port, url, options);
+    }
     this.dialect = dialect;
   }
 
-  define(type, schema) {
-    return new VertexModel(type, schema, this.client);
+  define(model, schema) {
+    return new VertexModel(model, schema, this.client);
   }
 
 }

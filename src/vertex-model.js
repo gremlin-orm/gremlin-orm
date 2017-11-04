@@ -7,26 +7,43 @@ class VertexModel {
 
   create(props, callback) {
     // convert props to query string
+    if (!checkSchema()) {
+      callback("ERORR");
+      return;
+    }
 
-    let response = this.client(query)
+    let gremlinStr = `g.addV('${this.type}')`;
+    const propsArr = Object.entries(props); 
+    propsArr.forEach(keyValuePair => gremlinStr += `.property('${keyValuePair[0]}', ${stringifyValue(keyValuePair[1])})`)
+  
+    this.client.execute(gremlinStr, callback);
 
-    // convert response to javascript obje
-    let obj;
-
-    callback(err, obj);
+    
   }
 
   find(props, callback) {
     // convert props to query string
 
-    let response = this.client(query)
+    // let response = this.client(query)
 
     // convert response to javascript obje
-    let obj;
+    // let obj;
 
-    callback(err, obj);
+    // callback(err, obj);
   }
-
 }
+
+function checkSchema(props) {
+  return true;
+}
+
+function stringifyValue(value) {
+  if (typeof value === 'string') {
+    return `'${value}'`;
+  } else {
+    return `${value}`;
+  }
+}
+
 
 module.exports = VertexModel;
