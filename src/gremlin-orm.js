@@ -22,12 +22,11 @@ class Gorm {
     else {
       this.dialect = dialect;
     }
-
+    this.makeNormalJSON = this.makeNormalJSON.bind(this);
   }
 
   define(label, schema) {
-    return defineVertex(label, schema);
-
+    return this.defineVertex(label, schema);
   }
 
   defineVertex(label, schema) {
@@ -38,14 +37,15 @@ class Gorm {
     return new EdgeModel(label, schema, this);
   }
 
-  makeNormalJSON(gremlinResponse, parentClass) {
+  makeNormalJSON(gremlinResponse) {
     let data = [];
     gremlinResponse.forEach((grem) => {
-      let object = Object.create(parentClass);
+      let object = Object.create(this);
       object.id = grem.id;
       object.label = grem.label;
 
-      let currentPartition = parentClass.partition ? parentClass.partition : '';
+      let currentPartition = this.partition ? this.partition : '';
+
       Object.keys(grem.properties).forEach((propKey) => {
         if (propKey != currentPartition) {
           object[propKey] = grem.properties[propKey][0].value;
@@ -56,11 +56,10 @@ class Gorm {
     return data;
   }
 
- 
   checkSchema(schema, props, checkRequired) {
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
-    
+
     if (checkRequired) {
       schemaKeys.forEach(key => {
         if ((schema[key].allowNull !== undefined) && (schema[key].allowNull === false)) {
@@ -71,9 +70,9 @@ class Gorm {
 
     propsKeys.forEach(key => {
       if (!schemaKeys.includes(key)) return false;
-      if (props[key].constructor !== schema[key].type) return false; 
+      if (props[key].constructor !== schema[key].type) return false;
     });
-  
+
     return true;
   }
 

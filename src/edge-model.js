@@ -1,5 +1,5 @@
 class EdgeModel {
-  constructor(label, schema, client, dialect, partition, gorm) {
+  constructor(label, schema, gorm) {
     this.label = label;
     this.schema = schema;
     this.g = gorm;
@@ -33,6 +33,7 @@ class EdgeModel {
     //   callback(null, response);
     // });
   }
+
 }
 
 module.exports = EdgeModel;
