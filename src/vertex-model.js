@@ -14,7 +14,7 @@ class VertexModel {
     }
 
     let gremlinStr = `g.addV('${this.label}')`;
-    if (this.g.dialect = 'azure') {
+    if (this.g.dialect === this.g.AZURE) {
       gremlinStr += `.property('${this.g.partition}', '${props[Object.keys(props)[0]]}')`;
     }
     const propsKeys = Object.keys(props);
