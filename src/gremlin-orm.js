@@ -38,23 +38,23 @@ class Gorm {
     return new EdgeModel(label, schema, this);
   }
 
-  function makeNormalJSON(gremlinResponse, parentClass) {
-  let data = [];
-  gremlinResponse.forEach((grem) => {
-    let object = Object.create(parentClass);
-    object.id = grem.id;
-    object.label = grem.label;
+  makeNormalJSON(gremlinResponse, parentClass) {
+    let data = [];
+    gremlinResponse.forEach((grem) => {
+      let object = Object.create(parentClass);
+      object.id = grem.id;
+      object.label = grem.label;
 
-    let currentPartition = parentClass.partition ? parentClass.partition : '';
-    Object.keys(grem.properties).forEach((propKey) => {
-      if (propKey != currentPartition) {
-        object[propKey] = grem.properties[propKey][0].value;
-      }
-    });
-    data.push(object);
-  })
-  return data;
-}
+      let currentPartition = parentClass.partition ? parentClass.partition : '';
+      Object.keys(grem.properties).forEach((propKey) => {
+        if (propKey != currentPartition) {
+          object[propKey] = grem.properties[propKey][0].value;
+        }
+      });
+      data.push(object);
+    })
+    return data;
+  }
 
  
   checkSchema(schema, props, checkRequired) {
