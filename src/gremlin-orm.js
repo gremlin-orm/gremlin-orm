@@ -40,14 +40,15 @@ class Gorm {
     return new EdgeModel(label, schema, this);
   }
 
-  makeNormalJSON(gremlinResponse) {
+  makeNormalJSON(gremlinResponse, parentClass) {
+    parentClass = parentClass || this;
     let data = [];
     gremlinResponse.forEach((grem) => {
-      let object = Object.create(this);
+      let object = Object.create(parentClass);
       object.id = grem.id;
       object.label = grem.label;
 
-      let currentPartition = this.partition ? this.partition : '';
+      let currentPartition = parentClass.partition ? parentClass.partition : '';
 
       Object.keys(grem.properties).forEach((propKey) => {
         if (propKey != currentPartition) {
