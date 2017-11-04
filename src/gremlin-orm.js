@@ -1,5 +1,5 @@
 const Gremlin = require('gremlin');
-const VertexModel = require('./vertex-model')
+const VertexModel = require('./vertex-model');
 
 class Gorm {
   constructor(dialect, port, url, options) {
@@ -13,11 +13,19 @@ class Gorm {
     } else {
       this.client = Gremlin.createClient(port, url, options);
     }
-    this.dialect = dialect;
+
+    if (Array.isArray(dialect)) {
+      this.dialect = dialect[0];
+      this.partition = dialect[1];
+    }
+    else {
+      this.dialect = dialect;
+    }
+
   }
 
-  define(model, schema) {
-    return new VertexModel(model, schema, this.client);
+  define(label, schema) {
+    return new VertexModel(label, schema, this.client, this.dialect, this.partition);
   }
 
 }
