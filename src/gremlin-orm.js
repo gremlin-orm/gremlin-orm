@@ -27,6 +27,7 @@ class Gorm {
 
   define(label, schema) {
     return defineVertex(label, schema);
+
   }
 
   defineVertex(label, schema) {
@@ -54,6 +55,36 @@ class Gorm {
   })
   return data;
 }
+
+ 
+  checkSchema(schema, props, checkRequired) {
+    const schemaKeys = Object.keys(schema);
+    const propsKeys = Object.keys(props);
+    
+    if (checkRequired) {
+      schemaKeys.forEach(key => {
+        if ((schema[key].allowNull !== undefined) && (schema[key].allowNull === false)) {
+          if (!propsKeys.includes(key)) return false;
+        }
+      });
+    }
+
+    propsKeys.forEach(key => {
+      if (!schemaKeys.includes(key)) return false;
+      if (props[key].constructor !== schema[key].type) return false; 
+    });
+  
+    return true;
+  }
+
+  stringifyValue(value) {
+    if (typeof value === 'string') {
+      return `'${value}'`;
+    } else {
+      return `${value}`;
+    }
+  }
+
 
 }
 
