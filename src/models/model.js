@@ -17,16 +17,34 @@ class Model {
     });
   }
 
+  executeOrPass(gremlinStr, this, callback) {
+    if (callback) this.executeQuery(gremlinStr, this, callback);
+    else {
+      let response = Object.create(this);
+      response.gremlinStr = gremlinStr;
+      return response;
+    }
+  }
+
+  limit(num, callback) {
+    let gremlinStr = this.getGremlinStr();
+    gremlinStr += `.limit(${parseInt(num)})`;
+    this.executeOrPass(gremlinStr, this, callback);
+  }
+
   delete(id, callback) {
-    let gremlinStr = `g.V().has('id', '${id}').drop()`;
-    this.g.client.execute(gremlinStr, (err, result) => {
-      if (err) {
-        callback({'error': err});
-        return;
-      }
-      let response = `${id} deleted successfully`;
-      callback(null, response);
-    });
+    let gremlinStr = this.getGremlinStr();
+    gremlinStr += '.drop()';
+    this.executeOrPass(gremlinStr, this, callback);
+    // let gremlinStr = `g.V().has('id', '${id}').drop()`;
+    // this.g.client.execute(gremlinStr, (err, result) => {
+    //   if (err) {
+    //     callback({'error': err});
+    //     return;
+    //   }
+    //   let response = `${id} deleted successfully`;
+    //   callback(null, response);
+    // });
   }
 
   actionBuilder(action, props) {

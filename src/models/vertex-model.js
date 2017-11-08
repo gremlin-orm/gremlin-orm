@@ -23,23 +23,13 @@ class VertexModel extends Model {
 
   find(props, callback) {
     let gremlinStr = 'g.V()' + this.actionBuilder('has', props);
-    if (callback) this.executeQuery(gremlinStr, this, callback);
-    else {
-      let response = Object.create(this);
-      response.gremlinStr = gremlinStr;
-      return response;
-    }
+    this.executeOrPass(gremlinStr, this, callback);
   }
 
   findE(label, props, depth, callback) {
     let gremlinStr = this.getGremlinStr();
     gremlinStr += `.out('${label}')`;
-    if (callback) this.executeQuery(gremlinStr, this, callback);
-    else {
-      let response = Object.create(this);
-      response.gremlinStr = gremlinStr;
-      return response;
-    }
+    this.executeOrPass(gremlinStr, this, callback);
   }
 }
 
