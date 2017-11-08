@@ -49,8 +49,24 @@ class Model {
 
   actionBuilder(action, props) {
     let propsStr = '';
+    let ifArr = '';
+
     const keys = Object.keys(props);
-    keys.forEach(key => propsStr += `.${action}('${key}',${this.stringifyValue(props[key])})`);
+    keys.forEach(key => {
+      if (Array.isArray(props[key])) {
+        ifArr = `within(`;
+        for (let i = 0; i < props[key].length; i += 1) {
+          if (i === props[key].length - 1) {
+            ifArr += `${this.stringifyValue(props[key][i])}))`;
+          } else {
+            ifArr += `${this.stringifyValue(props[key][i])},`;
+          }
+        }
+        propsStr += `.${action}('${key}',${ifArr}`;
+      } else {
+        propsStr += `.${action}('${key}',${this.stringifyValue(props[key])})`;
+      }
+    });
     return propsStr;
   }
 
