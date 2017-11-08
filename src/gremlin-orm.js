@@ -5,7 +5,7 @@ const EdgeModel = require('./models/edge-model');
 
 class Gorm {
   constructor(dialect, port, url, options) {
-    const AZURE = 'azure';
+    this.dialects = {AZURE: 'azure'};
     const argLength = arguments.length;
     if (argLength === 0) {
       return null;
@@ -40,7 +40,7 @@ class Gorm {
     return new EdgeModel(label, schema, this);
   }
 
-  
+
 }
 
 module.exports = Gorm;

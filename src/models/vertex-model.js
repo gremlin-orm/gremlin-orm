@@ -5,6 +5,7 @@ class VertexModel extends Model {
     super(gorm, '')
     this.label = label;
     this.schema = schema;
+    this.g = gorm;
   }
 
   create(props, callback) {
@@ -14,7 +15,7 @@ class VertexModel extends Model {
     }
 
     let gremlinStr = `g.addV('${this.label}')`;
-    if (this.g.dialect === this.g.AZURE) {
+    if (this.g.dialect === this.g.dialects.AZURE) {
       gremlinStr += `.property('${this.g.partition}', '${props[Object.keys(props)[0]]}')`;
     }
 
