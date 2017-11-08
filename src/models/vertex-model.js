@@ -5,7 +5,6 @@ class VertexModel extends Model {
     super(gorm, '')
     this.label = label;
     this.schema = schema;
-    this.g = gorm;
   }
 
   create(props, callback) {
@@ -34,7 +33,7 @@ class VertexModel extends Model {
   }
 
   findE(label, props, depth, callback) {
-    let gremlinStr = isInstance(this);
+    let gremlinStr = this.getOrBuildGremlinStr();
     gremlinStr += `.out('${label}')`;
     if (callback) this.executeQuery(gremlinStr, this, callback);
     else {
