@@ -35,9 +35,21 @@ class EdgeModel extends Model {
     gremlinStr += `.addE('${this.label}')` + this.actionBuilder('property', props);
     gremlinStr += `.to(g.V().has('${inVKey}',${this.stringifyValue(inVValue)}))`;
 
-    this.executeQuery(gremlinStr, this, callback);
-
+    return this.executeQuery(gremlinStr, this, callback);
   }
+
+  // find(props, callback) {
+  //   let gremlinStr = 'g.V()' + this.actionBuilder('has', props);
+  //   return this.executeOrPass(gremlinStr, this, callback);
+  // }
+
+  // findE(label, props, depth, callback) {
+  //   let gremlinStr = this.getGremlinStr();
+  //   gremlinStr += `.out('${label}')`;
+  //   return this.executeOrPass(gremlinStr, this, callback);
+  // }
+
+
 }
 
 module.exports = EdgeModel;
