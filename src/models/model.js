@@ -18,12 +18,10 @@ class Model {
   }
 
   executeOrPass(gremlinStr, childClass, callback) {
-    if (callback) this.executeQuery(gremlinStr, childClass, callback);
-    else {
-      let response = Object.create(childClass);
-      response.gremlinStr = gremlinStr;
-      return response;
-    }
+    if (callback) return this.executeQuery(gremlinStr, childClass, callback);
+    let response = Object.create(childClass);
+    response.gremlinStr = gremlinStr;
+    return response;
   }
 
   limit(num, callback) {
@@ -85,6 +83,9 @@ class Model {
   }
 
   checkSchema(schema, props, checkRequired) {
+    
+    return true;
+
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
 
@@ -119,26 +120,29 @@ class Model {
       }
 
       let currentPartition = this.g.partition ? this.g.partition : '';
-      Object.keys(grem.properties).forEach((propKey) => {
-        if (propKey != currentPartition) {
-          if (childClass.constructor.name === 'EdgeModel') {
-            object[propKey] = grem.properties[propKey];
-          } else {
-            object[propKey] = grem.properties[propKey][0].value;
+      if (grem.properties) {
+        Object.keys(grem.properties).forEach((propKey) => {
+          if (propKey != currentPartition) {
+            if (childClass.constructor.name === 'EdgeModel') {
+              object[propKey] = grem.properties[propKey];
+            } else {
+              object[propKey] = grem.properties[propKey][0].value;
+            }
           }
-        }
-      });
+        });
+      }
       data.push(object);
     })
     return data;
   }
+
 
   getRandomVariable(numVars, currentVarsArr) {
     const variables = currentVarsArr ? Array.from(currentVarsArr) : [];  
     const variablesRequired = numVars ? numVars : 1;
     const possibleChars = 'abcdefghijklmnopqrstuvwxyz';
     function getRandomChars() {
-      const result = '';
+      let result = '';
       for(let i = 0; i < 3; i += 1) {
         result += possibleChars[Math.floor(Math.random() * possibleChars.length)];
       }
