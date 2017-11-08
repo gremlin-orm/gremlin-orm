@@ -4,23 +4,23 @@ class Model {
     this.gremlinStr = gremlinStr;
   }
 
-  executeQuery(query, parentClass, callback) {
+  executeQuery(query, childClass, callback) {
     parentClass.g.client.execute(query, (err, result) => {
       if (err) {
         callback({'error': err});
         return;
       }
       // Create nicer Object
-      let response = familiarizeAndPrototype(result, parentClass);
+      let response = familiarizeAndPrototype(result, childClass);
 
       callback(null, response);
     });
   }
 
-  executeOrPass(gremlinStr, this, callback) {
-    if (callback) this.executeQuery(gremlinStr, this, callback);
+  executeOrPass(gremlinStr, childClass, callback) {
+    if (callback) this.executeQuery(gremlinStr, childClass, callback);
     else {
-      let response = Object.create(this);
+      let response = Object.create(childClass);
       response.gremlinStr = gremlinStr;
       return response;
     }
