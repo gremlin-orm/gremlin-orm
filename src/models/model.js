@@ -71,8 +71,9 @@ class Model {
   }
 
   getGremlinStr() {
-    if (this.gremlinStr !== '') return this.gremlinStr
-    return `g.V('${this.id}')`;
+    if (this.gremlinStr !== '') return this.gremlinStr;
+    if (this.id) return `g.V('${this.id}')`;
+    return '';
   }
 
   stringifyValue(value) {
@@ -107,9 +108,6 @@ class Model {
 }
 
 const familiarizeAndPrototype = (gremlinResponse, parentClass) => {
-    console.log("parentClass", parentClass);
-    console.log("gremlinResponse", gremlinResponse);
-  parentClass = parentClass || this; // What can this ever be?
   let data = [];
   gremlinResponse.forEach((grem) => {
     let object = Object.create(parentClass);
@@ -119,7 +117,7 @@ const familiarizeAndPrototype = (gremlinResponse, parentClass) => {
       object.inV = grem.inV;
       object.outV = grem.outV
     }
-    let currentPartition = parentClass.partition ? parentClass.partition : '';
+    let currentPartition = parentClass.g.partition ? parentClass.g.partition : '';
     Object.keys(grem.properties).forEach((propKey) => {
       if (propKey != currentPartition) {
         if (parentClass.constructor.name === 'EdgeModel') {
