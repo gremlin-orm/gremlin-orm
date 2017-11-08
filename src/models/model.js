@@ -87,24 +87,32 @@ class Model {
   checkSchema(schema, props, checkRequired) {
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
+
+    const response = {};
       
     if (checkRequired) {
       for (let i = 0; i < schemaKeys.length; i += 1) {
         let key = schemaKeys[i];
         if (schema[key].required) {
-          if (!props[key]) return false;
+          if (!props[key]) {
+            response[key] = [`A valid value for ${key} is required`];
+          }
         }
       }
     }
     
     for (let i = 0; i < propsKeys.length; i += 1) {
       let key = propsKeys[i];
-      if (!schemaKeys.includes(key)) return false;
+      if (!schemaKeys.includes(key)) {
+        response[key] = [`${key} does not match the schema model`];
+      }
       if (props[key]) {
-        if (props[key].constructor !== schema[key].type) return false;
+        if (props[key].constructor !== schema[key].type) {
+          response[key] = [`${key} does not match the schema model`];
+        }
       }
     }
-    return true;
+    return response;
   }
 }
 
