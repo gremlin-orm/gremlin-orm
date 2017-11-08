@@ -34,9 +34,9 @@ class VertexModel extends Model {
     // if (Object.keys(schemaCheck).length === 0) {
     //   callback({'error': schemaCheck});
     // }
-    let gremlinQuery = outGremlinStr + `.addE('${edge.label}')${this.actionBuilder('property', props)}.to(` + 
+    let gremlinQuery = outGremlinStr + `.addE('${edge.label}')${this.actionBuilder('property', props)}.to(` +
                                         inGremlinStr + ")";
-                                        
+
     executeOrPass(gremlinQuery, this, callback);
   }
 
@@ -47,7 +47,16 @@ class VertexModel extends Model {
 
   findE(label, props, depth, callback) {
     let gremlinStr = this.getGremlinStr();
-    gremlinStr += `.out('${label}')`;
+    gremlinStr += `.out('${label}')${this.actionBuilder('property', props)}`;
+    this.executeOrPass(gremlinStr, this, callback);
+  }
+
+  findImplicit(label, props, callback) {
+    let gremlinStr = this.getGremlinStr();
+    let originalAs = this.getRandomVariable()[0];
+    gremlinStr += `.as('${originalAs}').out('${label}')${this.actionBuilder('property', props)}` +
+                  `.in('${label}')${this.actionBuilder('property', props)}` +
+                  `.where(neq('${originalAs}'))`;
     this.executeOrPass(gremlinStr, this, callback);
   }
 }
