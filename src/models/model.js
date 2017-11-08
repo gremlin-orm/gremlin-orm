@@ -135,4 +135,25 @@ const familiarizeAndPrototype = (gremlinResponse, childClass) => {
   return data;
 }
 
+const getRandomVariable(numVars, currentVarsArr) {
+  const variables = currentVarsArr ? Array.from(currentVarsArr) : [];  
+  const variablesRequired = numVars ? numVars : 1;
+  const possibleChars = 'abcdefghijklmnopqrstuvwxyz';
+  function getRandomChars() {
+    const result = '';
+    for(let i = 0; i < 3; i += 1) {
+      result += possibleChars[Math.floor(Math.random() * possibleChars.length)];
+    }
+    return result;
+  }
+  for (let i = 0; i < variablesRequired; i += 1) {
+    let newVariable = getRandomChars();
+    while (variables.includes(newVariable)) {
+      newVariable = getRandomChars();
+    }
+    variables.push(newVariable);
+  }
+  return variables;
+}
+
 module.exports = Model;
