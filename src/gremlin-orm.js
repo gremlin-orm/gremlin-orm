@@ -1,7 +1,7 @@
 const Gremlin = require('gremlin');
-const VertexModel = require('./vertex-model');
-const EdgeModel = require('./edge-model');
-const QueryBuilders = require('./query-builders');
+const VertexModel = require('./models/vertex-model');
+const EdgeModel = require('./models/edge-model');
+// const QueryBuilders = require('./query-builders');
 
 class Gorm {
   constructor(dialect, port, url, options) {
@@ -23,9 +23,9 @@ class Gorm {
     else {
       this.dialect = dialect;
     }
-    this.hasProps = QueryBuilders.hasProps;
-    this.actionBuilder = QueryBuilders.actionBuilder;
-    this.stringifyValue = QueryBuilders.stringifyValue;
+    // this.hasProps = QueryBuilders.hasProps;
+    // this.actionBuilder = QueryBuilders.actionBuilder;
+    // this.stringifyValue = QueryBuilders.stringifyValue;
   }
 
   define(label, schema) {
@@ -40,24 +40,7 @@ class Gorm {
     return new EdgeModel(label, schema, this);
   }
 
-  checkSchema(schema, props, checkRequired) {
-    const schemaKeys = Object.keys(schema);
-    const propsKeys = Object.keys(props);
-    if (checkRequired) {
-      for (let i = 0; i < schemaKeys.length; i += 1) {
-        let key = schemaKeys[i];
-        if ((schema[key].allowNull !== undefined) && (schema[key].allowNull === false)) {
-          if (!propsKeys.includes(key)) return false;
-        }
-      }
-    }
-    for (let i = 0; i < propsKeys.length; i += 1) {
-      let key = propsKeys[i];
-      if (!schemaKeys.includes(key)) return false;
-      if (props[key].constructor !== schema[key].type) return false;
-    }
-    return true;
-  }
+  
 }
 
 module.exports = Gorm;
