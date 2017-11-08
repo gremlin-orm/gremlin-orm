@@ -18,12 +18,10 @@ class Model {
   }
 
   executeOrPass(gremlinStr, childClass, callback) {
-    if (callback) this.executeQuery(gremlinStr, childClass, callback);
-    else {
-      let response = Object.create(childClass);
-      response.gremlinStr = gremlinStr;
-      return response;
-    }
+    if (callback) return this.executeQuery(gremlinStr, childClass, callback);
+    let response = Object.create(childClass);
+    response.gremlinStr = gremlinStr;
+    return response;
   }
 
   limit(num, callback) {
@@ -109,26 +107,33 @@ class Model {
   }
 
   checkSchema(schema, props, checkRequired) {
+
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
 
+    const response = {};
+    
     if (checkRequired) {
-      for (let i = 0; i < schemaKeys.length; i += 1) {
-        let key = schemaKeys[i];
-        if (schema[key].required) {
-          if (!props[key]) return false;
+      for (let sKey of schemaKeys) {
+        if (schema[sKey].required) {
+          if (!props[sKey]) {
+            response[sKey] = [`A valid value for '${sKey}' is required`];
+          }
         }
       }
     }
-
-    for (let i = 0; i < propsKeys.length; i += 1) {
-      let key = propsKeys[i];
-      if (!schemaKeys.includes(key)) return false;
-      if (props[key]) {
-        if (props[key].constructor !== schema[key].type) return false;
+    
+    for (let pKey of propsKeys) {
+      if (!schemaKeys.includes(pKey)) {
+        response[pKey] = [`'${pKey}' is not part of the schema model`];
+      }
+      if (props[pKey]) {
+        if (props[pKey].constructor !== schema[pKey].type) {
+          response[pKey] = [`'${pKey}' should be a ${typeof schema[pKey].type()}`];
+        }
       }
     }
-    return true;
+    return response;
   }
 
   familiarizeAndPrototype(gremlinResponse, childClass) {
@@ -140,22 +145,27 @@ class Model {
       if (childClass.constructor.name === 'EdgeModel') {
         object.inV = grem.inV;
         object.outV = grem.outV
+        if (grem.inVLabel) object.inVLabel = grem.inVLabel;
+        if (grem.outVLabel) object.outVLabel = grem.outVLabel;
       }
 
       let currentPartition = this.g.partition ? this.g.partition : '';
-      Object.keys(grem.properties).forEach((propKey) => {
-        if (propKey != currentPartition) {
-          if (childClass.constructor.name === 'EdgeModel') {
-            object[propKey] = grem.properties[propKey];
-          } else {
-            object[propKey] = grem.properties[propKey][0].value;
+      if (grem.properties) {
+        Object.keys(grem.properties).forEach((propKey) => {
+          if (propKey != currentPartition) {
+            if (childClass.constructor.name === 'EdgeModel') {
+              object[propKey] = grem.properties[propKey];
+            } else {
+              object[propKey] = grem.properties[propKey][0].value;
+            }
           }
-        }
-      });
+        });
+      }
       data.push(object);
     })
     return data;
   }
+
 
   getRandomVariable(numVars, currentVarsArr) {
     const variables = currentVarsArr ? Array.from(currentVarsArr) : [];
