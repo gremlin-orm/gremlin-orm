@@ -117,6 +117,8 @@ class Model {
       if (childClass.constructor.name === 'EdgeModel') {
         object.inV = grem.inV;
         object.outV = grem.outV
+        if (grem.inVLabel) object.inVLabel = grem.inVLabel;
+        if (grem.outVLabel) object.outVLabel = grem.outVLabel;
       }
 
       let currentPartition = this.g.partition ? this.g.partition : '';
