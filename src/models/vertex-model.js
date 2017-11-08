@@ -5,7 +5,6 @@ class VertexModel extends Model {
     super(gorm, '')
     this.label = label;
     this.schema = schema;
-    this.g = gorm;
   }
 
   create(props, callback) {
@@ -13,7 +12,6 @@ class VertexModel extends Model {
       callback({'error': 'Object properties do not match schema.'});
       return;
     }
-
     let gremlinStr = `g.addV('${this.label}')`;
     if (this.g.dialect === this.g.dialects.AZURE) {
       gremlinStr += `.property('${this.g.partition}', '${props[Object.keys(props)[0]]}')`;
@@ -34,7 +32,7 @@ class VertexModel extends Model {
   }
 
   findE(label, props, depth, callback) {
-    let gremlinStr = isInstance(this);
+    let gremlinStr = this.getGremlinStr();
     gremlinStr += `.out('${label}')`;
     if (callback) this.executeQuery(gremlinStr, this, callback);
     else {
