@@ -31,9 +31,7 @@ class VertexModel {
   }
 
   findE(label, props, depth, callback) {
-    let curr = this;
-    let gremlinStr = 'g.v()';
-    if (curr.gremlinStr) gremlinStr = curr.gremlinStr;
+    let gremlinStr = isInstance(this);
     gremlinStr += `.out('${label}')`;
     if (callback) executeQuery(gremlinStr, this, callback);
     else {
