@@ -111,7 +111,6 @@ class Model {
   familiarizeAndPrototype(gremlinResponse, childClass) {
     let data = [];
     gremlinResponse.forEach((grem) => {
-        console.log("grem", grem);
       let object = Object.create(childClass);
       object.id = grem.id;
       object.label = grem.label;
