@@ -44,16 +44,18 @@ class Gorm {
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
     if (checkRequired) {
-      schemaKeys.forEach(key => {
+      for (let i = 0; i < schemaKeys.length; i += 1) {
+        let key = schemaKeys[i];
         if ((schema[key].allowNull !== undefined) && (schema[key].allowNull === false)) {
           if (!propsKeys.includes(key)) return false;
         }
-      });
+      }
     }
-    propsKeys.forEach(key => {
+    for (let i = 0; i < propsKeys.length; i += 1) {
+      let key = propsKeys[i];
       if (!schemaKeys.includes(key)) return false;
       if (props[key].constructor !== schema[key].type) return false;
-    });
+    }
     return true;
   }
 }
