@@ -34,6 +34,9 @@ class EdgeModel extends Model {
     let gremlinStr = `g.V().has('${outVKey}',${this.stringifyValue(outVValue)})`;
     gremlinStr += `.addE('${this.label}')` + this.actionBuilder('property', props);
     gremlinStr += `.to(g.V().has('${inVKey}',${this.stringifyValue(inVValue)}))`;
+
+
+
     // this.g.client.execute(gremlinStr, (err, result) => {
     //   if (err) {
     //     callback({'error': err});
