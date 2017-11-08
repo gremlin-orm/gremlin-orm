@@ -1,5 +1,5 @@
 class Model {
-  constructor(gorm, qremlinStr) {
+  constructor(gorm, gremlinStr) {
     this.g = gorm;
     this.gremlinStr = gremlinStr;
   }
@@ -45,6 +45,9 @@ class Model {
   }
 
   checkSchema(schema, props, checkRequired) {
+
+    return true;
+
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
     if (checkRequired) {
@@ -65,17 +68,26 @@ class Model {
 }
 
 const familiarizeAndPrototype = (gremlinResponse, parentClass) => {
-  parentClass = parentClass || this;
+    console.log("parentClass", parentClass);
+    console.log("gremlinResponse", gremlinResponse);
+  parentClass = parentClass || this; // What can this ever be?
   let data = [];
   gremlinResponse.forEach((grem) => {
     let object = Object.create(parentClass);
     object.id = grem.id;
     object.label = grem.label;
+    if (parentClass.constructor.name === 'EdgeModel') {
+      object.inV = grem.inV;
+      object.outV = grem.outV
+    }
     let currentPartition = parentClass.partition ? parentClass.partition : '';
-
     Object.keys(grem.properties).forEach((propKey) => {
       if (propKey != currentPartition) {
-        object[propKey] = grem.properties[propKey][0].value;
+        if (parentClass.constructor.name === 'EdgeModel') {
+          object[propKey] = grem.properties[propKey]; 
+        } else {
+          object[propKey] = grem.properties[propKey][0].value;
+        }
       }
     });
     data.push(object);
