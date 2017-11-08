@@ -36,7 +36,7 @@ class Model {
     return propsStr;
   }
 
-  getOrBuildGremlinStr() {
+  getGremlinStr() {
     if (this.gremlinStr !== '') return this.gremlinStr
     return `g.V('${this.id}')`;
   }
