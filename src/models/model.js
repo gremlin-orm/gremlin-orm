@@ -37,8 +37,9 @@ class Model {
   }
 
   getGremlinStr() {
-    if (this.gremlinStr !== '') return this.gremlinStr
-    return `g.V('${this.id}')`;
+    if (this.gremlinStr !== '') return this.gremlinStr;
+    if (this.id) return `g.V('${this.id}')`;
+    return '';
   }
 
   stringifyValue(value) {
