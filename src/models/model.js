@@ -5,11 +5,7 @@ class Model {
   }
 
   executeQuery(query, childClass, callback) {
-<<<<<<< HEAD
-    parentClass.g.client.execute(query, (err, result) => {
-=======
     this.g.client.execute(query, (err, result) => {
->>>>>>> d6cb9a466692d62d46391fd00b757b035e3f5f83
       if (err) {
         callback({'error': err});
         return;
@@ -137,6 +133,27 @@ const familiarizeAndPrototype = (gremlinResponse, childClass) => {
     data.push(object);
   })
   return data;
+}
+
+const getRandomVariable(numVars, currentVarsArr) {
+  const variables = currentVarsArr ? Array.from(currentVarsArr) : [];  
+  const variablesRequired = numVars ? numVars : 1;
+  const possibleChars = 'abcdefghijklmnopqrstuvwxyz';
+  function getRandomChars() {
+    const result = '';
+    for(let i = 0; i < 3; i += 1) {
+      result += possibleChars[Math.floor(Math.random() * possibleChars.length)];
+    }
+    return result;
+  }
+  for (let i = 0; i < variablesRequired; i += 1) {
+    let newVariable = getRandomChars();
+    while (variables.includes(newVariable)) {
+      newVariable = getRandomChars();
+    }
+    variables.push(newVariable);
+  }
+  return variables;
 }
 
 module.exports = Model;
