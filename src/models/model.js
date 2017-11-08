@@ -83,8 +83,6 @@ class Model {
   }
 
   checkSchema(schema, props, checkRequired) {
-    
-    return true;
 
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
