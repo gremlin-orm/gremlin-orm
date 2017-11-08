@@ -14,10 +14,6 @@ class EdgeModel {
       callback({'error': 'Object properties do not match schema.'});
       return;
     }
-
-    // console.log('this', this);
-    // // console.log('instanceof this', instanceof this );
-
     let outVKey = 'id';
     let outVValue = outV;
     let inVKey = 'id';
