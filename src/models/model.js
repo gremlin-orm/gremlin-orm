@@ -107,10 +107,8 @@ class Model {
   }
 
   checkSchema(schema, props, checkRequired) {
-
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
-
     const response = {};
     
     if (checkRequired) {
@@ -129,7 +127,11 @@ class Model {
       }
       if (props[pKey]) {
         if (props[pKey].constructor !== schema[pKey].type) {
-          response[pKey] = [`'${pKey}' should be a ${typeof schema[pKey].type()}`];
+          if (schema[pKey].type === Date) {
+            response[pKey] = [`'${pKey}' should be a date object`];
+          } else {
+            response[pKey] = [`'${pKey}' should be a ${typeof schema[pKey].type()}`];
+          }
         }
       }
     }
