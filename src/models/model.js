@@ -36,7 +36,7 @@ class Model {
     const keys = Object.keys(props);
     keys.forEach(key => {
       if (Array.isArray(props[key])) {
-        ifArr += `within(`;
+        ifArr = `within(`;
         for (let i = 0; i < props[key].length; i += 1) {
           if (i === props[key].length - 1) {
             ifArr += `${this.stringifyValue(props[key][i])}))`;
