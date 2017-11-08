@@ -107,8 +107,7 @@ query and instead pass its Gremlin query string to the next method in the chain 
 
 ## Methods
 
-<a id="query" />
-#### query(queryString, [raw, callback])
+#### query(queryString, [raw, callback]) <a id="query"></a>
 
 `.query` takes a raw Gremlin query string and runs it on the object it is called on.
 
@@ -126,8 +125,7 @@ query and instead pass its Gremlin query string to the next method in the chain 
 ```
 
 
-<a id="update" />
-#### update({props}, callback)
+#### update({props}, callback) <a id="update"></a>
 
 `.update` takes a properties object and updates the relevant properties on the model instance it is called on.
 
@@ -142,8 +140,7 @@ query and instead pass its Gremlin query string to the next method in the chain 
   });
 ```
 
-<a id="delete" />
-#### delete([callback])
+#### delete([callback]) <a id="delete"></a>
 
 `.delete` removes the object(s) it is called on from the database.
 
@@ -157,9 +154,7 @@ query and instead pass its Gremlin query string to the next method in the chain 
   });
 ```
 
-
-<a id="limit" />
-#### limit(num, [callback])
+#### limit(num, [callback]) <a id="limit"></a>
 
 `.limit` limits the query to only the first `num` objects
 
