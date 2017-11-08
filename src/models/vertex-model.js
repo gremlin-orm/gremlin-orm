@@ -35,7 +35,7 @@ class VertexModel extends Model {
     //   callback({'error': schemaCheck});
     // }
     let gremlinQuery = outGremlinStr + `.addE('${edge.label}')${this.actionBuilder('property', props)}.to(` + inGremlinStr + ")";
-    return this.executeOrPass(gremlinQuery, this, callback);
+    return this.executeOrPass(gremlinQuery, edge, callback);
   }
 
   find(props, callback) {

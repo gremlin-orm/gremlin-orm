@@ -111,12 +111,15 @@ class Model {
   familiarizeAndPrototype(gremlinResponse, childClass) {
     let data = [];
     gremlinResponse.forEach((grem) => {
+        console.log("grem", grem);
       let object = Object.create(childClass);
       object.id = grem.id;
       object.label = grem.label;
       if (childClass.constructor.name === 'EdgeModel') {
         object.inV = grem.inV;
         object.outV = grem.outV
+        if (grem.inVLabel) object.inVLabel = grem.inVLabel;
+        if (grem.outVLabel) object.outVLabel = grem.outVLabel;
       }
 
       let currentPartition = this.g.partition ? this.g.partition : '';
