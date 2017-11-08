@@ -45,6 +45,30 @@ class Model {
     // });
   }
 
+  query(string, raw, callback) {
+    let cb = callback;
+    let returnRawData = raw;
+    if (arguments.length < 3) {
+      cb = arguments[1];
+      returnRawData = false;
+    }
+
+    let gremlinStr = this.getGremlinStr();
+    gremlinStr += string;
+    if (!callback) return this.executeOrPass(gremlinStr, this, callback);
+    if (raw) {
+      let childClass = this;
+      return this.g.client.execute(gremlinStr, (err, result) => {
+        if (err) {
+          callback({'error': err});
+          return;
+        }
+        callback(null, result);
+      });
+    }
+    return this.executeOrPass(gremlinStr, this, callback);
+  }
+
   actionBuilder(action, props) {
     let propsStr = '';
     let ifArr = '';
@@ -144,7 +168,7 @@ class Model {
 
 
   getRandomVariable(numVars, currentVarsArr) {
-    const variables = currentVarsArr ? Array.from(currentVarsArr) : [];  
+    const variables = currentVarsArr ? Array.from(currentVarsArr) : [];
     const variablesRequired = numVars ? numVars : 1;
     const possibleChars = 'abcdefghijklmnopqrstuvwxyz';
     function getRandomChars() {
