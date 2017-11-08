@@ -43,6 +43,11 @@ class VertexModel extends Model {
     return this.executeOrPass(gremlinStr, this, callback);
   }
 
+  findAll(props, callback) {
+    let gremlinStr = 'g.V()' + this.actionBuilder('has', props);
+    return this.executeOrPass(gremlinStr, this, callback);
+  }
+
   findE(label, props, depth, callback) {
     let gremlinStr = this.getGremlinStr();
     gremlinStr += `.out('${label}')`;

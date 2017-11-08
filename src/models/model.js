@@ -138,7 +138,6 @@ class Model {
     return data;
   }
 
-
   getRandomVariable(numVars, currentVarsArr) {
     const variables = currentVarsArr ? Array.from(currentVarsArr) : [];  
     const variablesRequired = numVars ? numVars : 1;
