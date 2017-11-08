@@ -36,6 +36,11 @@ class Model {
     return propsStr;
   }
 
+  getGremlinStr() {
+    if (this.gremlinStr !== '') return this.gremlinStr
+    return `g.V('${this.id}')`;
+  }
+
   stringifyValue(value) {
     if (typeof value === 'string') {
       return `'${value}'`;
@@ -81,7 +86,7 @@ const familiarizeAndPrototype = (gremlinResponse, parentClass) => {
     Object.keys(grem.properties).forEach((propKey) => {
       if (propKey != currentPartition) {
         if (parentClass.constructor.name === 'EdgeModel') {
-          object[propKey] = grem.properties[propKey]; 
+          object[propKey] = grem.properties[propKey];
         } else {
           object[propKey] = grem.properties[propKey][0].value;
         }
