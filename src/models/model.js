@@ -4,7 +4,7 @@ class Model {
     this.gremlinStr = gremlinStr;
   }
 
-  executeQuery(query, childClass, callback) {
+  executeQuery(query, childClass, callback, singleObject) {
     this.g.client.execute(query, (err, result) => {
       if (err) {
         callback({'error': err});
@@ -12,7 +12,10 @@ class Model {
       }
       // Create nicer Object
       let response = this.familiarizeAndPrototype(result, childClass);
-
+      if(singleObject && response.length > 0) {
+        callback(null, response[0]);
+        return;
+      }
       callback(null, response);
     });
   }
@@ -24,8 +27,8 @@ class Model {
     return this.executeOrPass(gremlinStr, this, callback);
   }
 
-  executeOrPass(gremlinStr, childClass, callback) {
-    if (callback) return this.executeQuery(gremlinStr, childClass, callback);
+  executeOrPass(gremlinStr, childClass, callback, singleObject) {
+    if (callback) return this.executeQuery(gremlinStr, childClass, callback, singleObject);
     let response = Object.create(childClass);
     response.gremlinStr = gremlinStr;
     return response;
@@ -112,7 +115,7 @@ class Model {
       console.log('ids',ids);
       return `g.${type}("${ids.join('","')}")`;
     }
-    if (this.id) return `g.V('${this.id}')`;
+    if (this.id) return `g.${this.constructor.name.charAt(0)}('${this.id}')`;
     return '';
   }
 
