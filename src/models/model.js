@@ -19,6 +19,13 @@ class Model {
       callback(null, response);
     });
   }
+  
+  order(propKey, option, callback) {
+    let gremlinStr = `${this.getGremlinStr}.order().by(`;
+    const option = option === 'DESC' ? 'decr' : 'incr';
+    gremlinStr += `'${propKey}', ${option})`;
+    return this.executeOrPass(gremlinStr, this, callback);
+  }
 
   executeOrPass(gremlinStr, childClass, callback, singleObject) {
     if (callback) return this.executeQuery(gremlinStr, childClass, callback, singleObject);
