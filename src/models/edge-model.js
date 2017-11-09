@@ -45,7 +45,7 @@ class EdgeModel extends Model {
     gremlinStr += `.addE('${this.label}')` + this.actionBuilder('property', props);
     gremlinStr += `.to(g.V().has('${inVKey}',${this.stringifyValue(inVValue)}))`;
 
-    return this.executeQuery(gremlinStr, this, callback);
+    return this.executeQuery(gremlinStr, callback);
   }
 
   // NOT FULLY TESTED
@@ -54,7 +54,7 @@ class EdgeModel extends Model {
     gremlinStr += ".limit(1)";
     return this.executeOrPass(gremlinStr, callback, true);
   }
-  
+
   // NOT FULLY TESTED
   findAll(props, callback) {
     let gremlinStr = `g.E(${this.getIdFromProps(props)}).hasLabel('${this.label}')` + this.actionBuilder('has', props);
