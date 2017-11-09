@@ -38,16 +38,19 @@ class EdgeModel extends Model {
     return this.executeQuery(gremlinStr, this, callback);
   }
 
-  // find(props, callback) {
-  //   let gremlinStr = 'g.V()' + this.actionBuilder('has', props);
-  //   return this.executeOrPass(gremlinStr, this, callback);
-  // }
-
-  // findV(label, props, depth, callback) {
-  //   let gremlinStr = this.getGremlinStr();
-  //   gremlinStr += `.out('${label}')`;
-  //   return this.executeOrPass(gremlinStr, this, callback);
-  // }
+  // NOT FULLY TESTED
+  find(props, callback) {
+    let gremlinStr = `g.E(${this.getIdFromProps(props)})` + this.actionBuilder('has', props) + ".limit(1)";
+console.log("gremlinStr - find Edges", gremlinStr);
+    return this.executeOrPass(gremlinStr, this, callback, true);
+  }
+  
+  // NOT FULLY TESTED
+  findAll(props, callback) {
+    let gremlinStr = `g.E(${this.getIdFromProps(props)})` + this.actionBuilder('has', props);
+console.log("gremlinStr - findAll Edges", gremlinStr);
+    return this.executeOrPass(gremlinStr, this, callback);
+  }
 
 
 }

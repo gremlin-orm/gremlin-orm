@@ -24,6 +24,7 @@ class Model {
     let gremlinStr = `${this.getGremlinStr}.order().by(`;
     const gremlinOption = option === 'DESC' ? 'decr' : 'incr';
     gremlinStr += `'${propKey}', ${gremlinOption})`;
+
     return this.executeOrPass(gremlinStr, callback);
   }
 
@@ -124,6 +125,9 @@ class Model {
   }
 
   checkSchema(schema, props, checkRequired) {
+    /////////gf
+    return true;
+    //////////gf
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
     const response = {};
@@ -184,6 +188,19 @@ class Model {
     })
     childClass.addArrayMethods(data);
     return data;
+  }
+
+  getIdFromProps(props) {
+    let idString = '';
+    if (props.hasOwnProperty('id')) {
+      if (Array.isArray(props.id)) {
+        idString = `'${props.id.join(',')}'`;
+      } else {
+        idString = `'${props.id}'`;
+      }
+      delete props.id;
+    }
+    return idString;
   }
 
   getRandomVariable(numVars, currentVarsArr) {

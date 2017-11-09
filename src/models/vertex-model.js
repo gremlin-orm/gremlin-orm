@@ -42,12 +42,15 @@ class VertexModel extends Model {
   }
 
   find(props, callback) {
-    let gremlinStr = 'g.V()' + this.actionBuilder('has', props) + ".limit(1)";
+    let gremlinStr = `g.V(${this.getIdFromProps(props)})` + this.actionBuilder('has', props) + ".limit(1)";
+console.log("gremlinStr find Vertex", gremlinStr);
     return this.executeOrPass(gremlinStr, callback, true);
   }
 
   findAll(props, callback) {
-    let gremlinStr = 'g.V()' + this.actionBuilder('has', props);
+console.log("props", props);
+    let gremlinStr = `g.V(${this.getIdFromProps(props)})` + this.actionBuilder('has', props);
+console.log("gremlinStr - findAll Vertex", gremlinStr);
     return this.executeOrPass(gremlinStr, callback);
   }
 
