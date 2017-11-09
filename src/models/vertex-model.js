@@ -1,9 +1,9 @@
 const Model = require('./model');
 
 /**
-* @param {}
-* @param {}
-* @param {}
+* @param {string} label
+* @param {object} schema
+* @param {object} gorm
 */
 class VertexModel extends Model {
   constructor(label, schema, gorm) {
@@ -14,7 +14,7 @@ class VertexModel extends Model {
 
   /**
   * Creates a new vertex
-  * @param {}
+  * @param {object} props
   */
   create(props, callback) {
     if (!this.checkSchema(this.schema, props, true)) {
@@ -32,9 +32,9 @@ class VertexModel extends Model {
 
   /**
   * Creates a new edge
-  * @param {}
-  * @param {}
-  * @param {}
+  * @param {} edge
+  * @param {} props
+  * @param {} vertex
   */
   createE(edge, props, vertex, callback) {
     let outGremlinStr = this.getGremlinStr();
@@ -58,7 +58,7 @@ class VertexModel extends Model {
 
   /**
   * Finds first vertex with matching properties
-  * @param {}
+  * @param {object} props
   */
   find(props, callback) {
     let gremlinStr = `g.V(${this.getIdFromProps(props)})` + this.actionBuilder('has', props) + ".limit(1)";
@@ -68,7 +68,7 @@ console.log("gremlinStr find Vertex", gremlinStr);
 
   /**
   * Finds all vertexes with matching properties
-  * @param {}
+  * @param {object} props
   */
   findAll(props, callback) {
 console.log("props", props);
@@ -79,9 +79,9 @@ console.log("gremlinStr - findAll Vertex", gremlinStr);
 
   /**
   * find all vertexes connected to initial vertex(es) through a type of edge with optional properties
-  * @param {}
-  * @param {}
-  * @param {}
+  * @param {string} label
+  * @param {object} props
+  * @param {number} depth
   */
   findE(label, props, depth, callback) {
     let gremlinStr = this.getGremlinStr();
@@ -93,8 +93,8 @@ console.log("gremlinStr - findAll Vertex", gremlinStr);
 
   /**
   * find all vertexes which have the same edge relations in that the current vertex(es) has out to another vertex
-  * @param {}
-  * @param {}
+  * @param {string} label
+  * @param {object} props
   */
   findImplicit(label, props, callback) {
     let gremlinStr = this.getGremlinStr();
