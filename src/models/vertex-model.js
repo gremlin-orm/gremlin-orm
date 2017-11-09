@@ -30,28 +30,36 @@ class VertexModel extends Model {
     if (inGremlinStr === '') {
       callback({'error': 'Gremlin Query has not been initialised for in Vertex'});
     }
+    inGremlinStr = inGremlinStr.slice(1);
     // const schemaCheck = this.checkSchema(edge.schema, props, true);
     // if (Object.keys(schemaCheck).length === 0) {
     //   callback({'error': schemaCheck});
     // }
-    let gremlinQuery = outGremlinStr + `.addE('${edge.label}')${this.actionBuilder('property', props)}.to(` + inGremlinStr + ")";
-    return this.executeOrPass(gremlinQuery, edge, callback);
+    const [ a ] = this.getRandomVariable();
+    let gremlinQuery = outGremlinStr + `.as('${a}')` + inGremlinStr;
+    gremlinQuery += `.addE('${edge.label}')${this.actionBuilder('property', props)}.from('${a}')`;
+    return this.executeOrPass(gremlinQuery, callback).bind(edge);
   }
 
   find(props, callback) {
-    let gremlinStr = 'g.V()' + this.actionBuilder('has', props);
-    return this.executeOrPass(gremlinStr, this, callback);
+    let gremlinStr = `g.V(${this.getIdFromProps(props)})` + this.actionBuilder('has', props) + ".limit(1)";
+console.log("gremlinStr find Vertex", gremlinStr);
+    return this.executeOrPass(gremlinStr, callback, true);
   }
 
   findAll(props, callback) {
-    let gremlinStr = 'g.V()' + this.actionBuilder('has', props);
-    return this.executeOrPass(gremlinStr, this, callback);
+console.log("props", props);
+    let gremlinStr = `g.V(${this.getIdFromProps(props)})` + this.actionBuilder('has', props);
+console.log("gremlinStr - findAll Vertex", gremlinStr);
+    return this.executeOrPass(gremlinStr, callback);
   }
 
   findE(label, props, depth, callback) {
     let gremlinStr = this.getGremlinStr();
-    gremlinStr += `.out('${label}')`;
-    return this.executeOrPass(gremlinStr, this, callback);
+    for (let i = 0; i < depth; i += 1) {
+      gremlinStr += `.out('${label}')`;
+    }
+    return this.executeOrPass(gremlinStr, callback);
   }
 
   findImplicit(label, props, callback) {
@@ -60,7 +68,7 @@ class VertexModel extends Model {
     gremlinStr += `.as('${originalAs}').out('${label}')${this.actionBuilder('property', props)}` +
                   `.in('${label}')${this.actionBuilder('property', props)}` +
                   `.where(neq('${originalAs}'))`;
-    return this.executeOrPass(gremlinStr, this, callback);
+    return this.executeOrPass(gremlinStr, callback);
   }
 }
 
