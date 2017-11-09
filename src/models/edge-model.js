@@ -43,7 +43,7 @@ class EdgeModel extends Model {
   //   return this.executeOrPass(gremlinStr, this, callback);
   // }
 
-  // findE(label, props, depth, callback) {
+  // findV(label, props, depth, callback) {
   //   let gremlinStr = this.getGremlinStr();
   //   gremlinStr += `.out('${label}')`;
   //   return this.executeOrPass(gremlinStr, this, callback);

@@ -30,17 +30,20 @@ class VertexModel extends Model {
     if (inGremlinStr === '') {
       callback({'error': 'Gremlin Query has not been initialised for in Vertex'});
     }
+    inGremlinStr = inGremlinStr.slice(1);
     // const schemaCheck = this.checkSchema(edge.schema, props, true);
     // if (Object.keys(schemaCheck).length === 0) {
     //   callback({'error': schemaCheck});
     // }
-    let gremlinQuery = outGremlinStr + `.addE('${edge.label}')${this.actionBuilder('property', props)}.to(` + inGremlinStr + ")";
+    const [ a ] = this.getRandomVariable();
+    let gremlinQuery = outGremlinStr + `.as('${a}')` + inGremlinStr;
+    gremlinQuery += `.addE('${edge.label}')${this.actionBuilder('property', props)}.from('${a}')`;
     return this.executeOrPass(gremlinQuery, edge, callback);
   }
 
   find(props, callback) {
-    let gremlinStr = 'g.V()' + this.actionBuilder('has', props);
-    return this.executeOrPass(gremlinStr, this, callback);
+    let gremlinStr = 'g.V()' + this.actionBuilder('has', props) + ".limit(1)";
+    return this.executeOrPass(gremlinStr, this, callback, true);
   }
 
   findAll(props, callback) {
