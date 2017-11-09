@@ -1,4 +1,4 @@
-const Model = require('./model');
+import Model from './model';
 
 /**
 * @param {string} label
@@ -104,6 +104,4 @@ class VertexModel extends Model {
   }
 }
 
-
-
-module.exports = VertexModel;
+export default VertexModel;

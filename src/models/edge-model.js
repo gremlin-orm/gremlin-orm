@@ -1,4 +1,4 @@
-const Model = require('./model');
+import Model from './model';
 
 /**
 * @param {string} label
@@ -64,4 +64,4 @@ class EdgeModel extends Model {
 
 }
 
-module.exports = EdgeModel;
+export default EdgeModel;
