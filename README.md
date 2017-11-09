@@ -104,7 +104,7 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 ## Method Chaining
 
 In order to avoid sacrificing the power of Gremlin traversals, method calls in this ORM can take
-advantage of method chaining.  Any non-creation method will avoid running its database
+advantage of method chaining.  Any read-only method will avoid running its database
 query and instead pass its Gremlin query string to the next method in the chain if it is not given a callback.
 
 #### Example
