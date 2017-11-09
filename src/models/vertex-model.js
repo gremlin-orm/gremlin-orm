@@ -61,5 +61,4 @@ class VertexModel extends Model {
 
 
 
-
 module.exports = VertexModel;
