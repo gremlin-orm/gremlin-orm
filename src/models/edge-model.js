@@ -1,4 +1,4 @@
-const Model = require('./model');
+import Model from './model';
 
 /**
 * @param {}
@@ -54,7 +54,7 @@ class EdgeModel extends Model {
 console.log("gremlinStr - find Edges", gremlinStr);
     return this.executeOrPass(gremlinStr, this, callback, true);
   }
-  
+
   // NOT FULLY TESTED
   findAll(props, callback) {
     let gremlinStr = `g.E(${this.getIdFromProps(props)})` + this.actionBuilder('has', props);
@@ -65,4 +65,4 @@ console.log("gremlinStr - findAll Edges", gremlinStr);
 
 }
 
-module.exports = EdgeModel;
+export default EdgeModel;

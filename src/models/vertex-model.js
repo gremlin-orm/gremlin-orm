@@ -1,4 +1,4 @@
-const Model = require('./model');
+import Model from './model';
 
 /**
 * @param {}
@@ -106,6 +106,4 @@ console.log("gremlinStr - findAll Vertex", gremlinStr);
   }
 }
 
-
-
-module.exports = VertexModel;
+export default VertexModel;

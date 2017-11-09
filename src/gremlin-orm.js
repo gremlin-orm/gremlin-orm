@@ -1,6 +1,6 @@
-const Gremlin = require('gremlin');
-const VertexModel = require('./models/vertex-model');
-const EdgeModel = require('./models/edge-model');
+import Gremlin from 'gremlin';
+import VertexModel from './models/vertex-model';
+import EdgeModel from './models/edge-model';
 // const QueryBuilders = require('./query-builders');
 
 class Gorm {
@@ -43,4 +43,4 @@ class Gorm {
 
 }
 
-module.exports = Gorm;
+export default Gorm;

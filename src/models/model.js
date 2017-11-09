@@ -31,7 +31,7 @@ class Model {
   }
 
   /**
-  * Sorts query results by property in ascending/descending order 
+  * Sorts query results by property in ascending/descending order
   * @param {string} propKey property to sort by.
   * @param {string} option 'ASC' or 'DESC'.
   */
@@ -44,7 +44,7 @@ class Model {
   }
 
   /**
-  * Executes or passes a string of command 
+  * Executes or passes a string of command
   * @param {string} gremlinStr
   * @param {object} singleObject
   */
@@ -142,7 +142,7 @@ class Model {
   }
 
   /**
-  * 
+  *
   */
   getGremlinStr() {
     if (this.gremlinStr && this.gremlinStr !== '') return this.gremlinStr;
@@ -210,7 +210,7 @@ class Model {
   }
 
   /**
-  * 
+  *
   * @param {array} gremlinResponse
   * @param {object} childClass
   */
@@ -262,7 +262,7 @@ class Model {
   }
 
   /**
-  * 
+  *
   */
   getRandomVariable(numVars, currentVarsArr) {
     const variables = currentVarsArr ? Array.from(currentVarsArr) : [];
@@ -300,7 +300,7 @@ class Model {
   }
 
   /**
-  * Attaches array methods for later use 
+  * Attaches array methods for later use
   */
   addArrayMethods(arr) {
     if (this.constructor.name === 'VertexModel') {
@@ -320,6 +320,4 @@ class Model {
   }
 }
 
-
-
-module.exports = Model;
+export default Model;
