@@ -1,5 +1,10 @@
 const Model = require('./model');
 
+/**
+* @param {}
+* @param {}
+* @param {}
+*/
 class VertexModel extends Model {
   constructor(label, schema, gorm) {
     super(gorm, '')
@@ -7,6 +12,10 @@ class VertexModel extends Model {
     this.schema = schema;
   }
 
+  /**
+  * Creates a new vertex
+  * @param {}
+  */
   create(props, callback) {
     if (!this.checkSchema(this.schema, props, true)) {
       callback({'error': 'Object properties do not match schema.'});
@@ -21,6 +30,12 @@ class VertexModel extends Model {
     return this.executeQuery(gremlinStr, this, callback);
   }
 
+  /**
+  * Creates a new edge
+  * @param {}
+  * @param {}
+  * @param {}
+  */
   createE(edge, props, vertex, callback) {
     let outGremlinStr = this.getGremlinStr();
     if (outGremlinStr === '') {
@@ -41,12 +56,20 @@ class VertexModel extends Model {
     return this.executeOrPass(gremlinQuery, callback).bind(edge);
   }
 
+  /**
+  * Finds first vertex with matching properties
+  * @param {}
+  */
   find(props, callback) {
     let gremlinStr = `g.V(${this.getIdFromProps(props)})` + this.actionBuilder('has', props) + ".limit(1)";
 console.log("gremlinStr find Vertex", gremlinStr);
     return this.executeOrPass(gremlinStr, callback, true);
   }
 
+  /**
+  * Finds all vertexes with matching properties
+  * @param {}
+  */
   findAll(props, callback) {
 console.log("props", props);
     let gremlinStr = `g.V(${this.getIdFromProps(props)})` + this.actionBuilder('has', props);
@@ -54,6 +77,12 @@ console.log("gremlinStr - findAll Vertex", gremlinStr);
     return this.executeOrPass(gremlinStr, callback);
   }
 
+  /**
+  * find all vertexes connected to initial vertex(es) through a type of edge with optional properties
+  * @param {}
+  * @param {}
+  * @param {}
+  */
   findE(label, props, depth, callback) {
     let gremlinStr = this.getGremlinStr();
     for (let i = 0; i < depth; i += 1) {
@@ -62,6 +91,11 @@ console.log("gremlinStr - findAll Vertex", gremlinStr);
     return this.executeOrPass(gremlinStr, callback);
   }
 
+  /**
+  * find all vertexes which have the same edge relations in that the current vertex(es) has out to another vertex
+  * @param {}
+  * @param {}
+  */
   findImplicit(label, props, callback) {
     let gremlinStr = this.getGremlinStr();
     let originalAs = this.getRandomVariable()[0];

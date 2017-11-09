@@ -1,9 +1,19 @@
+/**
+* @param {}
+* @param {}
+*/
 class Model {
   constructor(gorm, gremlinStr) {
     this.g = gorm;
     this.gremlinStr = gremlinStr;
   }
 
+  /**
+  * Takes the built query string and executes it
+  * @param {string} query query string to execute.
+  * @param {object} childClass
+  * @param {object} singleObject
+  */
   executeQuery(query, childClass, callback, singleObject) {
     this.g.client.execute(query, (err, result) => {
       if (err) {
@@ -20,6 +30,11 @@ class Model {
     });
   }
 
+  /**
+  * Sorts query results by property in ascending/descending order 
+  * @param {string} propKey property to sort by.
+  * @param {string} option 'ASC' or 'DESC'.
+  */
   order(propKey, option, callback) {
     let gremlinStr = `${this.getGremlinStr}.order().by(`;
     const gremlinOption = option === 'DESC' ? 'decr' : 'incr';
@@ -28,6 +43,11 @@ class Model {
     return this.executeOrPass(gremlinStr, callback);
   }
 
+  /**
+  * Executes or passes a string of command 
+  * @param {string} gremlinStr
+  * @param {object} singleObject
+  */
   executeOrPass(gremlinStr, callback, singleObject) {
     if (callback) return this.executeQuery(gremlinStr, this, callback, singleObject);
     let response = Object.create(this);
@@ -35,12 +55,20 @@ class Model {
     return response;
   }
 
+  /**
+  * Limits the number of results returned
+  * @param {number} num number of results to be returned
+  */
   limit(num, callback) {
     let gremlinStr = this.getGremlinStr();
     gremlinStr += `.limit(${parseInt(num)})`;
     this.executeOrPass(gremlinStr, callback);
   }
 
+  /**
+  * Deletes an existing vertex or edge
+  * @param {string} id id of the vertex or edge to be deleted
+  */
   delete(id, callback) {
     let gremlinStr = this.getGremlinStr();
     gremlinStr += '.drop()';
@@ -56,6 +84,11 @@ class Model {
     // });
   }
 
+  /**
+  * Perform a cypher query and parse the results
+  * @param {string} string
+  * @param {boolean} raw
+  */
   query(string, raw, callback) {
     let cb = callback;
     let returnRawData = raw;
@@ -80,6 +113,11 @@ class Model {
     return this.executeOrPass(gremlinStr, callback);
   }
 
+  /**
+  * Builds a command string to be executed or passed using props
+  * @param {string} action e.g., 'has', 'property'
+  * @param {object} props
+  */
   actionBuilder(action, props) {
     let propsStr = '';
     let ifArr = '';
@@ -103,6 +141,9 @@ class Model {
     return propsStr;
   }
 
+  /**
+  * 
+  */
   getGremlinStr() {
     if (this.gremlinStr && this.gremlinStr !== '') return this.gremlinStr;
     if (this.constructor.name === 'Array') {
@@ -116,6 +157,9 @@ class Model {
     return '';
   }
 
+  /**
+  * Wraps '' around value if string and returns it
+  */
   stringifyValue(value) {
     if (typeof value === 'string') {
       return `'${value}'`;
@@ -124,6 +168,12 @@ class Model {
     }
   }
 
+  /**
+  * Checks whether the props object adheres to the schema model specifications
+  * @param {object} schema
+  * @param {object} props
+  * @param {boolean} checkRequired should be true for create or createE
+  */
   checkSchema(schema, props, checkRequired) {
     /////////gf
     return true;
@@ -159,6 +209,11 @@ class Model {
     return response;
   }
 
+  /**
+  * 
+  * @param {array} gremlinResponse
+  * @param {object} childClass
+  */
   familiarizeAndPrototype(gremlinResponse, childClass) {
     let data = [];
     gremlinResponse.forEach((grem) => {
@@ -190,6 +245,9 @@ class Model {
     return data;
   }
 
+  /**
+  * returns the id of the vertex or edge
+  */
   getIdFromProps(props) {
     let idString = '';
     if (props.hasOwnProperty('id')) {
@@ -203,6 +261,9 @@ class Model {
     return idString;
   }
 
+  /**
+  * 
+  */
   getRandomVariable(numVars, currentVarsArr) {
     const variables = currentVarsArr ? Array.from(currentVarsArr) : [];
     const variablesRequired = numVars ? numVars : 1;
@@ -224,7 +285,9 @@ class Model {
     return variables;
   }
 
-
+  /**
+  * Updates specific props on an existing vertex or edge
+  */
   update(props, callback) {
     let gremlinStr = this.getGremlinStr();
     const schema = this.schema;
@@ -236,6 +299,9 @@ class Model {
     return this.executeOrPass(gremlinStr, callback);
   }
 
+  /**
+  * Attaches array methods for later use 
+  */
   addArrayMethods(arr) {
     if (this.constructor.name === 'VertexModel') {
       arr.createE = this.createE;

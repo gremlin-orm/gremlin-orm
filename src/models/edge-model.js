@@ -1,6 +1,10 @@
 const Model = require('./model');
 
-
+/**
+* @param {}
+* @param {}
+* @param {}
+*/
 class EdgeModel extends Model {
   constructor(label, schema, gorm) {
     super(gorm, '');
@@ -8,6 +12,12 @@ class EdgeModel extends Model {
     this.schema = schema;
   }
 
+  /**
+  * create a new edge relationship by passing in two vertexes or sets of vertexes
+  * @param {}
+  * @param {}
+  * @param {}
+  */
   create(outV, inV, props, callback) {
     if (!(outV && inV)) {
       callback({'error': 'Need both an inV and an outV.'});
