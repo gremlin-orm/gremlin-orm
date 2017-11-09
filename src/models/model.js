@@ -173,9 +173,9 @@ class Model {
   * @param {boolean} checkRequired should be true for create or createE
   */
   checkSchema(schema, props, checkRequired) {
-    /////////gf
-    return true;
-    //////////gf
+    // /////////gf
+    // return true;
+    // //////////gf
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
     const response = {};
@@ -207,8 +207,9 @@ class Model {
     return response;
   }
 
-  /*
-  * returns true if {} and false if response object contains error message(s)
+  /**
+   * returns true if response is an empty object and false if it contains any error message
+   * @param {object} response return value from checkSchema
   */
   interpretCheckSchema(response) {
     if (Object.keys(obj).length === 0) return true;
