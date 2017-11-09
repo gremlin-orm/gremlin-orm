@@ -4,11 +4,11 @@
   "description": "Gremlin ORM for Node.js",
   "main": "dist/gremlin-orm.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src --presets babel-preset-es2015 --out-dir dist",
     "prepublish": "npm run build",
     "eslint": "eslint . --color",
-    "eslint-fix": "eslint . --color --fix"
+    "eslint-fix": "eslint . --color --fix",
+    "test": "mocha -s -f test.js"
   },
   "repository": {
     "type": "git",
