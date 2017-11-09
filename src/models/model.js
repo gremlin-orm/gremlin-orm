@@ -24,12 +24,12 @@ class Model {
     let gremlinStr = `${this.getGremlinStr}.order().by(`;
     const gremlinOption = option === 'DESC' ? 'decr' : 'incr';
     gremlinStr += `'${propKey}', ${gremlinOption})`;
-    return this.executeOrPass(gremlinStr, this, callback);
+    return this.executeOrPass(gremlinStr, callback);
   }
 
-  executeOrPass(gremlinStr, childClass, callback, singleObject) {
-    if (callback) return this.executeQuery(gremlinStr, childClass, callback, singleObject);
-    let response = Object.create(childClass);
+  executeOrPass(gremlinStr, callback, singleObject) {
+    if (callback) return this.executeQuery(gremlinStr, this, callback, singleObject);
+    let response = Object.create(this);
     response.gremlinStr = gremlinStr;
     return response;
   }
@@ -37,13 +37,13 @@ class Model {
   limit(num, callback) {
     let gremlinStr = this.getGremlinStr();
     gremlinStr += `.limit(${parseInt(num)})`;
-    this.executeOrPass(gremlinStr, this, callback);
+    this.executeOrPass(gremlinStr, callback);
   }
 
   delete(id, callback) {
     let gremlinStr = this.getGremlinStr();
     gremlinStr += '.drop()';
-    this.executeOrPass(gremlinStr, this, callback);
+    this.executeOrPass(gremlinStr, callback);
     // let gremlinStr = `g.V().has('id', '${id}').drop()`;
     // this.g.client.execute(gremlinStr, (err, result) => {
     //   if (err) {
@@ -65,7 +65,7 @@ class Model {
 
     let gremlinStr = this.getGremlinStr();
     gremlinStr += string;
-    if (!callback) return this.executeOrPass(gremlinStr, this, callback);
+    if (!callback) return this.executeOrPass(gremlinStr, callback);
     if (raw) {
       let childClass = this;
       return this.g.client.execute(gremlinStr, (err, result) => {
@@ -76,7 +76,7 @@ class Model {
         callback(null, result);
       });
     }
-    return this.executeOrPass(gremlinStr, this, callback);
+    return this.executeOrPass(gremlinStr, callback);
   }
 
   actionBuilder(action, props) {
@@ -103,16 +103,12 @@ class Model {
   }
 
   getGremlinStr() {
-    console.log('this', this)
-    console.log('this constructor', this.constructor.name);
-    if (this.gremlinStr !== '') return this.gremlinStr;
+    if (this.gremlinStr && this.gremlinStr !== '') return this.gremlinStr;
     if (this.constructor.name === 'Array') {
       if (this.length === 0) return `g.V('nonexistent')`;
       let type = this[0].constructor.name.charAt(0);
       let ids = [];
       this.forEach((el) => ids.push(el.id));
-      console.log('HELLO');
-      console.log('ids',ids);
       return `g.${type}("${ids.join('","')}")`;
     }
     if (this.id) return `g.${this.constructor.name.charAt(0)}('${this.id}')`;
@@ -213,17 +209,19 @@ class Model {
 
   addArrayMethods(arr) {
     if (this.constructor.name === 'VertexModel') {
-      arr.createE = this.createE.bind(this);
-      arr.findE = this.findE.bind(this);
-      arr.findImplicit = this.findImplicit.bind(this);
+      arr.createE = this.createE;
+      arr.findE = this.findE;
+      arr.findImplicit = this.findImplicit;
     }
     else if (this.constructor.name === 'EdgeModel') {
-      arr.findV = this.findV.bind(this);
+      arr.findV = this.findV;
     }
-    arr.order = this.order.bind(this);
-    arr.limit = this.limit.bind(this);
-    arr.delete = this.delete.bind(this);
-    arr.query = this.query.bind(this);
+    arr.order = this.order;
+    arr.limit = this.limit;
+    arr.delete = this.delete;
+    arr.query = this.query;
+    arr.getGremlinStr = this.getGremlinStr;
+    arr.executeOrPass = this.executeOrPass.bind(this);
   }
 }
 

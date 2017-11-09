@@ -38,26 +38,25 @@ class VertexModel extends Model {
     const [ a ] = this.getRandomVariable();
     let gremlinQuery = outGremlinStr + `.as('${a}')` + inGremlinStr;
     gremlinQuery += `.addE('${edge.label}')${this.actionBuilder('property', props)}.from('${a}')`;
-    return this.executeOrPass(gremlinQuery, edge, callback);
+    return this.executeOrPass(gremlinQuery, callback).bind(edge);
   }
 
   find(props, callback) {
     let gremlinStr = 'g.V()' + this.actionBuilder('has', props) + ".limit(1)";
-    return this.executeOrPass(gremlinStr, this, callback, true);
+    return this.executeOrPass(gremlinStr, callback, true);
   }
 
   findAll(props, callback) {
     let gremlinStr = 'g.V()' + this.actionBuilder('has', props);
-    return this.executeOrPass(gremlinStr, this, callback);
+    return this.executeOrPass(gremlinStr, callback);
   }
 
   findE(label, props, depth, callback) {
     let gremlinStr = this.getGremlinStr();
-    console.log('gremlinStr', gremlinStr);
     for (let i = 0; i < depth; i += 1) {
       gremlinStr += `.out('${label}')`;
     }
-    return this.executeOrPass(gremlinStr, this, callback);
+    return this.executeOrPass(gremlinStr, callback);
   }
 
   findImplicit(label, props, callback) {
@@ -66,7 +65,7 @@ class VertexModel extends Model {
     gremlinStr += `.as('${originalAs}').out('${label}')${this.actionBuilder('property', props)}` +
                   `.in('${label}')${this.actionBuilder('property', props)}` +
                   `.where(neq('${originalAs}'))`;
-    return this.executeOrPass(gremlinStr, this, callback);
+    return this.executeOrPass(gremlinStr, callback);
   }
 }
 
