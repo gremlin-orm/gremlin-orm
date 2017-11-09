@@ -22,8 +22,8 @@ class Model {
   
   order(propKey, option, callback) {
     let gremlinStr = `${this.getGremlinStr}.order().by(`;
-    const option = option === 'DESC' ? 'decr' : 'incr';
-    gremlinStr += `'${propKey}', ${option})`;
+    const gremlinOption = option === 'DESC' ? 'decr' : 'incr';
+    gremlinStr += `'${propKey}', ${gremlinOption})`;
     return this.executeOrPass(gremlinStr, this, callback);
   }
 
@@ -117,6 +117,9 @@ class Model {
   }
 
   checkSchema(schema, props, checkRequired) {
+    /////////gf
+    return true;
+    //////////gf
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
     const response = {};
@@ -176,6 +179,19 @@ class Model {
       data.push(object);
     })
     return data;
+  }
+
+  getIdFromProps(props) {
+    let idString = '';
+    if (props.hasOwnProperty('id')) {
+      if (Array.isArray(props.id)) {
+        idString = `'${props.id.join(',')}'`;
+      } else {
+        idString = `'${props.id}'`;
+      }
+      delete props.id;
+    }
+    return idString;
   }
 
   getRandomVariable(numVars, currentVarsArr) {
