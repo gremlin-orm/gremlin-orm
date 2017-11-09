@@ -40,16 +40,15 @@ class EdgeModel extends Model {
 
   // NOT FULLY TESTED
   find(props, callback) {
-    let gremlinStr = `g.E(${this.getIdFromProps(props)})` + this.actionBuilder('has', props) + ".limit(1)";
-console.log("gremlinStr - find Edges", gremlinStr);
-    return this.executeOrPass(gremlinStr, this, callback, true);
+    let gremlinStr = `g.E(${this.getIdFromProps(props)}).hasLabel('${this.label}')` + this.actionBuilder('has', props);
+    gremlinStr += ".limit(1)";
+    return this.executeOrPass(gremlinStr, callback, true);
   }
   
   // NOT FULLY TESTED
   findAll(props, callback) {
-    let gremlinStr = `g.E(${this.getIdFromProps(props)})` + this.actionBuilder('has', props);
-console.log("gremlinStr - findAll Edges", gremlinStr);
-    return this.executeOrPass(gremlinStr, this, callback);
+    let gremlinStr = `g.E(${this.getIdFromProps(props)}).hasLabel('${this.label}')` + this.actionBuilder('has', props);
+    return this.executeOrPass(gremlinStr, callback);
   }
 
 
