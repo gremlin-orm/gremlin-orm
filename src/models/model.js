@@ -17,6 +17,13 @@ class Model {
     });
   }
 
+  order(propKey, option, callback) {
+    let gremlinStr = `${this.getGremlinStr}.order().by(`;
+    const option = option === 'DESC' ? 'decr' : 'incr';
+    gremlinStr += `'${propKey}', ${option})`;
+    return this.executeOrPass(gremlinStr, this, callback);
+  }
+
   executeOrPass(gremlinStr, childClass, callback) {
     if (callback) return this.executeQuery(gremlinStr, childClass, callback);
     let response = Object.create(childClass);
@@ -43,6 +50,30 @@ class Model {
     //   let response = `${id} deleted successfully`;
     //   callback(null, response);
     // });
+  }
+
+  query(string, raw, callback) {
+    let cb = callback;
+    let returnRawData = raw;
+    if (arguments.length < 3) {
+      cb = arguments[1];
+      returnRawData = false;
+    }
+
+    let gremlinStr = this.getGremlinStr();
+    gremlinStr += string;
+    if (!callback) return this.executeOrPass(gremlinStr, this, callback);
+    if (raw) {
+      let childClass = this;
+      return this.g.client.execute(gremlinStr, (err, result) => {
+        if (err) {
+          callback({'error': err});
+          return;
+        }
+        callback(null, result);
+      });
+    }
+    return this.executeOrPass(gremlinStr, this, callback);
   }
 
   actionBuilder(action, props) {
@@ -146,7 +177,7 @@ class Model {
 
 
   getRandomVariable(numVars, currentVarsArr) {
-    const variables = currentVarsArr ? Array.from(currentVarsArr) : [];  
+    const variables = currentVarsArr ? Array.from(currentVarsArr) : [];
     const variablesRequired = numVars ? numVars : 1;
     const possibleChars = 'abcdefghijklmnopqrstuvwxyz';
     function getRandomChars() {

@@ -48,8 +48,16 @@ class VertexModel extends Model {
     gremlinStr += `.out('${label}')`;
     return this.executeOrPass(gremlinStr, this, callback);
   }
-}
 
+  findImplicit(label, props, callback) {
+    let gremlinStr = this.getGremlinStr();
+    let originalAs = this.getRandomVariable()[0];
+    gremlinStr += `.as('${originalAs}').out('${label}')${this.actionBuilder('property', props)}` +
+                  `.in('${label}')${this.actionBuilder('property', props)}` +
+                  `.where(neq('${originalAs}'))`;
+    return this.executeOrPass(gremlinStr, this, callback);
+  }
+}
 
 
 
