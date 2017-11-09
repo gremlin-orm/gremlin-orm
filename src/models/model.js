@@ -209,6 +209,15 @@ class Model {
     return response;
   }
 
+  /*
+  * returns true if {} and false if response object contains error message(s)
+  */
+  interpretCheckSchema(response) {
+    if (Object.keys(obj).length === 0) return true;
+    else return false;
+  }
+
+
   /**
   * 
   * @param {array} gremlinResponse
