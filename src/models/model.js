@@ -195,6 +195,17 @@ class Model {
     }
     return variables;
   }
+
+  update(props, callback) {
+    let gremlinStr = this.getGremlinStr();
+    const schema = this.schema;
+    const checkSchemaResponse = this.checkSchema(schema, props, false);
+
+    if (Object.keys(checkSchemaResponse).length !== 0) return callback(checkSchemaResponse); // should it throw an error?
+
+    gremlinStr += this.actionBuilder('property', props);
+    return this.executeOrPass(gremlinStr, callback);
+  }
 }
 
 
