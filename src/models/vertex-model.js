@@ -61,8 +61,8 @@ class VertexModel extends Model {
   * @param {object} props
   */
   find(props, callback) {
-    let gremlinStr = `g.V(${this.getIdFromProps(props)})` + this.actionBuilder('has', props) + ".limit(1)";
-console.log("gremlinStr find Vertex", gremlinStr);
+    let gremlinStr = `g.V(${this.getIdFromProps(props)}).hasLabel('${this.label}')` + this.actionBuilder('has', props);
+    gremlinStr += ".limit(1)";
     return this.executeOrPass(gremlinStr, callback, true);
   }
 
@@ -71,9 +71,7 @@ console.log("gremlinStr find Vertex", gremlinStr);
   * @param {object} props
   */
   findAll(props, callback) {
-console.log("props", props);
-    let gremlinStr = `g.V(${this.getIdFromProps(props)})` + this.actionBuilder('has', props);
-console.log("gremlinStr - findAll Vertex", gremlinStr);
+    let gremlinStr = `g.V(${this.getIdFromProps(props)}).hasLabel('${this.label}')` + this.actionBuilder('has', props);
     return this.executeOrPass(gremlinStr, callback);
   }
 
