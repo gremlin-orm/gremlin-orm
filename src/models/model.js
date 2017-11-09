@@ -1,6 +1,6 @@
 /**
-* @param {}
-* @param {}
+* @param {object} gorm
+* @param {string} gremlinStr
 */
 class Model {
   constructor(gorm, gremlinStr) {

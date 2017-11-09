@@ -1,9 +1,9 @@
 const Model = require('./model');
 
 /**
-* @param {}
-* @param {}
-* @param {}
+* @param {string} label
+* @param {object} schema
+* @param {object} gorm
 */
 class EdgeModel extends Model {
   constructor(label, schema, gorm) {
@@ -14,9 +14,9 @@ class EdgeModel extends Model {
 
   /**
   * create a new edge relationship by passing in two vertexes or sets of vertexes
-  * @param {}
-  * @param {}
-  * @param {}
+  * @param {object} outV
+  * @param {object} inV
+  * @param {object} props
   */
   create(outV, inV, props, callback) {
     if (!(outV && inV)) {
