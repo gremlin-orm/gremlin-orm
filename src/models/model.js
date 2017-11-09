@@ -11,17 +11,16 @@ class Model {
   /**
   * Takes the built query string and executes it
   * @param {string} query query string to execute.
-  * @param {object} childClass
   * @param {object} singleObject
   */
-  executeQuery(query, childClass, callback, singleObject) {
+  executeQuery(query, callback, singleObject) {
     this.g.client.execute(query, (err, result) => {
       if (err) {
         callback({'error': err});
         return;
       }
       // Create nicer Object
-      let response = this.familiarizeAndPrototype(result, childClass);
+      let response = this.familiarizeAndPrototype(result);
       if(singleObject && response.length > 0) {
         callback(null, response[0]);
         return;
@@ -31,7 +30,7 @@ class Model {
   }
 
   /**
-  * Sorts query results by property in ascending/descending order 
+  * Sorts query results by property in ascending/descending order
   * @param {string} propKey property to sort by.
   * @param {string} option 'ASC' or 'DESC'.
   */
@@ -44,12 +43,12 @@ class Model {
   }
 
   /**
-  * Executes or passes a string of command 
+  * Executes or passes a string of command
   * @param {string} gremlinStr
   * @param {object} singleObject
   */
   executeOrPass(gremlinStr, callback, singleObject) {
-    if (callback) return this.executeQuery(gremlinStr, this, callback, singleObject);
+    if (callback) return this.executeQuery(gremlinStr, callback, singleObject);
     let response = Object.create(this);
     response.gremlinStr = gremlinStr;
     return response;
@@ -101,7 +100,6 @@ class Model {
     gremlinStr += string;
     if (!callback) return this.executeOrPass(gremlinStr, callback);
     if (raw) {
-      let childClass = this;
       return this.g.client.execute(gremlinStr, (err, result) => {
         if (err) {
           callback({'error': err});
@@ -142,7 +140,7 @@ class Model {
   }
 
   /**
-  * 
+  *
   */
   getGremlinStr() {
     if (this.gremlinStr && this.gremlinStr !== '') return this.gremlinStr;
@@ -219,17 +217,16 @@ class Model {
 
 
   /**
-  * 
+  *
   * @param {array} gremlinResponse
-  * @param {object} childClass
   */
-  familiarizeAndPrototype(gremlinResponse, childClass) {
+  familiarizeAndPrototype(gremlinResponse) {
     let data = [];
     gremlinResponse.forEach((grem) => {
-      let object = Object.create(childClass);
+      let object = Object.create(this);
       object.id = grem.id;
       object.label = grem.label;
-      if (childClass.constructor.name === 'EdgeModel') {
+      if (this.constructor.name === 'EdgeModel') {
         object.inV = grem.inV;
         object.outV = grem.outV
         if (grem.inVLabel) object.inVLabel = grem.inVLabel;
@@ -240,7 +237,7 @@ class Model {
       if (grem.properties) {
         Object.keys(grem.properties).forEach((propKey) => {
           if (propKey != currentPartition) {
-            if (childClass.constructor.name === 'EdgeModel') {
+            if (this.constructor.name === 'EdgeModel') {
               object[propKey] = grem.properties[propKey];
             } else {
               object[propKey] = grem.properties[propKey][0].value;
@@ -250,7 +247,7 @@ class Model {
       }
       data.push(object);
     })
-    childClass.addArrayMethods(data);
+    this.addArrayMethods(data);
     return data;
   }
 
@@ -271,7 +268,7 @@ class Model {
   }
 
   /**
-  * 
+  *
   */
   getRandomVariable(numVars, currentVarsArr) {
     const variables = currentVarsArr ? Array.from(currentVarsArr) : [];
@@ -309,7 +306,7 @@ class Model {
   }
 
   /**
-  * Attaches array methods for later use 
+  * Attaches array methods for later use
   */
   addArrayMethods(arr) {
     if (this.constructor.name === 'VertexModel') {
