@@ -50,7 +50,10 @@ class VertexModel extends Model {
 
   findE(label, props, depth, callback) {
     let gremlinStr = this.getGremlinStr();
-    gremlinStr += `.out('${label}')`;
+    console.log('gremlinStr', gremlinStr);
+    for (let i = 0; i < depth; i += 1) {
+      gremlinStr += `.out('${label}')`;
+    }
     return this.executeOrPass(gremlinStr, this, callback);
   }
 

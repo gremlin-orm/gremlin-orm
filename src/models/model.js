@@ -19,8 +19,8 @@ class Model {
 
   order(propKey, option, callback) {
     let gremlinStr = `${this.getGremlinStr}.order().by(`;
-    const option = option === 'DESC' ? 'decr' : 'incr';
-    gremlinStr += `'${propKey}', ${option})`;
+    const gremlinOption = option === 'DESC' ? 'decr' : 'incr';
+    gremlinStr += `'${propKey}', ${gremlinOption})`;
     return this.executeOrPass(gremlinStr, this, callback);
   }
 
@@ -100,7 +100,18 @@ class Model {
   }
 
   getGremlinStr() {
+    console.log('this', this)
+    console.log('this constructor', this.constructor.name);
     if (this.gremlinStr !== '') return this.gremlinStr;
+    if (this.constructor.name === 'Array') {
+      if (this.length === 0) return `g.V('nonexistent')`;
+      let type = this[0].constructor.name.charAt(0);
+      let ids = [];
+      this.forEach((el) => ids.push(el.id));
+      console.log('HELLO');
+      console.log('ids',ids);
+      return `g.${type}("${ids.join('","')}")`;
+    }
     if (this.id) return `g.V('${this.id}')`;
     return '';
   }
@@ -117,7 +128,7 @@ class Model {
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
     const response = {};
-    
+
     if (checkRequired) {
       for (let sKey of schemaKeys) {
         if (schema[sKey].required) {
@@ -127,7 +138,7 @@ class Model {
         }
       }
     }
-    
+
     for (let pKey of propsKeys) {
       if (!schemaKeys.includes(pKey)) {
         response[pKey] = [`'${pKey}' is not part of the schema model`];
@@ -172,6 +183,7 @@ class Model {
       }
       data.push(object);
     })
+    childClass.addArrayMethods(data);
     return data;
   }
 
@@ -194,6 +206,21 @@ class Model {
       variables.push(newVariable);
     }
     return variables;
+  }
+
+  addArrayMethods(arr) {
+    if (this.constructor.name === 'VertexModel') {
+      arr.createE = this.createE.bind(this);
+      arr.findE = this.findE.bind(this);
+      arr.findImplicit = this.findImplicit.bind(this);
+    }
+    else if (this.constructor.name === 'EdgeModel') {
+      arr.findV = this.findV.bind(this);
+    }
+    arr.order = this.order.bind(this);
+    arr.limit = this.limit.bind(this);
+    arr.delete = this.delete.bind(this);
+    arr.query = this.query.bind(this);
   }
 }
 
