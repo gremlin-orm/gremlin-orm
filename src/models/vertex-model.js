@@ -33,9 +33,9 @@ class VertexModel extends Model {
 
   /**
   * Creates a new edge
-  * @param {} edge
-  * @param {} props
-  * @param {} vertex
+  * @param {string} edge
+  * @param {object} props
+  * @param {object} vertex
   */
   createE(edge, props, vertex, callback) {
     let outGremlinStr = this.getGremlinStr();
