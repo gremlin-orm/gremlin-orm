@@ -112,7 +112,7 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 
 In order to avoid sacrificing the power of Gremlin traversals, method calls in this ORM can take
 advantage of method chaining.  Any read-only method will avoid running its database
-query and instead pass its Gremlin query string to the next method in the chain if it is not given a callback.
+query and instead pass its Gremlin query string to the next method in the chain if it is not given a callback.  _Note: All create, update, delete methods require a callback and can not have more methods chained after_
 
 #### Example
 
@@ -224,13 +224,13 @@ The following options are available when defining model schemas:
 
 ##### Arguments
 * `queryString`: Gremlin query as a string
-* `callback` (optional): Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments.
 
 ##### Example
 ```javascript
   // query must be a full Gremlin query string
   let query = "g.V(1).as('a').out('created').as('b').in('created').as('c').dedup('a','b').select('a','b','c')"
-  g.query(query, (err, result) => {
+  g.queryRaw(query, (err, result) => {
     // send raw data to client
   });
 ```
@@ -252,7 +252,7 @@ The following options are available when defining model schemas:
 ```
 
 <a name="delete"></a>
-### delete([callback])
+### delete(callback)
 
 `.delete` removes the object(s) it is called on from the database.
 
@@ -302,7 +302,7 @@ The following options are available when defining model schemas:
 ## Vertex Methods
 
 <a name="create"></a>
-### create({props}, [callback])
+### create({props}, callback)
 
 `.create` creates a new vertex with properties matching props object
 
@@ -391,7 +391,7 @@ The following options are available when defining model schemas:
 ```
 
 <a name="createEdge"></a>
-### createEdge(edge, {props}, vertex, [callback])
+### createEdge(edge, {props}, vertex, callback)
 
 `.createEdge` creates new edge relationships from starting vertex(es) to vertex(es) passed in.
 
@@ -485,7 +485,7 @@ Person.find({'name': 'John'}).findImplicit('created', {}, (err, result) => {
 ## Edge Methods
 
 <a name="edge-model-create"></a>
-### create(out, in, {props}, [callback])
+### create(out, in, {props}, callback)
 
 `.create` creates an index from `out` vertex(es) to the `in` vertex(es)
 
