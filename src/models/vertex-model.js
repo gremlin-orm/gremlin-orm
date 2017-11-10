@@ -18,7 +18,7 @@ class VertexModel extends Model {
   */
   create(props, callback) {
     const checkSchemaResponse = this.checkSchema(this.schema, props, true);
-    if (!this.interpretCheckSchema(checkSchemaResponse)) {
+    if (this.interpretCheckSchema(checkSchemaResponse)) {
       callback(checkSchemaResponse);
       return;
     }
