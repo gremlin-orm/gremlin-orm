@@ -38,7 +38,7 @@ class VertexModel extends Model {
   * @param {object} props
   * @param {object} vertex
   */
-  createE(edge, props, vertex, callback) {
+  createEdge(edge, props, vertex, callback) {
     let outGremlinStr = this.getGremlinStr();
     if (outGremlinStr === '') {
       callback({'error': 'Gremlin Query has not been initialised for out Vertex'});
@@ -102,7 +102,7 @@ class VertexModel extends Model {
   * @param {object} props
   * @param {number} depth
   */
-  findE(label, props, callback) {
+  findEdge(label, props, callback) {
     let gremlinStr = this.getGremlinStr();
     gremlinStr += `.bothE('${label}')${this.actionBuilder('has', props)}`;
     let executeBound = this.executeOrPass.bind(EdgeModel);

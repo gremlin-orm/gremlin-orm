@@ -96,8 +96,8 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 * [create](#create) - create a new vertex
 * [find](#find) - find first vertex with matching properties
 * [findAll](#findAll) - find all vertexes with matching properties
-* [createE](#createE) - define a new edge relationship to another vertex(es)
-* [findE](#findE) - find edges directly connected to the relevant vertex(es)
+* [createEdge](#createEdge) - define a new edge relationship to another vertex(es)
+* [findEdge](#findEdge) - find edges directly connected to the relevant vertex(es)
 * [findRelated](#findRelated) - find all vertexes connected to initial vertex(es) through a type of edge with optional properties
 * [findImplicit](#findImplicit) - find all vertexes which have the same edge relations `in` that the current vertex(es) has `out` to another vertex
 
@@ -105,7 +105,7 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 * [create](#edge-model-create) - create a new edge relationship by passing in two vertexes or sets of vertexes
 * [find](#edge-model-find) - find first edge with matching properties
 * [findAll](#edge-model-findAll) - find all edges with matching properties
-* [findV](#findV) - find all vertexes that are connected by the relevant edges
+* [findVertex](#findVertex) - find all vertexes that are connected by the relevant edges
 
 
 ## Method Chaining
@@ -118,7 +118,7 @@ query and instead pass its Gremlin query string to the next method in the chain 
 
 ```javascript
   // Only makes one call to the database
-  Person.find({'name': 'John'}).findE('knows', {'since': '2015'}, (err, result) => {
+  Person.find({'name': 'John'}).findEdge('knows', {'since': '2015'}, (err, result) => {
     // Send people John knows to client
   })
 ```
@@ -129,7 +129,7 @@ Additionally, results returned in the form of JSON objects will retain their rel
   // Makes two calls to the database
   Person.find({'name': 'John'}), (err, result) => {
     let john = result;
-    john.findE('knows', {'since': '2015'}, (err, result) => {
+    john.findEdge('knows', {'since': '2015'}, (err, result) => {
       // Send people John knows to client
     })
   })
@@ -294,7 +294,7 @@ The following options are available when defining model schemas:
 
 ##### Example
 ```javascript
-  Person.find({'name': 'John'}).findE('knows').limit(100, (err, result) => {
+  Person.find({'name': 'John'}).findEdge('knows').limit(100, (err, result) => {
     // Return first 100 people that John knows
   });
 ```
@@ -390,10 +390,10 @@ The following options are available when defining model schemas:
   });
 ```
 
-<a id="createE"></a>
-### createE(edge, {props}, vertex, [callback])
+<a id="createEdge"></a>
+### createEdge(edge, {props}, vertex, [callback])
 
-`.createE` creates new edge relationships from starting vertex(es) to vertex(es) passed in.
+`.createEdge` creates new edge relationships from starting vertex(es) to vertex(es) passed in.
 
 ##### Arguments
 * `edge`: Edge model definition
@@ -407,23 +407,23 @@ The following options are available when defining model schemas:
 ##### Examples
 ```javascript
   // Chaining vertex methods
-  Person.findAll({'age': 20}).createE(Uses, {'frequency': 'daily'}, Website.find({'name': 'Facebook'}), (err, result) => {
+  Person.findAll({'age': 20}).createEdge(Uses, {'frequency': 'daily'}, Website.find({'name': 'Facebook'}), (err, result) => {
     // Result is array of newly created edges between everyone with age 20 and the website 'Facebook'
   });
 
-  // Calling .createE on model instances
+  // Calling .createEdge on model instances
   let developers, languages;
   Person.find({'occupation': 'web developer'}, (err, result) => developers = result);
   Language.find({'occupation': ['Javascript', 'HTML', 'CSS']}, (err, result) => languages = result);
-  developers.createE(Knows, {}, languages, (err, result) => {
+  developers.createEdge(Knows, {}, languages, (err, result) => {
     // Result is array of newly created edge objects between all the web developers and 3 important components of web development
   });
 ```
 
-<a id="findE"></a>
-### findE(label, {props}, [callback])
+<a id="findEdge"></a>
+### findEdge(label, {props}, [callback])
 
-`.findE` finds edges directly connected to the relevant vertex(es)
+`.findEdge` finds edges directly connected to the relevant vertex(es)
 
 ##### Arguments
 * `label`: Edge label string
@@ -435,7 +435,7 @@ The following options are available when defining model schemas:
 
 ##### Examples
 ```javascript
-Person.find({'name': 'John'}).findE('knows', {}, (err, result) => {
+Person.find({'name': 'John'}).findEdge('knows', {}, (err, result) => {
   // Result is array of edge objects representing all the 'knows' relationships of John
 });
 ```
@@ -579,10 +579,10 @@ Knows.create({'name': 'John'}, '123', {'since': 2015}, (err, result) => {
   });
 ```
 
-<a id="findV"></a>
-### findV({props}, [callback])
+<a id="findVertex"></a>
+### findVertex({props}, [callback])
 
-`.findV` finds the all vertexes with properties matching props object connected by the relevant edge(s)
+`.findVertex` finds the all vertexes with properties matching props object connected by the relevant edge(s)
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties to find on vertices
@@ -593,7 +593,7 @@ Knows.create({'name': 'John'}, '123', {'since': 2015}, (err, result) => {
 
 ##### Example
 ```javascript
-Knows.find({'through': 'school'}).findV({'occupation': 'developer'}, (err, result) => {
+Knows.find({'through': 'school'}).findVertex({'occupation': 'developer'}, (err, result) => {
   // Result is array of people who are developers who know other people through school
 });
 ```
