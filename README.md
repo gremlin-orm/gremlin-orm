@@ -21,8 +21,13 @@ const g = new gremlinOrm('neo4j'); // connects to localhost:8182 by default
 // const g = new gremlinOrm(['azure', 'partition-name'], process.env.GPORT, process.env.GHOST, {ssl: true, user: process.env.GUSER, password: process.env.GPASS});
 
 const Person = g.define('person', {
-  name: 'string',
-  age: 'number'
+  name: {
+    type: g.STRING,
+    required: true
+  },
+  age: {
+    type: g.NUMBER
+  }
 });
 
 Person.create(req.body, (err, result) => {
@@ -80,7 +85,8 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 * [defineEdge](#defineEdge) - define a new Edge model
 
 #### Generic Methods
-* [query](#query) - perform a cypher query and parse the results
+* [query](#query) - run a Gremlin query string on a Model
+* [queryRaw](#queryRaw) - perform a raw query on the gremlin-orm root and return raw data
 * [update](#update) - update specific props on an existing vertex or edge
 * [delete](#delete) - delete an existing vertex or edge
 * [order](#order) - order the results by property and asc/dsc
@@ -91,6 +97,7 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 * [find](#find) - find first vertex with matching properties
 * [findAll](#findAll) - find all vertexes with matching properties
 * [createE](#createE) - define a new edge relationship to another vertex(es)
+* [findE](#findE) - find edges directly connected to the relevant vertex(es)
 * [findRelated](#findRelated) - find all vertexes connected to initial vertex(es) through a type of edge with optional properties
 * [findImplicit](#findImplicit) - find all vertexes which have the same edge relations `in` that the current vertex(es) has `out` to another vertex
 
@@ -98,7 +105,7 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 * [create](#edge-model-create) - create a new edge relationship by passing in two vertexes or sets of vertexes
 * [find](#edge-model-find) - find first edge with matching properties
 * [findAll](#edge-model-findAll) - find all edges with matching properties
-* [findV](#findV) - find all vertexes that are connected by the current edges
+* [findV](#findV) - find all vertexes that are connected by the relevant edges
 
 
 ## Method Chaining
@@ -110,14 +117,27 @@ query and instead pass its Gremlin query string to the next method in the chain 
 #### Example
 
 ```javascript
+  // Only makes one call to the database
   Person.find({'name': 'John'}).findE('knows', {'since': '2015'}, (err, result) => {
     // Send people John knows to client
   })
 ```
 
+Additionally, results returned in the form of JSON objects will retain their relevant model methods for additional queries.
+
+```javascript
+  // Makes two calls to the database
+  Person.find({'name': 'John'}), (err, result) => {
+    let john = result;
+    john.findE('knows', {'since': '2015'}, (err, result) => {
+      // Send people John knows to client
+    })
+  })
+```
+
 ## Defining Models
 
-_This ORM utilizes Model definitions similar to [Sequelize](https://github.com/sequelize/sequelize) to add structure to developing servers around graph databases.  Queries outside of the constraints of pre-defined models can be run using the generic [`.query`](#query)._
+_This ORM utilizes Model definitions similar to [Sequelize](https://github.com/sequelize/sequelize) to add structure to developing servers around graph databases.  Queries outside of the constraints of pre-defined models can be run using the generic [`.query`](#query) or [`.queryRaw`](#queryRaw)._
 
 <a id="define"></a>
 ### define(label, schema)
@@ -137,10 +157,11 @@ _This ORM utilizes Model definitions similar to [Sequelize](https://github.com/s
 ```javascript
 const Person = g.define('person', {
   name: {
-    type: String
+    type: g.STRING,
+    required: true
   },
   age: {
-    type: Number
+    type: g.NUMBER
   }
 });
 
@@ -159,13 +180,23 @@ const Person = g.define('person', {
 ```javascript
 const Knows = g.defineEdge('knows', {
   from: {
-    type: String
+    type: g.STRING
   },
   since: {
-    type: Date
+    type: g.DATE
   }
 });
 ```
+
+#### Model Data types
+
+The following options are available when defining model schemas:
+* `type`: Use Sequelize-like constants to define data types. Date properties will be returned as javascript Date objects unless returning raw data.  The following data type constants are currently available with possibly more in the future.
+  * `g.STRING`
+  * `g.NUMBER`
+  * `g.DATE`
+  * `g.BOOLEAN`
+* `required` (default = false): If true, will not allow saving to database if not present or empty
 
 ## Generic Methods
 <a id="query"></a>
@@ -174,14 +205,32 @@ const Knows = g.defineEdge('knows', {
 `.query` takes a raw Gremlin query string and runs it on the object it is called on.
 
 ##### Arguments
-* `query`: Gremlin query as a string
+* `queryString`: Gremlin query as a string
 * `raw` (optional, default = false): If true, will return the raw data from the graph database instead of normally formatted JSON
 * `callback` (optional): Some callback function with (err, result) arguments.
 
 ##### Example
 ```javascript
-  let query = "g.V().as('a').out('created').as('b').in('created').as('c').dedup('a','b').select('a','b','c')"
-  g.query(query, true, (err, result) => {
+  let query = ".as('a').out('created').as('b').in('created').as('c').dedup('a','b').select('a','b','c')"
+  Person.find({'name': 'John'}).query(query, true, (err, result) => {
+    // send raw data to client
+  });
+```
+
+<a id="queryRaw"></a>
+### queryRaw(queryString, callback)
+
+`.queryRaw` performs a raw query on the gremlin-orm root and return raw data
+
+##### Arguments
+* `queryString`: Gremlin query as a string
+* `callback` (optional): Some callback function with (err, result) arguments.
+
+##### Example
+```javascript
+  // query must be a full Gremlin query string
+  let query = "g.V(1).as('a').out('created').as('b').in('created').as('c').dedup('a','b').select('a','b','c')"
+  g.query(query, (err, result) => {
     // send raw data to client
   });
 ```
@@ -371,6 +420,26 @@ const Knows = g.defineEdge('knows', {
   });
 ```
 
+<a id="findE"></a>
+### findE(label, {props}, [callback])
+
+`.findE` finds edges directly connected to the relevant vertex(es)
+
+##### Arguments
+* `label`: Edge label string
+* `props`: Object containing key value pairs of properties to match on edge relationships
+* `callback`: Some callback function with (err, result) arguments.
+
+##### Returns
+* Returns an array containing all connected edges
+
+##### Examples
+```javascript
+Person.find({'name': 'John'}).findE('knows', {}, (err, result) => {
+  // Result is array of edge objects representing all the 'knows' relationships of John
+});
+```
+
 <a id="findRelated"></a>
 ### findRelated(label, {props}, depth, [callback])
 
@@ -513,7 +582,7 @@ Knows.create({'name': 'John'}, '123', {'since': 2015}, (err, result) => {
 <a id="findV"></a>
 ### findV({props}, [callback])
 
-`.findV` finds the all vertexes with properties matching props object connected by the current edge(s)
+`.findV` finds the all vertexes with properties matching props object connected by the relevant edge(s)
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties to find on vertices
