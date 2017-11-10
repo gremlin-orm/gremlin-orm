@@ -1,4 +1,5 @@
 const Model = require('./model');
+const EdgeModel = require('./edge-model');
 
 /**
 * @param {string} label
@@ -54,7 +55,8 @@ class VertexModel extends Model {
     const [ a ] = this.getRandomVariable();
     let gremlinQuery = outGremlinStr + `.as('${a}')` + inGremlinStr;
     gremlinQuery += `.addE('${edge.label}')${this.actionBuilder('property', props)}.from('${a}')`;
-    return this.executeOrPass(gremlinQuery, callback).bind(edge);
+    let executeBound = this.executeOrPass.bind(edge);
+    return this.executeBound(gremlinQuery, callback);
   }
 
   /**
@@ -82,13 +84,28 @@ class VertexModel extends Model {
   * @param {object} props
   * @param {number} depth
   */
-  findE(label, props, depth, callback) {
+  findRelated(label, props, depth, callback) {
     let gremlinStr = this.getGremlinStr();
     for (let i = 0; i < depth; i += 1) {
       gremlinStr += `.out('${label}')`;
     }
     return this.executeOrPass(gremlinStr, callback);
   }
+
+  /**
+  * find all edges connected to initial vertex(es) with matching label and optional properties
+  * @param {string} label
+  * @param {object} props
+  * @param {number} depth
+  */
+  findE(label, props, callback) {
+    let gremlinStr = this.getGremlinStr();
+    gremlinStr += `.bothE('${label}')${this.actionBuilder('has', props)}`;
+    let executeBound = this.executeOrPass.bind(EdgeModel);
+    return executeBound(gremlinStr, callback);
+  }
+
+
 
   /**
   * find all vertexes which have the same edge relations in that the current vertex(es) has out to another vertex
