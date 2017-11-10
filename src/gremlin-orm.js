@@ -93,7 +93,8 @@ class Gorm {
             }
 
             if (this.g.definedVertices[grem.label]) {
-              if (this.g.definedVertices[grem.label][propKey] === this.g.DATE) {
+                console.log("this.g.definedVertices[grem.label]", this.g.definedVertices[grem.label]);
+              if (this.g.definedVertices[grem.label][propKey].type === this.g.DATE) {
                 object[propKey] = new Date(property);
               }
               else {
@@ -101,7 +102,7 @@ class Gorm {
               }
             }
             else if (this.g.definedEdges[grem.label]) {
-              if (this.g.definedEdges[grem.label][propKey] === this.g.DATE) {
+              if (this.g.definedEdges[grem.label][propKey].type === this.g.DATE) {
                 object[propKey] = new Date(property);
               }
               else {
