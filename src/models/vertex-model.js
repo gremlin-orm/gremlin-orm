@@ -19,7 +19,7 @@ class VertexModel extends Model {
   */
   create(props, callback) {
     const checkSchemaResponse = this.checkSchema(this.schema, props, true);
-    if (!this.interpretCheckSchema(checkSchemaResponse)) {
+    if (this.interpretCheckSchema(checkSchemaResponse)) {
       callback(checkSchemaResponse);
       return;
     }
@@ -34,9 +34,9 @@ class VertexModel extends Model {
 
   /**
   * Creates a new edge
-  * @param {} edge
-  * @param {} props
-  * @param {} vertex
+  * @param {string} edge
+  * @param {object} props
+  * @param {object} vertex
   */
   createE(edge, props, vertex, callback) {
     let outGremlinStr = this.getGremlinStr();

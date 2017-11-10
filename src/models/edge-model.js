@@ -62,6 +62,12 @@ class EdgeModel extends Model {
     return this.executeOrPass(gremlinStr, callback);
   }
 
+  // NOT YET TESTED
+  findV(props, callback) {
+    let gremlinStr = this.getGremlinStr();
+    gremlinStr += `.bothV()${this.actionBuilder('has', props)}`;
+    return this.executeOrPass(gremlinStr, callback);
+  }
 
 }
 
