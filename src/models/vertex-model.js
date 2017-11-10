@@ -19,7 +19,7 @@ class VertexModel extends Model {
   */
   create(props, callback) {
     const checkSchemaResponse = this.checkSchema(this.schema, props, true);
-    if (!this.interpretCheckSchema(checkSchemaResponse)) {
+    if (this.interpretCheckSchema(checkSchemaResponse)) {
       callback(checkSchemaResponse);
       return;
     }
@@ -87,10 +87,8 @@ class VertexModel extends Model {
   * @param {number} depth
   */
 
-  findRelated(label, props, depth, callback) {
-
+  findRelated(label, properties, depth, callback) {
     const props = this.parseProps(properties);
-
     let gremlinStr = this.getGremlinStr();
     for (let i = 0; i < depth; i += 1) {
       gremlinStr += `.out('${label}')`;

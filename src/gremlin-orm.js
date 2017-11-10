@@ -85,11 +85,34 @@ class Gorm {
       if (grem.properties) {
         Object.keys(grem.properties).forEach((propKey) => {
           if (propKey != currentPartition) {
+            let property;
             if (this.constructor.name === 'EdgeModel') {
-              object[propKey] = grem.properties[propKey];
+              property = grem.properties[propKey];
             } else {
-              object[propKey] = grem.properties[propKey][0].value;
+              property = grem.properties[propKey][0].value;
             }
+
+            if (this.g.definedVertices[grem.label]) {
+                console.log("this.g.definedVertices[grem.label]", this.g.definedVertices[grem.label]);
+              if (this.g.definedVertices[grem.label][propKey].type === this.g.DATE) {
+                object[propKey] = new Date(property);
+              }
+              else {
+                object[propKey] = property;
+              }
+            }
+            else if (this.g.definedEdges[grem.label]) {
+              if (this.g.definedEdges[grem.label][propKey].type === this.g.DATE) {
+                object[propKey] = new Date(property);
+              }
+              else {
+                object[propKey] = property;
+              }
+            }
+            else {
+              object[propKey] = property;
+            }
+
           }
         });
       }
