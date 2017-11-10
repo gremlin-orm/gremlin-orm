@@ -5,7 +5,14 @@ const EdgeModel = require('./models/edge-model');
 
 class Gorm {
   constructor(dialect, port, url, options) {
-    this.dialects = {AZURE: 'azure'};
+    //Constants
+
+    this.DIALECTS = {AZURE: 'azure'};
+    this.STRING = 'string';
+    this.NUMBER = 'number';
+    this.BOOLEAN = 'boolean';
+    this.DATE = 'date';
+
     const argLength = arguments.length;
     if (argLength === 0) {
       return null;
@@ -25,6 +32,7 @@ class Gorm {
     }
     this.definedVertices = {};
     this.definedEdges = {};
+
   }
 
   define(label, schema) {
