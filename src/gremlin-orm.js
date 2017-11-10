@@ -93,7 +93,6 @@ class Gorm {
             }
 
             if (this.g.definedVertices[grem.label]) {
-                console.log("this.g.definedVertices[grem.label]", this.g.definedVertices[grem.label]);
               if (this.g.definedVertices[grem.label][propKey].type === this.g.DATE) {
                 object[propKey] = new Date(property);
               }
