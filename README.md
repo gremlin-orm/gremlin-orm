@@ -112,7 +112,7 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 
 In order to avoid sacrificing the power of Gremlin traversals, method calls in this ORM can take
 advantage of method chaining.  Any read-only method will avoid running its database
-query and instead pass its Gremlin query string to the next method in the chain if it is not given a callback.  _Note: All create, update, delete methods require a callback and can not have more methods chained after_
+query and instead pass its Gremlin query string to the next method in the chain if it is not given a callback.  _Note: All create, update, and delete methods require a callback and can not have more methods chained after._
 
 #### Example
 
