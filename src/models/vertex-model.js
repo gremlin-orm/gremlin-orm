@@ -27,7 +27,7 @@ class VertexModel extends Model {
     }
 
     gremlinStr += this.actionBuilder('property', props);
-    return this.executeQuery(gremlinStr, callback);
+    return this.executeQuery(gremlinStr, callback, true);
   }
 
   /**

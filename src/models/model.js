@@ -220,8 +220,9 @@ class Model {
   *
   * @param {array} gremlinResponse
   */
-  familiarizeAndPrototype(gremlinResponse) {
+  familiarizeAndPrototype(gremlinResponse, needsCheckClass) {
     let data = [];
+
     gremlinResponse.forEach((grem) => {
       let object = Object.create(this);
       object.id = grem.id;

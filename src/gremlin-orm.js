@@ -23,9 +23,8 @@ class Gorm {
     else {
       this.dialect = dialect;
     }
-    // this.hasProps = QueryBuilders.hasProps;
-    // this.actionBuilder = QueryBuilders.actionBuilder;
-    // this.stringifyValue = QueryBuilders.stringifyValue;
+    this.definedVertices = {};
+    this.definedEdges = {};
   }
 
   define(label, schema) {
@@ -33,14 +32,14 @@ class Gorm {
   }
 
   defineVertex(label, schema) {
+    this.definedVertices[label] = schema;
     return new VertexModel(label, schema, this);
   }
 
   defineEdge(label, schema) {
+    this.definedEdges[label] = schema;
     return new EdgeModel(label, schema, this);
   }
-
-
 }
 
 module.exports = Gorm;
