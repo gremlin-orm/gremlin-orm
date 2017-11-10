@@ -67,41 +67,6 @@ class Model {
   }
 
 
-   /**
-  * Parses properties into their known types from schema model
-  * @param {object} properties - properties object to parse
-  */
-  parseProps(properties) {      
-    const props = {};
-    Object.keys(this.schema).forEach((key) => {
-      if (properties[key]) {
-        switch (this.schema[key].type) {
-          case 'number': 
-            props[key] = parseInt(properties[key]);
-            break;
-          case 'boolean':
-            props[key] = properties[key] === 'true';
-            break;
-          case 'date': 
-            const isNum = /^\d+$/.test(properties[key]);
-            let millis;
-            if (isNum) {
-              millis = parseInt(properties[key]);
-            } else {
-              millis = Date.parse(properties[key]);
-            }
-            if (!Number.isNaN(millis)) {
-              props[key] = millis;  
-            }
-            break;
-          default:  //string
-            props[key] = properties[key].toString();
-        }
-      }
-    });
-    return props;
-  }
-
   /**
   * Deletes an existing vertex or edge
   * @param {string} id id of the vertex or edge to be deleted
@@ -204,6 +169,64 @@ class Model {
     }
   }
 
+   /**
+  * Parses properties into their known types from schema model
+  * @param {object} properties - properties object to parse
+  */
+  parseProps(properties) {      
+    const props = {};
+    Object.keys(this.schema).forEach((key) => {
+      if (properties[key]) {
+        switch (this.schema[key].type) {
+          case 'number': 
+            props[key] = parseInt(properties[key]);
+            if(Number.isNaN(props[key])) props[key] = null;
+            console.log("props[key]", props[key]);
+            break;
+          case 'boolean':
+            if (properties[key] === 'true' || properties[key] === 'false') {
+              props[key] = properties[key] === 'true';  
+            } else {
+              props[key] = null;  
+            }
+            console.log("props[key]", props[key]);
+            break;
+          case 'date': 
+            let millis = this.dateGetMillis(properties[key]);
+            if (Number.isNaN(millis)) {
+              millis = 666;
+            } 
+            props[key] = millis;  
+            break;
+          default:  //string
+            props[key] = properties[key].toString();
+        }
+      }
+    });
+    return props;
+  }
+
+   /**
+  * Checks Date types and parses it into millis
+  * @param {Date/String/Number} value - number string or date representing date
+  */
+  dateGetMillis(value) {
+    let millis = NaN;
+    if (value instanceof Date) {
+      millis = value.getTime();
+    } else {
+      const strValue = value.toString();
+      const isNum = /^\d+$/.test(strValue);  
+      if (isNum) {
+        millis = parseInt(strValue);
+      } else {
+        millis = Date.parse(strValue);
+      }
+    }
+    return millis;
+  }  
+
+
   /**
   * Checks whether the props object adheres to the schema model specifications
   * @param {object} schema
@@ -211,34 +234,40 @@ class Model {
   * @param {boolean} checkRequired should be true for create or createE
   */
   checkSchema(schema, props, checkRequired) {
-    // /////////gf
-    // return true;
-    // //////////gf
     const schemaKeys = Object.keys(schema);
     const propsKeys = Object.keys(props);
     const response = {};
+
+    function addErrorToResponse(key, message) {
+      if (!response[key]) response[key] = [];
+      response[key].push(message);  
+    }
 
     if (checkRequired) {
       for (let sKey of schemaKeys) {
         if (schema[sKey].required) {
           if (!props[sKey]) {
-            response[sKey] = [`A valid value for '${sKey}' is required`];
+            addErrorToResponse(sKey, `A valid value for '${sKey}' is required`);
           }
         }
       }
     }
     for (let pKey of propsKeys) {
-      if (!schemaKeys.includes(pKey)) {
-        response[pKey] = [`'${pKey}' is not part of the schema model`];
-      }
-      if (props[pKey]) {
-        if (props[pKey].constructor !== schema[pKey].type) {
-          if (schema[pKey].type === Date) {
-            response[pKey] = [`'${pKey}' should be a date object`];
+      if (schemaKeys.includes(pKey)) {
+        if (schema[pKey].type === this.g.DATE) {
+          const millis = this.dateGetMillis(props[pKey]);
+          if (Number.isNaN(millis)) {
+            addErrorToResponse(pKey, `'${pKey}' should be a Date`);
           } else {
-            response[pKey] = [`'${pKey}' should be a ${typeof schema[pKey].type()}`];
+            props[pKey] = millis;  //known side-effect
+          } 
+        } else {
+          if(!(typeof props[pKey] === schema[pKey].type)) {
+            addErrorToResponse(pKey, `'${pKey}' should be a ${schema[pKey].type}`);
           }
-        }
+        } 
+      } else {
+        addErrorToResponse(pKey, `'${pKey}' is not part of the schema model`);
       }
     }
     return response;
@@ -249,8 +278,8 @@ class Model {
    * @param {object} response return value from checkSchema
   */
   interpretCheckSchema(response) {
-    if (Object.keys(obj).length === 0) return true;
-    else return false;
+    if (Object.keys(response).length === 0) return false;
+    return true;
   }
 
 
