@@ -43,7 +43,7 @@ class Model {
   update(props, callback) {
     let gremlinStr = this.getGremlinStr();
     const schema = this.schema;
-    const checkSchemaResponse = this.checkSchema(schema, props, false);
+    const checkSchemaResponse = this.checkSchema(schema, props, true);
 
     if (Object.keys(checkSchemaResponse).length !== 0) return callback(checkSchemaResponse); // should it throw an error?
 
@@ -59,15 +59,6 @@ class Model {
     let gremlinStr = this.getGremlinStr();
     gremlinStr += '.drop()';
     this.executeOrPass(gremlinStr, callback);
-    // let gremlinStr = `g.V().has('id', '${id}').drop()`;
-    // this.g.client.execute(gremlinStr, (err, result) => {
-    //   if (err) {
-    //     callback({'error': err});
-    //     return;
-    //   }
-    //   let response = `${id} deleted successfully`;
-    //   callback(null, response);
-    // });
   }
 
   /**
@@ -160,12 +151,12 @@ class Model {
   */
   addArrayMethods(arr) {
     if (this.constructor.name === 'VertexModel') {
-      arr.createE = this.createE;
-      arr.findE = this.findE;
+      arr.createEdge = this.createEdge;
+      arr.findEdge = this.findEdge;
       arr.findImplicit = this.findImplicit;
     }
     else if (this.constructor.name === 'EdgeModel') {
-      arr.findV = this.findV;
+      arr.findVertex = this.findVertex;
     }
     arr.order = this.order;
     arr.limit = this.limit;
@@ -301,7 +292,7 @@ class Model {
   * Checks whether the props object adheres to the schema model specifications
   * @param {object} schema
   * @param {object} props
-  * @param {boolean} checkRequired should be true for create or createE
+  * @param {boolean} checkRequired should be true for create and update methods
   */
   checkSchema(schema, props, checkRequired) {
     const schemaKeys = Object.keys(schema);
