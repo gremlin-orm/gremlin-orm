@@ -91,7 +91,7 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 * [find](#find) - find first vertex with matching properties
 * [findAll](#findAll) - find all vertexes with matching properties
 * [createE](#createE) - define a new edge relationship to another vertex(es)
-* [findE](#findE) - find all vertexes connected to initial vertex(es) through a type of edge with optional properties
+* [findRelated](#findRelated) - find all vertexes connected to initial vertex(es) through a type of edge with optional properties
 * [findImplicit](#findImplicit) - find all vertexes which have the same edge relations `in` that the current vertex(es) has `out` to another vertex
 
 #### Edge Methods
@@ -371,10 +371,10 @@ const Knows = g.defineEdge('knows', {
   });
 ```
 
-<a id="findE"></a>
-### findE(label, {props}, depth, [callback])
+<a id="findRelated"></a>
+### findRelated(label, {props}, depth, [callback])
 
-`.findE` finds vertexes related through the desired edge relationship.
+`.findRelated` finds vertexes related through the desired edge relationship.
 
 ##### Arguments
 * `label`: Edge label string
@@ -387,7 +387,7 @@ const Knows = g.defineEdge('knows', {
 
 ##### Examples
 ```javascript
-Person.find({'name': 'John'}).findE('knows', {}, 2, (err, result) => {
+Person.find({'name': 'John'}).findRelated('knows', {}, 2, (err, result) => {
   // Result is array of vertex objects representing John's friends of friends
 });
 ```

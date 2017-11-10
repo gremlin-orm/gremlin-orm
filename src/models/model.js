@@ -6,6 +6,7 @@ class Model {
   constructor(gorm, gremlinStr) {
     this.g = gorm;
     this.gremlinStr = gremlinStr;
+    this.checkModels = false;
   }
 
   /**
@@ -20,7 +21,8 @@ class Model {
         return;
       }
       // Create nicer Object
-      let response = this.familiarizeAndPrototype(result);
+      let executeBoundFamiliar = this.g.familiarizeAndPrototype.bind(this);
+      let response = executeBoundFamiliar(result);
       if(singleObject && response.length > 0) {
         callback(null, response[0]);
         return;
@@ -131,20 +133,20 @@ class Model {
       cb = arguments[1];
       returnRawData = false;
     }
-
+    this.checkModels = true;
     let gremlinStr = this.getGremlinStr();
     gremlinStr += string;
-    if (!callback) return this.executeOrPass(gremlinStr, callback);
-    if (raw) {
+    if (!cb) return this.executeOrPass(gremlinStr, cb);
+    if (returnRawData) {
       return this.g.client.execute(gremlinStr, (err, result) => {
         if (err) {
-          callback({'error': err});
+          cb({'error': err});
           return;
         }
-        callback(null, result);
+        cb(null, result);
       });
     }
-    return this.executeOrPass(gremlinStr, callback);
+    return this.executeOrPass(gremlinStr, cb);
   }
 
   /**
@@ -252,40 +254,7 @@ class Model {
   }
 
 
-  /**
-  *
-  * @param {array} gremlinResponse
-  */
-  familiarizeAndPrototype(gremlinResponse) {
-    let data = [];
-    gremlinResponse.forEach((grem) => {
-      let object = Object.create(this);
-      object.id = grem.id;
-      object.label = grem.label;
-      if (this.constructor.name === 'EdgeModel') {
-        object.inV = grem.inV;
-        object.outV = grem.outV
-        if (grem.inVLabel) object.inVLabel = grem.inVLabel;
-        if (grem.outVLabel) object.outVLabel = grem.outVLabel;
-      }
 
-      let currentPartition = this.g.partition ? this.g.partition : '';
-      if (grem.properties) {
-        Object.keys(grem.properties).forEach((propKey) => {
-          if (propKey != currentPartition) {
-            if (this.constructor.name === 'EdgeModel') {
-              object[propKey] = grem.properties[propKey];
-            } else {
-              object[propKey] = grem.properties[propKey][0].value;
-            }
-          }
-        });
-      }
-      data.push(object);
-    })
-    this.addArrayMethods(data);
-    return data;
-  }
 
   /**
   * returns the id of the vertex or edge
