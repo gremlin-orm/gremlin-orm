@@ -12,7 +12,7 @@ class Model {
   /**
   * Takes the built query string and executes it
   * @param {string} query query string to execute.
-  * @param {object} singleObject
+  * @param {boolean} singleObject whether single object is expected
   */
   executeQuery(query, callback, singleObject) {
     this.g.client.execute(query, (err, result) => {
