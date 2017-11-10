@@ -64,6 +64,42 @@ class Model {
     this.executeOrPass(gremlinStr, callback);
   }
 
+
+   /**
+  * Parses properties into their known types from schema model
+  * @param {object} properties - properties object to parse
+  */
+  parseProps(properties) {      
+    const props = {};
+    Object.keys(this.schema).forEach((key) => {
+      if (properties[key]) {
+        switch (this.schema[key].type) {
+          case 'number': 
+            props[key] = parseInt(properties[key]);
+            break;
+          case 'boolean':
+            props[key] = properties[key] === 'true';
+            break;
+          case 'date': 
+            const isNum = /^\d+$/.test(properties[key]);
+            let millis;
+            if (isNum) {
+              millis = parseInt(properties[key]);
+            } else {
+              millis = Date.parse(properties[key]);
+            }
+            if (!Number.isNaN(millis)) {
+              props[key] = millis;  
+            }
+            break;
+          default:  //string
+            props[key] = properties[key].toString();
+        }
+      }
+    });
+    return props;
+  }
+
   /**
   * Deletes an existing vertex or edge
   * @param {string} id id of the vertex or edge to be deleted
@@ -189,7 +225,6 @@ class Model {
         }
       }
     }
-
     for (let pKey of propsKeys) {
       if (!schemaKeys.includes(pKey)) {
         response[pKey] = [`'${pKey}' is not part of the schema model`];
@@ -257,6 +292,7 @@ class Model {
   */
   getIdFromProps(props) {
     let idString = '';
+    console.log("props", props);
     if (props.hasOwnProperty('id')) {
       if (Array.isArray(props.id)) {
         idString = `'${props.id.join(',')}'`;

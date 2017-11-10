@@ -23,7 +23,7 @@ class VertexModel extends Model {
       return;
     }
     let gremlinStr = `g.addV('${this.label}')`;
-    if (this.g.dialect === this.g.dialects.AZURE) {
+    if (this.g.dialect === this.g.DIALECTS.AZURE) {
       gremlinStr += `.property('${this.g.partition}', '${props[Object.keys(props)[0]]}')`;
     }
 
@@ -59,9 +59,10 @@ class VertexModel extends Model {
 
   /**
   * Finds first vertex with matching properties
-  * @param {object} props
+  * @param {object} properties
   */
-  find(props, callback) {
+  find(properties, callback) {
+    const props = this.parseProps(properties);
     let gremlinStr = `g.V(${this.getIdFromProps(props)}).hasLabel('${this.label}')` + this.actionBuilder('has', props);
     gremlinStr += ".limit(1)";
     return this.executeOrPass(gremlinStr, callback, true);
@@ -69,9 +70,10 @@ class VertexModel extends Model {
 
   /**
   * Finds all vertexes with matching properties
-  * @param {object} props
+  * @param {object} properties
   */
-  findAll(props, callback) {
+  findAll(properties, callback) {
+    const props = this.parseProps(properties);
     let gremlinStr = `g.V(${this.getIdFromProps(props)}).hasLabel('${this.label}')` + this.actionBuilder('has', props);
     return this.executeOrPass(gremlinStr, callback);
   }
@@ -79,10 +81,11 @@ class VertexModel extends Model {
   /**
   * find all vertexes connected to initial vertex(es) through a type of edge with optional properties
   * @param {string} label
-  * @param {object} props
+  * @param {object} properties
   * @param {number} depth
   */
-  findE(label, props, depth, callback) {
+  findE(label, properties, depth, callback) {
+    const props = this.parseProps(properties);
     let gremlinStr = this.getGremlinStr();
     for (let i = 0; i < depth; i += 1) {
       gremlinStr += `.out('${label}')`;
@@ -93,9 +96,10 @@ class VertexModel extends Model {
   /**
   * find all vertexes which have the same edge relations in that the current vertex(es) has out to another vertex
   * @param {string} label
-  * @param {object} props
+  * @param {object} properties
   */
-  findImplicit(label, props, callback) {
+  findImplicit(label, properties, callback) {
+    const props = this.parseProps(properties);
     let gremlinStr = this.getGremlinStr();
     let originalAs = this.getRandomVariable()[0];
     gremlinStr += `.as('${originalAs}').out('${label}')${this.actionBuilder('property', props)}` +
