@@ -262,7 +262,9 @@ The following options are available when defining model schemas:
 ##### Example
 ```javascript
   Person.find({'name', 'John'}, (err, result) => {
-    if (result) result.delete();
+    if (result) result.delete((err, result) => {
+      // check if successful delete
+    });
   });
 ```
 

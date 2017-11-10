@@ -1,6 +1,6 @@
 {
   "name": "gremlin-orm",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Gremlin ORM for Node.js",
   "main": "dist/gremlin-orm.js",
   "scripts": {
