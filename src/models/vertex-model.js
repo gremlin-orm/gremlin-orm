@@ -17,8 +17,9 @@ class VertexModel extends Model {
   * @param {object} props
   */
   create(props, callback) {
-    if (!this.checkSchema(this.schema, props, true)) {
-      callback({'error': 'Object properties do not match schema.'});
+    const checkSchemaResponse = this.checkSchema(this.schema, props, true);
+    if (!this.interpretCheckSchema(checkSchemaResponse)) {
+      callback(checkSchemaResponse);
       return;
     }
     let gremlinStr = `g.addV('${this.label}')`;

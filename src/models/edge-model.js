@@ -23,8 +23,9 @@ class EdgeModel extends Model {
       callback({'error': 'Need both an inV and an outV.'});
       return;
     }
-    if (!this.checkSchema(this.schema, props, true)) {
-      callback({'error': 'Object properties do not match schema.'});
+    const checkSchemaResponse = this.checkSchema(this.schema, props, true);
+    if (!this.interpretCheckSchema(checkSchemaResponse)) {
+      callback(checkSchemaResponse);
       return;
     }
     let outVKey = 'id';
