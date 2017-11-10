@@ -95,17 +95,17 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 #### Vertex Methods
 * [create](#create) - create a new vertex
 * [find](#find) - find first vertex with matching properties
-* [findAll](#findAll) - find all vertexes with matching properties
+* [findAll](#findAll) - find all vertices with matching properties
 * [createEdge](#createEdge) - define a new edge relationship to another vertex(es)
 * [findEdge](#findEdge) - find edges directly connected to the relevant vertex(es)
-* [findRelated](#findRelated) - find all vertexes connected to initial vertex(es) through a type of edge with optional properties
-* [findImplicit](#findImplicit) - find all vertexes which have the same edge relations `in` that the current vertex(es) has `out` to another vertex
+* [findRelated](#findRelated) - find all vertices connected to initial vertex(es) through a type of edge with optional properties
+* [findImplicit](#findImplicit) - find all vertices which have the same edge relations `in` that the current vertex(es) has `out` to another vertex
 
 #### Edge Methods
-* [create](#edge-model-create) - create a new edge relationship by passing in two vertexes or sets of vertexes
+* [create](#edge-model-create) - create a new edge relationship by passing in two vertices or sets of vertices
 * [find](#edge-model-find) - find first edge with matching properties
 * [findAll](#edge-model-findAll) - find all edges with matching properties
-* [findVertex](#findVertex) - find all vertexes that are connected by the relevant edges
+* [findVertex](#findVertex) - find all vertices that are connected by the relevant edges
 
 
 ## Method Chaining
@@ -150,7 +150,7 @@ _This ORM utilizes Model definitions similar to [Sequelize](https://github.com/s
 `.defineVertex` defines a new instance of the `VertexModel` class - see generic and vertex model methods
 
 ##### Arguments
-* `label`: Label to be used on all vertexes of this model
+* `label`: Label to be used on all vertices of this model
 * `schema`: A schema object which defines allowed property keys and allowed values/types for each key
 
 ##### Example
@@ -358,7 +358,7 @@ The following options are available when defining model schemas:
 <a name="findAll"></a>
 ### findAll({props}, [callback])
 
-`.findAll` finds the all vertexes with properties matching props object
+`.findAll` finds the all vertices with properties matching props object
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties
@@ -443,7 +443,7 @@ Person.find({'name': 'John'}).findEdge('knows', {}, (err, result) => {
 <a name="findRelated"></a>
 ### findRelated(label, {props}, depth, [callback])
 
-`.findRelated` finds vertexes related through the desired edge relationship.
+`.findRelated` finds vertices related through the desired edge relationship.
 
 ##### Arguments
 * `label`: Edge label string
@@ -464,7 +464,7 @@ Person.find({'name': 'John'}).findRelated('knows', {}, 2, (err, result) => {
 <a name="findImplicit"></a>
 ### findImplicit(label, {props}, [callback])
 
-`.findImplicit` finds vertexes that are related to another vertex the same way the original vertex is.
+`.findImplicit` finds vertices that are related to another vertex the same way the original vertex is.
 
 ##### Arguments
 * `label`: Edge label string
@@ -476,7 +476,7 @@ Person.find({'name': 'John'}).findRelated('knows', {}, 2, (err, result) => {
 
 ##### Examples
 ```javascript
-Person.find({'name': 'John'}).findImplicit('created', {}, 2, (err, result) => {
+Person.find({'name': 'John'}).findImplicit('created', {}, (err, result) => {
   // Result is array of vertex objects representing people who have co-created things that John created
 });
 ```
@@ -582,7 +582,7 @@ Knows.create({'name': 'John'}, '123', {'since': 2015}, (err, result) => {
 <a name="findVertex"></a>
 ### findVertex({props}, [callback])
 
-`.findVertex` finds the all vertexes with properties matching props object connected by the relevant edge(s)
+`.findVertex` finds the all vertices with properties matching props object connected by the relevant edge(s)
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties to find on vertices
