@@ -109,8 +109,6 @@ class VertexModel extends Model {
     return executeBound(gremlinStr, callback);
   }
 
-
-
   /**
   * find all vertexes which have the same edge relations in that the current vertex(es) has out to another vertex
   * @param {string} label
