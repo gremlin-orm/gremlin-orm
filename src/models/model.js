@@ -10,15 +10,9 @@ class Model {
   }
 
   /**
-<<<<<<< HEAD
-  * Takes the built query string and executes it
-  * @param {string} query query string to execute.
-  * @param {boolean} singleObject whether single object is expected
-=======
   * Perform a cypher query and parse the results
   * @param {string} string
   * @param {boolean} raw
->>>>>>> d6e1d7c7df481e8795afd43ba9d2edc1b3092a0d
   */
   query(string, raw, callback) {
     let cb = callback;
