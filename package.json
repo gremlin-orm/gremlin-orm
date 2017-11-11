@@ -4,7 +4,7 @@
   "description": "Gremlin ORM for Node.js",
   "main": "dist/gremlin-orm.js",
   "scripts": {
-    "test": "mocha -t 10000",
+    "test": "mocha -t 10000 test/index.js test/helpers.js test/vertex.js test/edge.js",
     "build": "babel src --presets babel-preset-es2015 --out-dir dist",
     "prepublish": "npm run build"
   },
