@@ -14,9 +14,7 @@ class EdgeModel extends Model {
 
   /**
   * creates an index from out vertex(es) to the in vertex(es)
-  * @param {string} outV string representing id
   * @param {object} outV object with properties to find 'out' vertex
-  * @param {string} inV string representing id
   * @param {object} inV object with properties to find 'in' vertex
   * @param {object} props object containing key value pairs of properties to add on the new edge
   */
@@ -26,28 +24,13 @@ class EdgeModel extends Model {
       return;
     }
     const checkSchemaResponse = this.checkSchema(this.schema, props, true);
-    if (!this.interpretCheckSchema(checkSchemaResponse)) {
+    if (this.interpretCheckSchema(checkSchemaResponse)) {
       callback(checkSchemaResponse);
       return;
     }
-    let outVKey = 'id';
-    let outVValue = outV;
-    let inVKey = 'id';
-    let inVValue = inV;
-    if (outV.constructor === Object) {
-      outVKey = outV.key;
-      outVValue = outV.value;
-    }
-
-    if (inV.constructor === Object) {
-      inVKey = inV.key;
-      inVValue = inV.value;
-    }
-
-    let gremlinStr = `g.V().has('${outVKey}',${this.stringifyValue(outVValue)})`;
+    let gremlinStr = outV.getGremlinStr();
     gremlinStr += `.addE('${this.label}')` + this.actionBuilder('property', props);
-    gremlinStr += `.to(g.V().has('${inVKey}',${this.stringifyValue(inVValue)}))`;
-
+    gremlinStr += `.to(${inV.getGremlinStr()})`;
     return this.executeQuery(gremlinStr, callback, true);
   }
 
