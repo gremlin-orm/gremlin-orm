@@ -35,20 +35,40 @@ class Gorm {
 
   }
 
+  /**
+  * an alias for defineVertex
+  * @param {string} label
+  * @param {object} schema
+  */
   define(label, schema) {
     return this.defineVertex(label, schema);
   }
 
+  /**
+  * defines a new instance of the VertexModel class - see generic and vertex model methods
+  * @param {string} label label to be used on all vertices of this model
+  * @param {object} schema a schema object which defines allowed property keys and allowed values/types for each key
+  */
   defineVertex(label, schema) {
     this.definedVertices[label] = schema;
     return new VertexModel(label, schema, this);
   }
 
+  /**
+  * defines a new instance of the EdgeModel class - see generic and edge model methods
+  * @param {string} label label to be used on all edges of this model
+  * @param {object} schema a schema object which defines allowed property keys and allowed values/types for each key
+  */
   defineEdge(label, schema) {
     this.definedEdges[label] = schema;
     return new EdgeModel(label, schema, this);
   }
 
+  /**
+  * performs a raw query on the gremlin-orm root and return raw data
+  * @param {string} string Gremlin query as a string
+  * @param {function} callback Some callback function with (err, result) arguments.
+  */
   queryRaw(string, callback) {
     return this.client.execute(string, (err, result) => {
       if (err) {
@@ -60,7 +80,6 @@ class Gorm {
   }
 
   /**
-  *
   * @param {array} gremlinResponse
   */
   familiarizeAndPrototype(gremlinResponse) {
