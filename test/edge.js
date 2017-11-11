@@ -45,8 +45,7 @@ describe('Edge Model', () => {
           Knows.create(john, bob, {duration: 5}, (err, result) => {
             expect(result.label).to.equal('knows');
             expect(result.duration).to.equal(5);
-            // expect(result.outV).to.equal('1');
-            // expect(result.inV).to.equal('2');
+            done();
           });
         });
       });
