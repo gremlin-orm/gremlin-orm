@@ -13,10 +13,12 @@ class EdgeModel extends Model {
   }
 
   /**
-  * create a new edge relationship by passing in two vertexes or sets of vertexes
-  * @param {object} outV
-  * @param {object} inV
-  * @param {object} props
+  * creates an index from out vertex(es) to the in vertex(es)
+  * @param {string} outV string representing id
+  * @param {object} outV object with properties to find 'out' vertex
+  * @param {string} inV string representing id
+  * @param {object} inV object with properties to find 'in' vertex
+  * @param {object} props object containing key value pairs of properties to add on the new edge
   */
   create(outV, inV, props, callback) {
     if (!(outV && inV)) {
