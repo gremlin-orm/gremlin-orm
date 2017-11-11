@@ -1,4 +1,5 @@
 const Model = require('./model');
+const VertexModel = require('./vertex-model');
 
 /**
 * @param {string} label
@@ -66,7 +67,8 @@ class EdgeModel extends Model {
   findVertex(props, callback) {
     let gremlinStr = this.getGremlinStr();
     gremlinStr += `.bothV()${this.actionBuilder('has', props)}`;
-    return this.executeOrPass(gremlinStr, callback);
+    let executeBound = this.executeOrPass.bind(new VertexModel('fake', {}, this.g));
+    return executeBound(gremlinStr, callback);
   }
 
 }
