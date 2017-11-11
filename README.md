@@ -492,8 +492,8 @@ Person.find({'name': 'John'}).findImplicit('created', {}, (err, result) => {
 `.create` creates an index from `out` vertex(es) to the `in` vertex(es)
 
 ##### Arguments
-* `out` (String or Object): Object with properties to find 'out' vertex, or string representing `id`
-* `in` (String or Object): Object with properties to find 'in' vertex, or string representing `id`
+* `out`: Vertex instance or find/findAll method call
+* `in`: Vertex instance or find/findAll method call
 * `props`: Object containing key value pairs of properties to add on the new edge
 * `callback`: Some callback function with (err, result) arguments.
 
@@ -502,17 +502,20 @@ Person.find({'name': 'John'}).findImplicit('created', {}, (err, result) => {
 
 ##### Examples
 ```javascript
-Knows.create({'name': 'John'}, '123', {'since': 2015}, (err, result) => {
-  // Returns the newly created edge
-  /*
-    {
-      "id": "1",
-      "label": "knows",
-      "since": "2015",
-      "outV": "1",
-      "inV": "123",
-    }
-  */
+Person.find({'name': 'Joe'}, (err, result) => {
+  let joe = result;
+  Knows.create(Person.find({'name': 'John'}), joe, {'since': 2015}, (err, result) => {
+    // Returns the newly created edge
+    /*
+      {
+        "id": "1",
+        "label": "knows",
+        "since": "2015",
+        "outV": "1",  // John's id
+        "inV": "2",   // Joe's id
+      }
+    */
+  });
 });
 ```
 
