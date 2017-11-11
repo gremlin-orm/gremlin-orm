@@ -91,11 +91,9 @@ describe('VertexModel', () => {
     });
   });
 
-  // {'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}
-  // Fails on date or boolean lookup -- needs updates to actionBuilder
   describe('Find', () => {
     it('Should find a vertex with matching parameters', (done) => {
-      Person.find({'name': 'John', 'age': 20}, (err, result) => {
+      Person.find({'name': 'John', 'age': 20, 'dob': '12/18/1999', 'developer': true}, (err, result) => {
           expect(result).to.have.property('name');
           expect(result).to.have.property('age');
           expect(result.name).to.equal('John');
