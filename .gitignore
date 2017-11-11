@@ -6,6 +6,8 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.DS_Store
+*/.DS_Store
 
 # Runtime data
 pids
@@ -37,7 +39,6 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
-package-lock.json
 
 # Typescript v1 declaration files
 typings/

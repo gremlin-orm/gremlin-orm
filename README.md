@@ -95,24 +95,24 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 #### Vertex Methods
 * [create](#create) - create a new vertex
 * [find](#find) - find first vertex with matching properties
-* [findAll](#findAll) - find all vertexes with matching properties
+* [findAll](#findAll) - find all vertices with matching properties
 * [createEdge](#createEdge) - define a new edge relationship to another vertex(es)
 * [findEdge](#findEdge) - find edges directly connected to the relevant vertex(es)
-* [findRelated](#findRelated) - find all vertexes connected to initial vertex(es) through a type of edge with optional properties
-* [findImplicit](#findImplicit) - find all vertexes which have the same edge relations `in` that the current vertex(es) has `out` to another vertex
+* [findRelated](#findRelated) - find all vertices connected to initial vertex(es) through a type of edge with optional properties
+* [findImplicit](#findImplicit) - find all vertices which have the same edge relations `in` that the current vertex(es) has `out` to another vertex
 
 #### Edge Methods
-* [create](#edge-model-create) - create a new edge relationship by passing in two vertexes or sets of vertexes
+* [create](#edge-model-create) - create a new edge relationship by passing in two vertices or sets of vertices
 * [find](#edge-model-find) - find first edge with matching properties
 * [findAll](#edge-model-findAll) - find all edges with matching properties
-* [findVertex](#findVertex) - find all vertexes that are connected by the relevant edges
+* [findVertex](#findVertex) - find all vertices that are connected by the relevant edges
 
 
 ## Method Chaining
 
 In order to avoid sacrificing the power of Gremlin traversals, method calls in this ORM can take
 advantage of method chaining.  Any read-only method will avoid running its database
-query and instead pass its Gremlin query string to the next method in the chain if it is not given a callback.
+query and instead pass its Gremlin query string to the next method in the chain if it is not given a callback.  _Note: All create, update, and delete methods require a callback and can not have more methods chained after._
 
 #### Example
 
@@ -139,18 +139,18 @@ Additionally, results returned in the form of JSON objects will retain their rel
 
 _This ORM utilizes Model definitions similar to [Sequelize](https://github.com/sequelize/sequelize) to add structure to developing servers around graph databases.  Queries outside of the constraints of pre-defined models can be run using the generic [`.query`](#query) or [`.queryRaw`](#queryRaw)._
 
-<a id="define"></a>
+<a name="define"></a>
 ### define(label, schema)
 
 `.define` is an alias for defineVertex
 
-<a id="defineVertex"></a>
+<a name="defineVertex"></a>
 ### defineVertex(label, schema)
 
 `.defineVertex` defines a new instance of the `VertexModel` class - see generic and vertex model methods
 
 ##### Arguments
-* `label`: Label to be used on all vertexes of this model
+* `label`: Label to be used on all vertices of this model
 * `schema`: A schema object which defines allowed property keys and allowed values/types for each key
 
 ##### Example
@@ -167,7 +167,7 @@ const Person = g.define('person', {
 
 ```
 
-<a id="defineEdge"></a>
+<a name="defineEdge"></a>
 ### defineEdge(label, schema)
 
 `.defineEdge` defines a new instance of the `EdgeModel` class - see generic and edge model methods
@@ -199,7 +199,7 @@ The following options are available when defining model schemas:
 * `required` (default = false): If true, will not allow saving to database if not present or empty
 
 ## Generic Methods
-<a id="query"></a>
+<a name="query"></a>
 ### query(queryString, [raw, callback])
 
 `.query` takes a raw Gremlin query string and runs it on the object it is called on.
@@ -217,25 +217,25 @@ The following options are available when defining model schemas:
   });
 ```
 
-<a id="queryRaw"></a>
+<a name="queryRaw"></a>
 ### queryRaw(queryString, callback)
 
 `.queryRaw` performs a raw query on the gremlin-orm root and return raw data
 
 ##### Arguments
 * `queryString`: Gremlin query as a string
-* `callback` (optional): Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments.
 
 ##### Example
 ```javascript
   // query must be a full Gremlin query string
   let query = "g.V(1).as('a').out('created').as('b').in('created').as('c').dedup('a','b').select('a','b','c')"
-  g.query(query, (err, result) => {
+  g.queryRaw(query, (err, result) => {
     // send raw data to client
   });
 ```
 
-<a id="update"></a>
+<a name="update"></a>
 ### update({props}, callback)
 
 `.update` takes a properties object and updates the relevant properties on the model instance it is called on.
@@ -251,8 +251,8 @@ The following options are available when defining model schemas:
   });
 ```
 
-<a id="delete"></a>
-### delete([callback])
+<a name="delete"></a>
+### delete(callback)
 
 `.delete` removes the object(s) it is called on from the database.
 
@@ -262,11 +262,13 @@ The following options are available when defining model schemas:
 ##### Example
 ```javascript
   Person.find({'name', 'John'}, (err, result) => {
-    if (result) result.delete();
+    if (result) result.delete((err, result) => {
+      // check if successful delete
+    });
   });
 ```
 
-<a id="order"></a>
+<a name="order"></a>
 ### order(property, order, [callback])
 
 `.order` sorts the results by a property in ascending or descending order
@@ -283,7 +285,7 @@ The following options are available when defining model schemas:
   });
 ```
 
-<a id="limit"></a>
+<a name="limit"></a>
 ### limit(num, [callback])
 
 `.limit` limits the query to only the first `num` objects
@@ -301,8 +303,8 @@ The following options are available when defining model schemas:
 
 ## Vertex Methods
 
-<a id="create"></a>
-### create({props}, [callback])
+<a name="create"></a>
+### create({props}, callback)
 
 `.create` creates a new vertex with properties matching props object
 
@@ -328,7 +330,7 @@ The following options are available when defining model schemas:
   });
 ```
 
-<a id="find"></a>
+<a name="find"></a>
 ### find({props}, [callback])
 
 `.find` finds the first vertex with properties matching props object
@@ -355,10 +357,10 @@ The following options are available when defining model schemas:
   });
 ```
 
-<a id="findAll"></a>
+<a name="findAll"></a>
 ### findAll({props}, [callback])
 
-`.findAll` finds the all vertexes with properties matching props object
+`.findAll` finds the all vertices with properties matching props object
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties
@@ -390,8 +392,8 @@ The following options are available when defining model schemas:
   });
 ```
 
-<a id="createEdge"></a>
-### createEdge(edge, {props}, vertex, [callback])
+<a name="createEdge"></a>
+### createEdge(edge, {props}, vertex, callback)
 
 `.createEdge` creates new edge relationships from starting vertex(es) to vertex(es) passed in.
 
@@ -420,7 +422,7 @@ The following options are available when defining model schemas:
   });
 ```
 
-<a id="findEdge"></a>
+<a name="findEdge"></a>
 ### findEdge(label, {props}, [callback])
 
 `.findEdge` finds edges directly connected to the relevant vertex(es)
@@ -440,10 +442,10 @@ Person.find({'name': 'John'}).findEdge('knows', {}, (err, result) => {
 });
 ```
 
-<a id="findRelated"></a>
+<a name="findRelated"></a>
 ### findRelated(label, {props}, depth, [callback])
 
-`.findRelated` finds vertexes related through the desired edge relationship.
+`.findRelated` finds vertices related through the desired edge relationship.
 
 ##### Arguments
 * `label`: Edge label string
@@ -461,10 +463,10 @@ Person.find({'name': 'John'}).findRelated('knows', {}, 2, (err, result) => {
 });
 ```
 
-<a id="findImplicit"></a>
+<a name="findImplicit"></a>
 ### findImplicit(label, {props}, [callback])
 
-`.findImplicit` finds vertexes that are related to another vertex the same way the original vertex is.
+`.findImplicit` finds vertices that are related to another vertex the same way the original vertex is.
 
 ##### Arguments
 * `label`: Edge label string
@@ -476,7 +478,7 @@ Person.find({'name': 'John'}).findRelated('knows', {}, 2, (err, result) => {
 
 ##### Examples
 ```javascript
-Person.find({'name': 'John'}).findImplicit('created', {}, 2, (err, result) => {
+Person.find({'name': 'John'}).findImplicit('created', {}, (err, result) => {
   // Result is array of vertex objects representing people who have co-created things that John created
 });
 ```
@@ -484,8 +486,8 @@ Person.find({'name': 'John'}).findImplicit('created', {}, 2, (err, result) => {
 
 ## Edge Methods
 
-<a id="edge-model-create"></a>
-### create(out, in, {props}, [callback])
+<a name="edge-model-create"></a>
+### create(out, in, {props}, callback)
 
 `.create` creates an index from `out` vertex(es) to the `in` vertex(es)
 
@@ -514,7 +516,7 @@ Knows.create({'name': 'John'}, '123', {'since': 2015}, (err, result) => {
 });
 ```
 
-<a id="edge-model-find"></a>
+<a name="edge-model-find"></a>
 ### find({props}, [callback])
 
 `.find` finds the first edge with properties matching props object
@@ -542,7 +544,7 @@ Knows.create({'name': 'John'}, '123', {'since': 2015}, (err, result) => {
   });
 ```
 
-<a id="findAll"></a>
+<a name="findAll"></a>
 ### findAll({props}, [callback])
 
 `.findAll` finds the all edges with properties matching props object
@@ -579,10 +581,10 @@ Knows.create({'name': 'John'}, '123', {'since': 2015}, (err, result) => {
   });
 ```
 
-<a id="findVertex"></a>
+<a name="findVertex"></a>
 ### findVertex({props}, [callback])
 
-`.findVertex` finds the all vertexes with properties matching props object connected by the relevant edge(s)
+`.findVertex` finds the all vertices with properties matching props object connected by the relevant edge(s)
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties to find on vertices
