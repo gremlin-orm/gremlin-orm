@@ -10,12 +10,7 @@ services:
 
 before_install:
 - docker pull gremlinorm/gremlin-server-neo4j
-- cd .
-- ls
-- cd ..
-- ls
-- docker-compose run --rm --service-ports gremlin-server
-- docker ps -a
+- ./bin/server
 
 script:
 - npm run build; mocha -t 10000 test/index.js test/helpers.js test/vertex.js test/edge.js --exit
