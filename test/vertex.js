@@ -122,7 +122,7 @@ describe('Vertex Model', () => {
 
   describe('FindRelated', () => {
     it('Should find related vertices with matching parameters', (done) => {
-      Person.find({'name': 'John'}).findRelated('knows', {}, 1, (err, results) => {
+      Person.find({'name': 'John'}).findRelated('knows', {'duration': 1}, 1, (err, results) => {
         expect(results[0].name).to.equal('Jane');
         done();
       });
