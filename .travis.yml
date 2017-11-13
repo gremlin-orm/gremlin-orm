@@ -10,6 +10,7 @@ services:
 
 before_install:
 - docker pull gremlinorm/gremlin-server-neo4j
+- cd gremlin-server-neo4j
 - docker-compose run --rm --service-ports gremlin-server
 - docker ps -a
 
