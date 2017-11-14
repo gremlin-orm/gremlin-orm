@@ -1,11 +1,13 @@
 const gremlinOrm = require('./../dist/gremlin-orm');
-const g = new gremlinOrm('neo4j', '8182', '0.0.0.0');
+const g = new gremlinOrm('neo4j');
 
 const { assert, expect } = require('chai');
 
 describe('Database', () => {
   before(done => {
-    g.queryRaw('g.V().drop()', () => {done();});
+    g.queryRaw('g.V().drop()', () => {
+      g.queryRaw('g.E().drop()', () => {done()});
+    });
   });
   describe('Initial State', () => {
     it('Should connect and have no objects', (done) => {
