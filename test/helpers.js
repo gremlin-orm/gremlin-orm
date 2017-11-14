@@ -1,5 +1,5 @@
 const gremlinOrm = require('./../dist/gremlin-orm');
-const g = new gremlinOrm('neo4j');
+const g = new gremlinOrm('neo4j', '8182', '0.0.0.0');
 
 const { assert, expect } = require('chai');
 
