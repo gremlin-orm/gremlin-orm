@@ -1,5 +1,5 @@
 const gremlinOrm = require('./../dist/gremlin-orm');
-const g = new gremlinOrm('neo4j', '8182', '0.0.0.0');
+const g = new gremlinOrm('neo4j');
 
 const { assert, expect } = require('chai');
 
@@ -28,7 +28,9 @@ const Knows = g.defineEdge('knows', {
 
 describe('Helpers', () => {
   before(done => {
-    g.queryRaw('g.V().drop()', () => {done();});
+    g.queryRaw('g.V().drop()', () => {
+      g.queryRaw('g.E().drop()', () => {done()});
+    });
   });
   describe('familiarizeAndPrototype', () => {
     it('Should exist', () => {

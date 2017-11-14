@@ -12,4 +12,5 @@ before_install:
 - docker pull gremlinorm/gremlin-server-neo4j
 
 script:
-- docker run gremlinorm/gremlin-server-neo4j:latest & sleep 30; npm run build; mocha -t 10000 test/index.js test/helpers.js test/vertex.js test/edge.js --exit
+- git clone https://github.com/gremlin-orm/gremlin-orm-neo4j.git; cd gremlin-orm-neo4j; docker-compose run --rm --service-ports gremlin-server
+- sleep 45; npm run build; mocha -t 10000 test/index.js test/helpers.js test/vertex.js test/edge.js --exit
