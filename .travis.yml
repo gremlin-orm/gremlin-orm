@@ -10,7 +10,6 @@ services:
 
 before_install:
 - docker pull gremlinorm/gremlin-server-neo4j
-- docker run gremlinorm/gremlin-server-neo4j:latest
 
 script:
-- npm run build; mocha -t 10000 test/index.js test/helpers.js test/vertex.js test/edge.js --exit
+- docker run gremlinorm/gremlin-server-neo4j:latest & npm run build; mocha -t 10000 test/index.js test/helpers.js test/vertex.js test/edge.js --exit
