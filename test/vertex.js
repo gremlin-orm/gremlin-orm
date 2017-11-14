@@ -28,9 +28,7 @@ const Knows = g.defineEdge('knows', {
 
 describe('Vertex Model', () => {
   before(done => {
-    g.queryRaw('g.V().drop()', () => {
-      g.queryRaw('g.E().drop()', () => {done()});
-    });
+    g.queryRaw('g.V().drop()', () => {done()});
   });
   describe('Define', () => {
     it('Should define a new model called Person', () => {
