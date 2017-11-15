@@ -116,7 +116,7 @@ class VertexModel extends Model {
     }
     let gremlinStr = this.getGremlinStr();
     for (let i = 0; i < depth; i += 1) {
-      gremlinStr += `.out('${label}')${this.actionBuilder('has', props)}`;
+      gremlinStr += `.outE('${label}')${this.actionBuilder('has', props)}.inV()`;
     }
     return this.executeOrPass(gremlinStr, callback);
   }
@@ -162,8 +162,8 @@ class VertexModel extends Model {
     }
     let gremlinStr = this.getGremlinStr();
     let originalAs = this.getRandomVariable()[0];
-    gremlinStr += `.as('${originalAs}').out('${label}')${this.actionBuilder('has', props)}` +
-                  `.in('${label}')${this.actionBuilder('has', props)}` +
+    gremlinStr += `.as('${originalAs}').outE('${label}')${this.actionBuilder('has', props)}` +
+                  `inV().inE('${label}')${this.actionBuilder('has', props)}.outV()` +
                   `.where(neq('${originalAs}'))`;
     return this.executeOrPass(gremlinStr, callback);
   }

@@ -147,7 +147,7 @@ describe('Vertex Model', () => {
         });
       });
     });
-    xit('Should find only related vertices with matching parameters', (done) => {
+    it('Should find only related vertices with matching parameters', (done) => {
       Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
         let john = result;
         Person.create({'name': 'Jane', 'age': 20, 'dob': '12/18/1998', developer: true}, (err, result) => {
@@ -245,7 +245,7 @@ describe('Vertex Model', () => {
       });
     });
 
-    xit('Should find only implicit vertices with matching properties', (done) => {
+    it('Should find only implicit vertices with matching properties', (done) => {
       Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
         let john = result;
         Person.create({'name': 'Jane', 'age': 20, 'dob': '12/18/1998', developer: true}, (err, result) => {
