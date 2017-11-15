@@ -425,12 +425,12 @@ The following options are available when defining model schemas:
 ```
 
 <a name="findEdge"></a>
-### findEdge(label, {props}, [callback])
+### findEdge(edge, {props}, [callback])
 
 `.findEdge` finds edges directly connected to the relevant vertex(es)
 
 ##### Arguments
-* `label`: Edge label string
+* `edge`: Edge model definition. If a string label is passed, no schema check will be done - edge model definition is recommended.
 * `props`: Object containing key value pairs of properties to match on edge relationships
 * `callback`: Some callback function with (err, result) arguments.
 
@@ -439,18 +439,19 @@ The following options are available when defining model schemas:
 
 ##### Examples
 ```javascript
-Person.find({'name': 'John'}).findEdge('knows', {}, (err, result) => {
+Person.find({'name': 'John'}).findEdge(Knows, {'from': 'school'}, (err, result) => {
   // Result is array of edge objects representing all the 'knows' relationships of John
+  // where John knows the person from school (edge model property)
 });
 ```
 
 <a name="findRelated"></a>
-### findRelated(label, {props}, depth, [callback])
+### findRelated(edge, {props}, depth, [callback])
 
 `.findRelated` finds vertices related through the desired edge relationship.
 
 ##### Arguments
-* `label`: Edge label string
+* `edge`: Edge model definition. If a string label is passed, no schema check will be done - edge model definition is recommended.
 * `props`: Object containing key value pairs of properties to match on edge relationships
 * `depth`: Depth of edge traversals to make
 * `callback`: Some callback function with (err, result) arguments.
@@ -460,18 +461,18 @@ Person.find({'name': 'John'}).findEdge('knows', {}, (err, result) => {
 
 ##### Examples
 ```javascript
-Person.find({'name': 'John'}).findRelated('knows', {}, 2, (err, result) => {
+Person.find({'name': 'John'}).findRelated(Knows, {}, 2, (err, result) => {
   // Result is array of vertex objects representing John's friends of friends
 });
 ```
 
 <a name="findImplicit"></a>
-### findImplicit(label, {props}, [callback])
+### findImplicit(edge, {props}, [callback])
 
 `.findImplicit` finds vertices that are related to another vertex the same way the original vertex is.
 
 ##### Arguments
-* `label`: Edge label string
+* `edge`: Edge model definition. If a string label is passed, no schema check will be done - edge model definition is recommended.
 * `props`: Object containing key value pairs of properties to match on edge relationships
 * `callback`: Some callback function with (err, result) arguments.
 
