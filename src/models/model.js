@@ -178,7 +178,7 @@ class Model {
       this.forEach((el) => ids.push(el.id));
       return `g.${type}("${ids.join('","')}")`;
     }
-    if (this.id) return `g.${this.constructor.name.charAt(0)}('${this.id}')`;
+    if (this.hasOwnProperty('id')) return `g.${this.constructor.name.charAt(0)}('${this.id}')`;
     return '';
   }
 
@@ -236,8 +236,9 @@ class Model {
            if(Number.isNaN(props[key])) props[key] = null;
            break;
          case 'boolean':
-           if (properties[key] === 'true' || properties[key] === 'false') {
-             props[key] = properties[key] === 'true';
+
+           if (properties[key].toString() === 'true' || properties[key].toString() === 'false') {
+             props[key] = properties[key].toString() === 'true';
            } else {
              props[key] = null;
            }

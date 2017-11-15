@@ -1,5 +1,7 @@
 # gremlin-orm
 
+[![Build Status](https://travis-ci.org/gremlin-orm/gremlin-orm.svg?branch=master)](https://travis-ci.org/gremlin-orm/gremlin-orm)
+
 gremlin-orm is an ORM for graph databases in Node.js.  Currently working on Neo4j and Microsoft
 Azure Cosmos DB with more to come in the future.
 
@@ -112,7 +114,7 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 
 In order to avoid sacrificing the power of Gremlin traversals, method calls in this ORM can take
 advantage of method chaining.  Any read-only method will avoid running its database
-query and instead pass its Gremlin query string to the next method in the chain if it is not given a callback.
+query and instead pass its Gremlin query string to the next method in the chain if it is not given a callback.  _Note: All create, update, and delete methods require a callback and can not have more methods chained after._
 
 #### Example
 
@@ -224,13 +226,13 @@ The following options are available when defining model schemas:
 
 ##### Arguments
 * `queryString`: Gremlin query as a string
-* `callback` (optional): Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments.
 
 ##### Example
 ```javascript
   // query must be a full Gremlin query string
   let query = "g.V(1).as('a').out('created').as('b').in('created').as('c').dedup('a','b').select('a','b','c')"
-  g.query(query, (err, result) => {
+  g.queryRaw(query, (err, result) => {
     // send raw data to client
   });
 ```
@@ -252,7 +254,7 @@ The following options are available when defining model schemas:
 ```
 
 <a name="delete"></a>
-### delete([callback])
+### delete(callback)
 
 `.delete` removes the object(s) it is called on from the database.
 
@@ -262,7 +264,9 @@ The following options are available when defining model schemas:
 ##### Example
 ```javascript
   Person.find({'name', 'John'}, (err, result) => {
-    if (result) result.delete();
+    if (result) result.delete((err, result) => {
+      // check if successful delete
+    });
   });
 ```
 
@@ -302,7 +306,7 @@ The following options are available when defining model schemas:
 ## Vertex Methods
 
 <a name="create"></a>
-### create({props}, [callback])
+### create({props}, callback)
 
 `.create` creates a new vertex with properties matching props object
 
@@ -391,7 +395,7 @@ The following options are available when defining model schemas:
 ```
 
 <a name="createEdge"></a>
-### createEdge(edge, {props}, vertex, [callback])
+### createEdge(edge, {props}, vertex, callback)
 
 `.createEdge` creates new edge relationships from starting vertex(es) to vertex(es) passed in.
 
@@ -485,13 +489,13 @@ Person.find({'name': 'John'}).findImplicit('created', {}, (err, result) => {
 ## Edge Methods
 
 <a name="edge-model-create"></a>
-### create(out, in, {props}, [callback])
+### create(out, in, {props}, callback)
 
 `.create` creates an index from `out` vertex(es) to the `in` vertex(es)
 
 ##### Arguments
-* `out` (String or Object): Object with properties to find 'out' vertex, or string representing `id`
-* `in` (String or Object): Object with properties to find 'in' vertex, or string representing `id`
+* `out`: Vertex instance or find/findAll method call
+* `in`: Vertex instance or find/findAll method call
 * `props`: Object containing key value pairs of properties to add on the new edge
 * `callback`: Some callback function with (err, result) arguments.
 
@@ -500,17 +504,20 @@ Person.find({'name': 'John'}).findImplicit('created', {}, (err, result) => {
 
 ##### Examples
 ```javascript
-Knows.create({'name': 'John'}, '123', {'since': 2015}, (err, result) => {
-  // Returns the newly created edge
-  /*
-    {
-      "id": "1",
-      "label": "knows",
-      "since": "2015",
-      "outV": "1",
-      "inV": "123",
-    }
-  */
+Person.find({'name': 'Joe'}, (err, result) => {
+  let joe = result;
+  Knows.create(Person.find({'name': 'John'}), joe, {'since': 2015}, (err, result) => {
+    // Returns the newly created edge
+    /*
+      {
+        "id": "1",
+        "label": "knows",
+        "since": "2015",
+        "outV": "1",  // John's id
+        "inV": "2",   // Joe's id
+      }
+    */
+  });
 });
 ```
 
