@@ -4,7 +4,7 @@ const g = new gremlinOrm('neo4j');
 const { assert, expect } = require('chai');
 
 describe('Database', () => {
-  before(done => {
+  beforeEach(done => {
     g.queryRaw('g.V().drop()', () => {done()});
   });
   describe('Initial State', () => {
