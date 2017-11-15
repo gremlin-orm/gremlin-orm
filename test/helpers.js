@@ -27,7 +27,7 @@ const Knows = g.defineEdge('knows', {
 });
 
 describe('Helpers', () => {
-  before(done => {
+  beforeEach(done => {
     g.queryRaw('g.V().drop()', () => {done()});
   });
   describe('familiarizeAndPrototype', () => {
