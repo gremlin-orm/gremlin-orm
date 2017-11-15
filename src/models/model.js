@@ -178,7 +178,7 @@ class Model {
       this.forEach((el) => ids.push(el.id));
       return `g.${type}("${ids.join('","')}")`;
     }
-    if (this.id) return `g.${this.constructor.name.charAt(0)}('${this.id}')`;
+    if (this.hasOwnProperty('id')) return `g.${this.constructor.name.charAt(0)}('${this.id}')`;
     return '';
   }
 

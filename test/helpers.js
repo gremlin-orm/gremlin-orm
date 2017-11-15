@@ -28,10 +28,10 @@ const Knows = g.defineEdge('knows', {
 
 describe('Helpers', () => {
   before(done => {
-    g.queryRaw('g.V().drop()', () => {done();});
+    g.queryRaw('g.V().drop()', () => {done()});
   });
   describe('familiarizeAndPrototype', () => {
-    it('should exist', () => {
+    it('Should exist', () => {
       expect(g.familiarizeAndPrototype).to.be.a('function');
     });
   });

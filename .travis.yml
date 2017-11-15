@@ -1,0 +1,15 @@
+sudo: required
+
+language: node_js
+
+node_js:
+  - 6
+
+services:
+  - docker
+
+before_install:
+- docker pull gremlinorm/gremlin-server-neo4j
+
+script:
+- docker run -p 8182:8182 gremlinorm/gremlin-server-neo4j:latest & sleep 30; npm run build; mocha -t 10000 test/index.js test/helpers.js test/vertex.js test/edge.js --exit

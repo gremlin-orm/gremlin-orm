@@ -28,7 +28,7 @@ const Knows = g.defineEdge('knows', {
 
 describe('Edge Model', () => {
   before(done => {
-    g.queryRaw('g.V().drop()', () => {done();});
+    g.queryRaw('g.V().drop()', () => {done()});
   });
   describe('Define', () => {
     it('Should define a new edge model called Knows', () => {

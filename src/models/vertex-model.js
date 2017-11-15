@@ -47,6 +47,11 @@ class VertexModel extends Model {
     if (inGremlinStr === '') {
       callback({'error': 'Gremlin Query has not been initialised for in Vertex'});
     }
+    const checkSchemaResponse = this.checkSchema(edge.schema, props, true);
+    if (this.interpretCheckSchema(checkSchemaResponse)) {
+      callback(checkSchemaResponse);
+      return;
+    }
     inGremlinStr = inGremlinStr.slice(1);
     // const schemaCheck = this.checkSchema(edge.schema, props, true);
     // if (Object.keys(schemaCheck).length === 0) {
@@ -56,7 +61,7 @@ class VertexModel extends Model {
     let gremlinQuery = outGremlinStr + `.as('${a}')` + inGremlinStr;
     gremlinQuery += `.addE('${edge.label}')${this.actionBuilder('property', props)}.from('${a}')`;
     let executeBound = this.executeOrPass.bind(edge);
-    return this.executeBound(gremlinQuery, callback);
+    return executeBound(gremlinQuery, callback);
   }
 
   /**
@@ -105,7 +110,7 @@ class VertexModel extends Model {
   findEdge(label, props, callback) {
     let gremlinStr = this.getGremlinStr();
     gremlinStr += `.bothE('${label}')${this.actionBuilder('has', props)}`;
-    let executeBound = this.executeOrPass.bind(EdgeModel);
+    let executeBound = this.executeOrPass.bind(new EdgeModel('fake', {}, this.g));
     return executeBound(gremlinStr, callback);
   }
 
