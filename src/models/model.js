@@ -226,11 +226,12 @@ class Model {
  * Parses properties into their known types from schema model
  * @param {object} properties - properties object to parse
  */
-  parseProps(properties) {
+  parseProps(properties, model) {
+    let schema = model ? model.schema : this.schema;
     const props = {};
-    Object.keys(this.schema).forEach((key) => {
+    Object.keys(schema).forEach((key) => {
       if (properties[key]) {
-       switch (this.schema[key].type) {
+       switch (schema[key].type) {
          case 'number':
            props[key] = parseInt(properties[key]);
            if(Number.isNaN(props[key])) props[key] = null;
