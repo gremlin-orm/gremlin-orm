@@ -226,7 +226,7 @@ class Model {
     return variables;
   }
 
-  /**
+ /**
  * Parses properties into their known types from schema model
  * @param {object} properties - properties object to parse
  */
