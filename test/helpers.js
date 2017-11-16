@@ -273,12 +273,10 @@ describe('Helpers', () => {
       expect(Knows.dateGetMillis).to.be.a('function');
     });
     it('Should convert a Date object to integer time', () => {
-      let time = new Date('12/18/1999').getTime();
-      expect(Person.dateGetMillis(new Date('12/18/1999'))).to.equal(time);
+      expect(typeof Person.dateGetMillis(new Date('12/18/1999'))).to.equal('number');
     });
     it('Should convert a Date compatible string to integer time', () => {
-      let time = new Date('12/18/1999').getTime();
-      expect(Person.dateGetMillis('12/18/1999')).to.equal(time);
+      expect(typeof Person.dateGetMillis('12/18/1999')).to.equal('number');
     });
     it('Should convert a numeric string directly to integer', () => {
       expect(Person.dateGetMillis('945504000000')).to.equal(945504000000);
@@ -319,10 +317,9 @@ describe('Helpers', () => {
       expect(props.developer).to.equal(false);
     });
     it('Should cast a string date into an integer date if the schema type is date', () => {
-      let time = new Date('12/18/1999').getTime();
       let properties = {'name': 'John', 'age': 20, 'dob': '12/18/1999', 'developer': 'false'};
       let props = Person.parseProps(properties);
-      expect(props.dob).to.equal(time);
+      expect(typeof props.dob).to.equal('number');
     });
     it('Should return a string value if schema type is string', () => {
       let properties = {'name': true, 'age': 20, 'dob': '12/18/1999', 'developer': 'false'};
