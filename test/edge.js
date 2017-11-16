@@ -59,11 +59,116 @@ describe('Edge Model', () => {
         done();
       });
     });
-    // it('Should not create an edge if required property is missing', (done) => {
-    //   Knows.create(john, bob, (err, result) => {
-    //     expect(result).to.equal(undefined);
-    //     done();
-    //   });
-    // })
+    it('Should not create an edge if required property type is incorrect', (done) => {
+      Knows.create(john, bob, {duration: '123'}, (err, result) => {
+        expect(result).to.equal(undefined);
+        done();
+      });
+    });
   });
+
+  describe('Find', () => {
+    it('Should find and return the first edge with matching properties', (done) => {
+      Person.create({'name': 'Sam', 'age': 38, 'dob': '12/18/1979', developer: true}, (err, result) => {
+        sam = result;
+        Knows.create(john, bob, {duration: 3}, (err, result) => {
+          const id = result.id;
+          const outV = result.outV;
+          const inV = result.inV;
+          Knows.create(bob, sam, {duration: 3}, (err, result) => {
+            Knows.find({'duration': 3}, (err, result) => {
+              expect(typeof result).to.equal('object');
+              expect(!Array.isArray(result)).to.equal(true);
+              expect(result.id).to.equal(id);
+              expect(result.label).to.equal('knows');
+              expect(result.inV).to.equal(inV);
+              expect(result.outV).to.equal(outV);
+              expect(result.inVLabel).to.equal('person');
+              expect(result.outVLabel).to.equal('person');
+              expect(result.duration).to.equal(3);
+              done();
+            });
+          });
+        });
+      });
+    });
+    it('Should return an empty array if no match is found', (done) => {
+      Person.create({'name': 'Sam', 'age': 38, 'dob': '12/18/1979', developer: true}, (err, result) => {
+        sam = result;
+        Knows.create(john, bob, {duration: 3}, (err, result) => {
+          const id = result.id;
+          const outV = result.outV;
+          const inV = result.inV;
+          Knows.create(bob, sam, {duration: 3}, (err, result) => {
+            Knows.find({'duration': 10}, (err, result) => {
+              expect(Array.isArray(result)).to.equal(true);
+              expect(result.length).to.equal(0);
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+
+  describe('FindAll', () => {
+    it('Should find and return all edges with matching properties', (done) => {
+      Person.create({'name': 'Sam', 'age': 38, 'dob': '12/18/1979', developer: true}, (err, result) => {
+        sam = result;
+        Knows.create(john, bob, {duration: 3}, (err, result) => {
+          const id1 = result.id;
+          Knows.create(bob, sam, {duration: 3}, (err, result) => {
+            const id2 = result.id;
+            Knows.create(john, sam, {duration: 5}, (err, result) => {
+              const id3 = result.id;
+              Knows.findAll({'duration': 3}, (err, result) => {
+                expect(Array.isArray(result)).to.equal(true);
+                expect(result.length).to.equal(2);
+                expect(result[0].id).to.equal(id1);
+                expect(result[1].id).to.equal(id2);
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+    it('Should return an empty array if no match is found', (done) => {
+      Person.create({'name': 'Sam', 'age': 38, 'dob': '12/18/1979', developer: true}, (err, result) => {
+        sam = result;
+        Knows.create(john, bob, {duration: 3}, (err, result) => {
+          const id = result.id;
+          const outV = result.outV;
+          const inV = result.inV;
+          Knows.create(bob, sam, {duration: 3}, (err, result) => {
+            Knows.find({'duration': 10}, (err, result) => {
+              expect(Array.isArray(result)).to.equal(true);
+              expect(result.length).to.equal(0);
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+
+  // describe('FindVertex', () => {
+  //   it('Should find and return all vertices connected by relevant edges with matching properties', (done) => {
+  //     Person.create({'name': 'Sam', 'age': 38, 'dob': '12/18/1979', developer: true}, (err, result) => {
+  //       sam = result;
+  //       Knows.create(john, bob, {duration: 3}, (err, result) => {
+  //         const id1 = result.id;
+  //         Knows.create(bob, sam, {duration: 3}, (err, result) => {
+  //           const id2 = result.id;
+  //           Knows.create(john, sam, {duration: 5}, (err, result) => {
+  //             const id3 = result.id;
+  //             Knows.findAll({'duration': 3}, (err, result) => {
+                
+  //             })
+  //           });
+  //         });
+  //       });
+  //     });
+  //   });
+  // });
 });
