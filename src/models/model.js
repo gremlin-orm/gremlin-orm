@@ -26,6 +26,7 @@ class Model {
     gremlinStr += string;
     if (!cb) return this.executeOrPass(gremlinStr, cb);
     if (returnRawData) {
+      this.checkModels = false;
       this.g.client.execute(gremlinStr, (err, result) => {
         if (err) {
           cb({'error': err});
@@ -34,7 +35,7 @@ class Model {
         cb(null, result);
       });
     }
-    return this.executeOrPass(gremlinStr, cb);
+    else return this.executeOrPass(gremlinStr, cb);
   }
 
   /**
@@ -99,7 +100,7 @@ class Model {
       if(singleObject && response.length > 0) {
         callback(null, response[0]);
         return;
-      }      
+      }
       callback(null, response);
     });
   }
