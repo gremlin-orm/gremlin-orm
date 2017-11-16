@@ -70,7 +70,7 @@ class Gorm {
   * @param {function} callback Some callback function with (err, result) arguments.
   */
   queryRaw(string, callback) {
-    return this.client.execute(string, (err, result) => {
+    this.client.execute(string, (err, result) => {
       if (err) {
         callback({'error': err});
         return;

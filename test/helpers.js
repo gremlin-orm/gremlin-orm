@@ -169,7 +169,26 @@ describe('Helpers', () => {
   });
   describe('getGremlinStr', () => {
     it('Should return gremlinStr from Gremlin string object', () => {
-      
+      let str = Person.find({'name': 'John'}).getGremlinStr();
+      expect(str).to.equal(`g.V().hasLabel('person').has('name','John').limit(1)`);
+    });
+    it('Should return gremlinStr from familiarized object', done => {
+      Person.create({'name': 'John', 'age': 20}, (err, result) => {
+        expect(result.getGremlinStr()).to.equal(`g.V('${result.id}')`);
+        done();
+      });
+    });
+    it('Should return gremlinStr from an array of familiarized object', done => {
+      Person.create({'name': 'John', 'age': 20}, (err, result) => {
+        let john = result
+        Person.create({'name': 'Jane', 'age': 20}, (err, result) => {
+          let jane = result;
+          Person.findAll({}, (err, results) => {
+            expect(results.getGremlinStr()).to.equal(`g.V("${results.map(el => el.id).join('","')}")`);
+            done();
+          });
+        });
+      });
     });
   });
 });
