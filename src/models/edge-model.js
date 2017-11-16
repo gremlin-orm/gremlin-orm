@@ -50,17 +50,19 @@ class EdgeModel extends Model {
 
   // NOT YET TESTED
   findVertex(vertexModel, properties, callback) {
-    let props, model;
+    let label, props, model;
     if (typeof vertexModel === 'string') {
+      label = vertexModel;
       props = properties;
       model = new VertexModel('fake', {}, this.g)
     }
     else {
       props = this.parseProps(properties, vertexModel);
       model = vertexModel;
+      label = model.label;
     }
     let gremlinStr = this.getGremlinStr();
-    gremlinStr += `.bothV()${this.actionBuilder('has', props)}`;
+    gremlinStr += `.bothV(${model.label})${this.actionBuilder('has', props)}`;
     let executeBound = this.executeOrPass.bind(model);
     return executeBound(gremlinStr, callback);
   }
