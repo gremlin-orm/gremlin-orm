@@ -246,4 +246,65 @@ describe('Model', () => {
       });
     });
   });
+
+  describe('Order', () => {
+    beforeEach(done => {
+      g.queryRaw("g.addV('person').property('name','Bobby').property('age', 22)", () => {
+        g.queryRaw("g.addV('person').property('name','Bobby').property('age', 33)", () => {
+          g.queryRaw("g.addV('person').property('name','Harry').property('age', 28)", () => {
+            let knowsProps = ".property('duration', 3).property('how', 'golf days')";
+            knowsProps += ".property('anniversary', 1458901167000).property('duration', 1)";
+            let bobby33 = "g.V().has('name','Bobby').has('age', 33)"
+            g.queryRaw(`${bobby33}.addE('knows')${knowsProps}.to(g.V().has('name','Harry'))`, () => {
+              done();
+            });      
+          });    
+        });
+      });  
+    });
+    it('Should be available on Vertex and Edge Models', () => {
+      expect(Person.order).to.be.a('function');
+      expect(Knows.order).to.be.a('function');
+    });
+    it('Should expect at least 1 prop to order by', (done) => {
+      Person.findAll({}).order('name', '', (err, result) => {
+        console.log("result", result);
+        expect(result).to.equal(undefined);
+        done()
+      });
+    });
+    xit('Should order vertices in ascending order', (done) => {
+      Person.findAll({}).order('name', 'ASC', (err, result) => {
+        console.log("result", result);
+        done()
+      });
+    });
+    xit('Should order vertices in descending order', (done) => {
+      done();
+    });
+    xit('Should order edges in ascending order', (done) => {
+      g.queryRaw("g.addV('person').property('name','Peter').property('age', 22)", () => {
+        g.queryRaw("g.V().has('name','Victoria').addE('knows').property('duration', 2).to(g.V().has('name','Peter'))", () => {
+          Knows.findAll({}).delete((err, result) => {
+            expect(result.length).to.equal(0);  
+            done();
+          });      
+        });      
+      });
+    });
+    xit('Should order edges in decscending order', (done) => {
+      g.queryRaw("g.addV('person').property('name','Peter').property('age', 22)", () => {
+        g.queryRaw("g.V().has('name','Victoria').addE('knows').property('duration', 2).to(g.V().has('name','Peter'))", () => {
+          Knows.find({duration: 1}, (err, result) => {
+            result.delete((err, result) => {
+              Knows.findAll({}, (err, result) => {
+                expect(result.length).to.equal(1);
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
 });
