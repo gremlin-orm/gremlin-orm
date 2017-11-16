@@ -81,6 +81,10 @@ describe('Helpers', () => {
     });
   });
   describe('executeQuery', () => {
+    it('Should be available on Vertex and Edge models', () => {
+      expect(Person.executeQuery).to.be.a('function');
+      expect(Knows.executeQuery).to.be.a('function');
+    });
     it('Should send query to database and return array of results', done => {
       g.queryRaw(`g.addV('person').property('name','John').property('age', 24)`, (err, result) => {
         query = `g.V().hasLabel('person').has('name','John')`;
@@ -105,6 +109,10 @@ describe('Helpers', () => {
     });
   });
   describe('executeOrPass', () => {
+    it('Should be available on Vertex and Edge models', () => {
+      expect(Person.executeOrPass).to.be.a('function');
+      expect(Knows.executeOrPass).to.be.a('function');
+    });
     it('Should send query to database and return array of results when callback present', done => {
       g.queryRaw(`g.addV('person').property('name','John').property('age', 24)`, (err, result) => {
         query = `g.V().hasLabel('person').has('name','John')`;
@@ -127,6 +135,10 @@ describe('Helpers', () => {
     });
   });
   describe('actionBuilder', () => {
+    it('Should be available on Vertex and Edge models', () => {
+      expect(Person.actionBuilder).to.be.a('function');
+      expect(Knows.actionBuilder).to.be.a('function');
+    });
     it('Should return query string with action and props', () => {
       let string = Person.actionBuilder('property', {'name': 'John'});
       expect(string).to.equal(`.property('name','John')`);
@@ -149,6 +161,10 @@ describe('Helpers', () => {
     });
   });
   describe('addArrayMethods', () => {
+    it('Should be available on Vertex and Edge models', () => {
+      expect(Person.addArrayMethods).to.be.a('function');
+      expect(Knows.addArrayMethods).to.be.a('function');
+    });
     it('Should add general methods to array', () => {
       let arr = ['test'];
       Person.addArrayMethods(arr);
@@ -168,6 +184,10 @@ describe('Helpers', () => {
     });
   });
   describe('getGremlinStr', () => {
+    it('Should be available on Vertex and Edge models', () => {
+      expect(Person.getGremlinStr).to.be.a('function');
+      expect(Knows.getGremlinStr).to.be.a('function');
+    });
     it('Should return gremlinStr from Gremlin string object', () => {
       let str = Person.find({'name': 'John'}).getGremlinStr();
       expect(str).to.equal(`g.V().hasLabel('person').has('name','John').limit(1)`);
@@ -189,6 +209,206 @@ describe('Helpers', () => {
           });
         });
       });
+    });
+  });
+  describe('getIdFromProps', () => {
+    it('Should be available on Vertex and Edge models', () => {
+      expect(Person.getIdFromProps).to.be.a('function');
+      expect(Knows.getIdFromProps).to.be.a('function');
+    });
+    it('Should not change props object if no id key', () => {
+      let props = {'name': 'John', 'age': 20};
+      let originalPropsLength = Object.keys(props).length;
+      Person.getIdFromProps(props);
+      expect(Object.keys(props)).to.have.lengthOf(originalPropsLength);
+    });
+    it('Should remove id property from props object', () => {
+      let props = {'id': 1, 'name': 'John', 'age': 20};
+      let originalPropsLength = Object.keys(props).length;
+      Person.getIdFromProps(props);
+      expect(Object.keys(props)).to.have.lengthOf(originalPropsLength - 1);
+      expect(props.id).to.equal(undefined);
+    });
+    it('Should return a empty string if no id key is present', () => {
+      let props = {'name': 'John', 'age': 20};
+      let string = Person.getIdFromProps(props);
+      expect(string).to.equal('');
+    });
+    it('Should return a single ID from props object', () => {
+      let props = {'id': 1, 'name': 'John', 'age': 20};
+      let string = Person.getIdFromProps(props);
+      expect(string).to.equal("'1'");
+    });
+    it('Should return a multiple IDs from props object with id array', () => {
+      let props = {'id': [1,2,3], 'name': 'John', 'age': 20};
+      let string = Person.getIdFromProps(props);
+      expect(string).to.equal("'1,2,3'");
+    });
+  });
+  describe('getRandomVariable', () => {
+    it('Should be available on Vertex and Edge models', () => {
+      expect(Person.getRandomVariable).to.be.a('function');
+      expect(Knows.getRandomVariable).to.be.a('function');
+    });
+    it('Should return an array of one variable', () => {
+      let arr = Person.getRandomVariable(1, []);
+      expect(arr).to.have.lengthOf(1);
+      expect(typeof arr[0]).to.equal('string');
+    });
+    it('Should return an array of multiple unique variables', () => {
+      let arr = Person.getRandomVariable(2, []);
+      expect(arr).to.have.lengthOf(2);
+      expect(arr[0]).to.not.equal(arr[1]);
+    });
+    it('Should return a variable not in the current variables array', () => {
+      let arr = Person.getRandomVariable(1, ['abc']);
+      expect(arr).to.have.lengthOf(2);
+      expect(arr[0]).to.equal('abc');
+      expect(arr[1]).to.not.equal('abc');
+    });
+  });
+  describe('dateGetMillis', () => {
+    it('Should be available on Vertex and Edge models', () => {
+      expect(Person.dateGetMillis).to.be.a('function');
+      expect(Knows.dateGetMillis).to.be.a('function');
+    });
+    it('Should convert a Date object to integer time', () => {
+      expect(Person.dateGetMillis(new Date('12/18/1999'))).to.equal(945504000000);
+    });
+    it('Should convert a Date compatible string to integer time', () => {
+      expect(Person.dateGetMillis('12/18/1999')).to.equal(945504000000);
+    });
+    it('Should convert a numeric string directly to integer', () => {
+      expect(Person.dateGetMillis('945504000000')).to.equal(945504000000);
+    });
+    it('Should return NaN for incompatible strings', () => {
+      expect(Number.isNaN(Person.dateGetMillis('hello'))).to.equal(true);
+    });
+  });
+  describe('parseProps', () => {
+    it('Should be available on Vertex and Edge models', () => {
+      expect(Person.parseProps).to.be.a('function');
+      expect(Knows.parseProps).to.be.a('function');
+    });
+    it('Should return a new props object', () => {
+      let properties = {'name': 'John', 'age': 20, 'dob': '12/18/1999', 'developer': true};
+      let props = Person.parseProps(properties);
+      expect(props.hasOwnProperty('name')).to.equal(true);
+    });
+    it('Should remove a key that is not available in schema', () => {
+      let properties = {'name': 'John', 'age': 20, 'dob': '12/18/1999', 'developer': true};
+      let props = Person.parseProps(properties);
+      expect(props.hasOwnProperty('name')).to.equal(true);
+      expect(props.hasOwnProperty('hello')).to.equal(false);
+    });
+    it('Should cast a number string into a number if the schema type is number', () => {
+      let properties = {'name': 'John', 'age': '20', 'dob': '12/18/1999', 'developer': true};
+      let props = Person.parseProps(properties);
+      expect(props.age).to.equal(20);
+    });
+    it('Should cast a string true into a boolean true if the schema type is boolean', () => {
+      let properties = {'name': 'John', 'age': 20, 'dob': '12/18/1999', 'developer': 'true'};
+      let props = Person.parseProps(properties);
+      expect(props.developer).to.equal(true);
+    });
+    it('Should cast a string false into a boolean false if the schema type is boolean', () => {
+      let properties = {'name': 'John', 'age': 20, 'dob': '12/18/1999', 'developer': 'false'};
+      let props = Person.parseProps(properties);
+      expect(props.developer).to.equal(false);
+    });
+    it('Should cast a string date into an integer date if the schema type is date', () => {
+      let properties = {'name': 'John', 'age': 20, 'dob': '12/18/1999', 'developer': 'false'};
+      let props = Person.parseProps(properties);
+      expect(props.dob).to.equal(945504000000);
+    });
+    it('Should return a string value if schema type is string', () => {
+      let properties = {'name': true, 'age': 20, 'dob': '12/18/1999', 'developer': 'false'};
+      let props = Person.parseProps(properties);
+      expect(props.name).to.equal('true');
+    });
+  });
+  describe('stringifyValue', () => {
+    it('Should be available on Vertex and Edge models', () => {
+      expect(Person.stringifyValue).to.be.a('function');
+      expect(Knows.stringifyValue).to.be.a('function');
+    });
+    it('Should return a string with quotes if the input is a string', () => {
+      expect(Person.stringifyValue('string')).to.equal("'string'");
+    });
+    it('Should return a string without quotes if the input is a number', () => {
+      expect(Person.stringifyValue(20)).to.equal("20");
+    });
+    it('Should return a string without quotes if the input is a boolean', () => {
+      expect(Person.stringifyValue(true)).to.equal("true");
+    });
+  });
+  describe('checkSchema', () => {
+    it('Should be available on Vertex and Edge models', () => {
+      expect(Person.checkSchema).to.be.a('function');
+      expect(Knows.checkSchema).to.be.a('function');
+    });
+    it('Should return an empty object if all checks pass', () => {
+      let properties = {'name': 'John', 'age': 20, 'dob': '12/18/1999', 'developer': true};
+      let obj = Person.checkSchema(Person.schema, properties, true);
+      expect(Object.keys(obj)).to.have.lengthOf(0);
+    });
+    it('Should check required properties if checkRequired is true', () => {
+      let properties = {'age': 20, 'dob': '12/18/1999', 'developer': true};
+      let obj = Person.checkSchema(Person.schema, properties, true);
+      expect(Object.keys(obj)).to.have.lengthOf(1);
+      expect(obj[Object.keys(obj)[0]][0]).to.equal(`A valid value for 'name' is required`);
+    });
+    it('Should not check required properties if checkRequired is false', () => {
+      let properties = {'age': 20, 'dob': '12/18/1999', 'developer': true};
+      let obj = Person.checkSchema(Person.schema, properties, false);
+      expect(Object.keys(obj)).to.have.lengthOf(0);
+    });
+    it('Should return error if string type is wrong', () => {
+      let properties = {'name': 20, 'age': 20, 'dob': '12/18/1999', 'developer': true};
+      let obj = Person.checkSchema(Person.schema, properties, false);
+      expect(Object.keys(obj)).to.have.lengthOf(1);
+      expect(Object.keys(obj)[0]).to.equal('name');
+      expect(obj[Object.keys(obj)[0]][0]).to.equal(`'name' should be a string`);
+    });
+    it('Should return error if number type is wrong', () => {
+      let properties = {'name': 'John', 'age': '20', 'dob': '12/18/1999', 'developer': true};
+      let obj = Person.checkSchema(Person.schema, properties, false);
+      expect(Object.keys(obj)).to.have.lengthOf(1);
+      expect(Object.keys(obj)[0]).to.equal('age');
+      expect(obj[Object.keys(obj)[0]][0]).to.equal(`'age' should be a number`);
+    });
+    it('Should return error if date type is wrong', () => {
+      let properties = {'name': 'John', 'age': 20, 'dob': 'hello', 'developer': true};
+      let obj = Person.checkSchema(Person.schema, properties, false);
+      expect(Object.keys(obj)).to.have.lengthOf(1);
+      expect(Object.keys(obj)[0]).to.equal('dob');
+      expect(obj[Object.keys(obj)[0]][0]).to.equal(`'dob' should be a Date`);
+    });
+    it('Should return error if boolean type is wrong', () => {
+      let properties = {'name': 'John', 'age': 20, 'dob': '12/18/1999', 'developer': 'true'};
+      let obj = Person.checkSchema(Person.schema, properties, false);
+      expect(Object.keys(obj)).to.have.lengthOf(1);
+      expect(Object.keys(obj)[0]).to.equal('developer');
+      expect(obj[Object.keys(obj)[0]][0]).to.equal(`'developer' should be a boolean`);
+    });
+    it('Should return multiple errors for multiple wrong values', () => {
+      let properties = {'name': 20, 'age': '20', 'dob': 'hello', 'developer': 'true'};
+      let obj = Person.checkSchema(Person.schema, properties, false);
+      expect(Object.keys(obj)).to.have.lengthOf(4);
+    });
+  });
+  describe('interpretCheckSchema', () => {
+    it('Should be available on Vertex and Edge models', () => {
+      expect(Person.interpretCheckSchema).to.be.a('function');
+      expect(Knows.interpretCheckSchema).to.be.a('function');
+    });
+    it('Should return true if there are errors', () => {
+      let response = {'name': ['should be a string']};
+      expect(Person.interpretCheckSchema(response)).to.equal(true);
+    });
+    it('Should return false if there are no errors', () => {
+      let response = {};
+      expect(Person.interpretCheckSchema(response)).to.equal(false);
     });
   });
 });
