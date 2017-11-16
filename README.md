@@ -593,7 +593,7 @@ Person.find({'name': 'Joe'}, (err, result) => {
 `.findVertex` finds the all vertices with properties matching props object connected by the relevant edge(s)
 
 ##### Arguments
-* `vertexModel`: vertexModel that corresponds to the vertex
+* `vertexModel`: Vertex model that corresponds to the vertex
 * `props`: Object containing key value pairs of properties to find on vertices
 * `callback`: Some callback function with (err, result) arguments
 
