@@ -44,9 +44,9 @@ describe('Model', () => {
           knowsProps += ".property('anniversary', 1458101167000).property('duration', 1)";
           g.queryRaw(`g.V().has('name','Victoria').addE('knows')${knowsProps}.to(g.V().has('name','Samanatha'))`, () => {
             done();
-          });      
-        });    
-      });  
+          });
+        });
+      });
     });
   });
 
@@ -68,7 +68,7 @@ describe('Model', () => {
           expect(result[0]).to.be.an.instanceof(Person.constructor);
           expect(result[0].name).to.equal('Victoria');
           done();
-        });  
+        });
       });
     });
     it("Should return the results in JSON format if 'raw' is true", (done) => {
@@ -101,7 +101,7 @@ describe('Model', () => {
             expect(result.age).to.equal(12  );
             done();
           });
-        });     
+        });
       });
     });
     it('Should not update vertex if string type prop is wrong', (done) => {
@@ -120,30 +120,30 @@ describe('Model', () => {
       Person.findAll({name: 'Victoria'}).update({dob: 'date'}, (err, result) => {
         expect(err).to.not.equal(null);
         done();
-      }); 
+      });
     });
     it('Should not update vertex if boolean type prop is wrong', (done) => {
         Person.findAll({name: 'Victoria'}).update({developer: 3}, (err, result) => {
         expect(err).to.not.equal(null);
         done();
-      }); 
+      });
     });
     it('Should not update vertex if prop is not in schema', (done) => {
         Person.findAll({name: 'Victoria'}).update({golf: true}, (err, result) => {
         expect(err).to.not.equal(null);
         done();
-      }); 
+      });
     });
     it('Should update properties on the database for Edge Model', (done) => {
       g.queryRaw("g.addV('person').property('name','Peter').property('age', 22)", () => {
         g.queryRaw("g.V().has('name','Victoria').addE('knows').property('duration', 2).to(g.V().has('name','Peter'))", () => {
           Knows.findAll({}).update({duration: 5}, (err, result) => {
-            expect(result.length).to.equal(2);  
-            expect(result[0].duration).to.equal(5); 
-            expect(result[1].duration).to.equal(5); 
+            expect(result.length).to.equal(2);
+            expect(result[0].duration).to.equal(5);
+            expect(result[1].duration).to.equal(5);
             done();
-          });      
-        });      
+          });
+        });
       });
     });
     it('Should update properties on the database for a specific instance of Edge Model', (done) => {
@@ -152,7 +152,7 @@ describe('Model', () => {
           Knows.find({duration: 1}, (err, result) => {
             result.update({duration: 5}, (err, result) => {
               expect(result.length).to.equal(1);
-              expect(result[0].duration).to.equal(5); 
+              expect(result[0].duration).to.equal(5);
               Knows.findAll({duration: 5}, (err, result) => {
                 expect(result.length).to.equal(1);
                 done();
@@ -204,7 +204,7 @@ describe('Model', () => {
         Person.findAll({}, (err, result) => {
           expect(result.length).to.equal(0);
           done();
-        });  
+        });
       });
     });
     it('Should delete vertices on the database for a specific instance of Vertex Model', (done) => {
@@ -218,17 +218,17 @@ describe('Model', () => {
               done();
             });
           });
-        });     
+        });
       });
     });
     it('Should delete edges from the database for Edge Model', (done) => {
       g.queryRaw("g.addV('person').property('name','Peter').property('age', 22)", () => {
         g.queryRaw("g.V().has('name','Victoria').addE('knows').property('duration', 2).to(g.V().has('name','Peter'))", () => {
           Knows.findAll({}).delete((err, result) => {
-            expect(result.length).to.equal(0);  
+            expect(result.length).to.equal(0);
             done();
-          });      
-        });      
+          });
+        });
       });
     });
     it('Should delete edges on the database for a specific instance of Edge Model', (done) => {
