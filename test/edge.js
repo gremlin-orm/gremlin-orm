@@ -141,7 +141,7 @@ describe('Edge Model', () => {
           const outV = result.outV;
           const inV = result.inV;
           Knows.create(bob, sam, {duration: 3}, (err, result) => {
-            Knows.find({'duration': 10}, (err, result) => {
+            Knows.findAll({'duration': 10}, (err, result) => {
               expect(Array.isArray(result)).to.equal(true);
               expect(result.length).to.equal(0);
               done();
@@ -152,23 +152,89 @@ describe('Edge Model', () => {
     });
   });
 
-  // describe('FindVertex', () => {
-  //   it('Should find and return all vertices connected by relevant edges with matching properties', (done) => {
-  //     Person.create({'name': 'Sam', 'age': 38, 'dob': '12/18/1979', developer: true}, (err, result) => {
-  //       sam = result;
-  //       Knows.create(john, bob, {duration: 3}, (err, result) => {
-  //         const id1 = result.id;
-  //         Knows.create(bob, sam, {duration: 3}, (err, result) => {
-  //           const id2 = result.id;
-  //           Knows.create(john, sam, {duration: 5}, (err, result) => {
-  //             const id3 = result.id;
-  //             Knows.findAll({'duration': 3}, (err, result) => {
-                
-  //             })
-  //           });
-  //         });
-  //       });
-  //     });
-  //   });
-  // });
+  describe('FindVertex', () => {
+    it('Should find and return all vertices connected by relevant edges with matching properties', (done) => {
+      Person.create({'name': 'Sam', 'age': 38, 'dob': '12/18/1979', 'developer': true}, (err, result) => {
+        sam = result;
+        Person.create({'name': 'Steven', 'age': 10, 'dob': '05/11/2007', 'developer': false}, (err, result) => {
+          steven = result;
+          Person.create({'name': 'Susan', 'age': 17, 'dob': '09/30/2000', 'developer': true}, (err, result) => {
+            susan = result;
+            Person.create({'name': 'Sasha', 'age': 27, 'dob': '01/03/1990', 'developer': true}, (err, result) => {
+              sasha = result;
+              Knows.create(john, bob, {duration: 1}, (err, result) => {
+                const id1 = result.id;
+                const outV1 = result.outV;
+                const inV1 = result.inV;
+                Knows.create(john, sam, {duration: 2}, (err, result) => {
+                  const id2 = result.id;
+                  const outV2 = result.outV;
+                  const inV2 = result.inV;
+                  Knows.create(john, steven, {duration: 3}, (err, result) => {
+                    const id3 = result.id;
+                    const outV3 = result.outV;
+                    const inV3 = result.inV;
+                    Knows.create(john, susan, {duration: 4}, (err, result) => {
+                      const id4 = result.id;
+                      const outV4 = result.outV;
+                      const inV4 = result.inV;
+                      Knows.create(john, sasha, {duration: 5}, (err, result) => {
+                        const id5 = result.id;
+                        const outV5 = result.outV;
+                        const inV5 = result.inV;
+                        Knows.create(sasha, john, {duration: 5}, (err, result) => {
+                          const id5 = result.id;
+                          const outV5 = result.outV;
+                          const inV5 = result.inV;
+                          Knows.create(bob, sam, {duration: 5}, (err, result) => {
+                            const id6 = result.id;
+                            const outV6 = result.outV;
+                            const inV6 = result.inV;
+                            Knows.create(bob, steven, {duration: 5}, (err, result) => {
+                              const id7 = result.id;
+                              const outV7 = result.outV;
+                              const inV7 = result.inV;
+                              Knows.create(sam, steven, {duration: 4}, (err, result) => {
+                                const id8 = result.id;
+                                const outV8 = result.outV;
+                                const inV8 = result.inV;
+                                Knows.create(sam, susan, {duration: 3}, (err, result) => {
+                                  const id9 = result.id;
+                                  const outV9 = result.outV;
+                                  const inV9 = result.inV;
+                                  Knows.create(steven, susan, {duration: 2}, (err, result) => {
+                                    const id10 = result.id;
+                                    const outV10 = result.outV;
+                                    const inV10 = result.inV;
+                                    Knows.create(steven, sasha, {duration: 1}, (err, result) => {
+                                      const id11 = result.id;
+                                      const outV11 = result.outV;
+                                      const inV11 = result.inV;
+                                      Knows.findAll({duration: 5}).findVertex(Person, {developer: true}, (err, result) => {
+                                        console.log('result', result);
+                                        expect(Array.isArray(result)).to.equal(true);
+                                        expect(result.length).to.equal(5);
+                                        expect(result.map(vertex => vertex.name).includes('John')).to.equal(true);
+                                        expect(result.map(vertex => vertex.name).includes('Sam')).to.equal(true);
+                                        expect(result.map(vertex => vertex.name).includes('Sasha')).to.equal(true);
+                                        done();
+                                      });
+                                    });
+                                  });
+                                });
+                              });
+                            });
+                          });
+                        });
+                      });
+                    });
+                  });
+                });  
+              });
+            });
+          });
+        });
+      });
+    });
+  });
 });

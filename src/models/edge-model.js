@@ -62,7 +62,7 @@ class EdgeModel extends Model {
       label = model.label;
     }
     let gremlinStr = this.getGremlinStr();
-    gremlinStr += `.bothV(${model.label})${this.actionBuilder('has', props)}`;
+    gremlinStr += `.bothV()${this.actionBuilder('has', props)}`;
     let executeBound = this.executeOrPass.bind(model);
     return executeBound(gremlinStr, callback);
   }
