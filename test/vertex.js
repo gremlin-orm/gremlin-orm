@@ -42,7 +42,6 @@ describe('Vertex Model', () => {
         expect(result).to.have.property('name');
         expect(result).to.have.property('age');
         expect(result.name).to.equal('John');
-console.log("Result SCHEMA: ", result.schema);        
         done();
       });
     });
