@@ -27,7 +27,6 @@ class VertexModel extends Model {
     if (this.g.dialect === this.g.DIALECTS.AZURE) {
       gremlinStr += `.property('${this.g.partition}', '${props[Object.keys(props)[0]]}')`;
     }
-
     gremlinStr += this.actionBuilder('property', props);
     return this.executeQuery(gremlinStr, callback, true);
   }

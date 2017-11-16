@@ -26,7 +26,7 @@ class Model {
     gremlinStr += string;
     if (!cb) return this.executeOrPass(gremlinStr, cb);
     if (returnRawData) {
-      return this.g.client.execute(gremlinStr, (err, result) => {
+      this.g.client.execute(gremlinStr, (err, result) => {
         if (err) {
           cb({'error': err});
           return;
@@ -43,10 +43,8 @@ class Model {
   update(props, callback) {
     let gremlinStr = this.getGremlinStr();
     const schema = this.schema;
-    const checkSchemaResponse = this.checkSchema(schema, props, true);
-
-    if (Object.keys(checkSchemaResponse).length !== 0) return callback(checkSchemaResponse); // should it throw an error?
-
+    const checkSchemaResponse = this.checkSchema(schema, props);
+    if (this.interpretCheckSchema(checkSchemaResponse)) return callback(checkSchemaResponse); // should it throw an error?
     gremlinStr += this.actionBuilder('property', props);
     return this.executeOrPass(gremlinStr, callback);
   }
@@ -55,7 +53,7 @@ class Model {
   * Deletes an existing vertex or edge
   * @param {string} id id of the vertex or edge to be deleted
   */
-  delete(id, callback) {
+  delete(callback) {
     let gremlinStr = this.getGremlinStr();
     gremlinStr += '.drop()';
     this.executeOrPass(gremlinStr, callback);
@@ -101,7 +99,7 @@ class Model {
       if(singleObject && response.length > 0) {
         callback(null, response[0]);
         return;
-      }
+      }      
       callback(null, response);
     });
   }

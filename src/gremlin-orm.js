@@ -88,8 +88,8 @@ class Gorm {
       let object;
       if (!this.checkModels) object = Object.create(this);
       else {
-        if (grem.type === 'vertex') object = Object.create(EdgeModel);
-        else if (grem.type === 'edge') object = Object.create(VertexModel);
+        if (grem.type === 'vertex') object = Object.create(new VertexModel('string', {}, this.g));
+        else if (grem.type === 'edge') object = Object.create(new EdgeModel('string', {}, this.g));
       }
       object.id = grem.id;
       object.label = grem.label;
