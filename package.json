@@ -11,7 +11,7 @@
   },
   "config": {
     "blanket": {
-      "pattern": "/test"
+      "pattern": "test"
     }
   },
   "repository": {
