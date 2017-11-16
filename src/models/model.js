@@ -66,10 +66,15 @@ class Model {
   * @param {string} option 'ASC' or 'DESC'.
   */
   order(propKey, option, callback) {
-    let gremlinStr = `${this.getGremlinStr}.order().by(`;
+    if (!(option === 'DESC' || option === "ASC" )) {
+      callback({error: 'Order requires option to be "ASC" or "DESC"'});
+      return;
+    }
+    let originalGremlinStr = this.getGremlinStr();
+    const order = originalGremlinStr.includes('order()') ? '' : '.order()';
+    let gremlinStr = `${originalGremlinStr}${order}.by(`;
     const gremlinOption = option === 'DESC' ? 'decr' : 'incr';
     gremlinStr += `'${propKey}', ${gremlinOption})`;
-
     return this.executeOrPass(gremlinStr, callback);
   }
 
