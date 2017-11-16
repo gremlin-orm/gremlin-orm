@@ -13,4 +13,4 @@ before_install:
 
 script:
 - docker run -p 8182:8182 gremlinorm/gremlin-server-neo4j:latest & sleep 30; npm run build; mocha -t 10000 test/index.js test/helpers.js test/vertex.js test/edge.js --exit
-- istanbul cover ./node_modules/mocha/bin/_mocha -t 10000 test/index.js test/helpers.js test/vertex.js test/edge.js --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
+- istanbul cover ./node_modules/mocha/bin/_mocha -t 10000 test/index.js test/helpers.js test/vertex.js test/edge.js --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage --exit
