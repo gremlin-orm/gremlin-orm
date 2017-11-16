@@ -41,7 +41,7 @@ describe('Edge Model', () => {
       });
     });
   });
-  
+
   describe('Define', () => {
     it('Should define a new edge model called Knows', () => {
       expect(Knows.create).to.be.a('function');
@@ -211,7 +211,6 @@ describe('Edge Model', () => {
                                       const outV11 = result.outV;
                                       const inV11 = result.inV;
                                       Knows.findAll({duration: 5}).findVertex(Person, {developer: true}, (err, result) => {
-                                        console.log('result', result);
                                         expect(Array.isArray(result)).to.equal(true);
                                         expect(result.length).to.equal(5);
                                         expect(result.map(vertex => vertex.name).includes('John')).to.equal(true);
@@ -229,7 +228,7 @@ describe('Edge Model', () => {
                       });
                     });
                   });
-                });  
+                });
               });
             });
           });
