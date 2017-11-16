@@ -226,7 +226,7 @@ The following options are available when defining model schemas:
 
 ##### Arguments
 * `queryString`: Gremlin query as a string
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Example
 ```javascript
@@ -244,7 +244,7 @@ The following options are available when defining model schemas:
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties to update
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Example
 ```javascript
@@ -259,7 +259,7 @@ The following options are available when defining model schemas:
 `.delete` removes the object(s) it is called on from the database.
 
 ##### Arguments
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Example
 ```javascript
@@ -278,7 +278,7 @@ The following options are available when defining model schemas:
 ##### Arguments
 * `property`: Name of property to order by
 * `order`: Order to sort - 'ASC' or 'DSC'
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Example
 ```javascript
@@ -294,7 +294,7 @@ The following options are available when defining model schemas:
 
 ##### Arguments
 * `num`: Max number of results to return
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Example
 ```javascript
@@ -312,7 +312,7 @@ The following options are available when defining model schemas:
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties matching defined Model schema
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Returns
 * Returns the newly created vertex object (with a unique ID) or an error object of failed schema checks
@@ -339,7 +339,7 @@ The following options are available when defining model schemas:
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Returns
 * Returns the first matching vertex as an object
@@ -366,7 +366,7 @@ The following options are available when defining model schemas:
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Returns
 * Returns an array containing all vertices matching props as objects
@@ -403,7 +403,7 @@ The following options are available when defining model schemas:
 * `edge`: Edge model definition
 * `props`: Object containing key value pairs of properties to place on new edges
 * `vertex`: Vertex model instances or vertex model query
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Returns
 * Returns an array containing all new created edges
@@ -432,7 +432,7 @@ The following options are available when defining model schemas:
 ##### Arguments
 * `edge`: Edge model definition. If a string label is passed, no schema check will be done - edge model definition is recommended.
 * `props`: Object containing key value pairs of properties to match on edge relationships
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Returns
 * Returns an array containing all connected edges
@@ -454,7 +454,7 @@ Person.find({'name': 'John'}).findEdge(Knows, {'from': 'school'}, (err, result) 
 * `edge`: Edge model definition. If a string label is passed, no schema check will be done - edge model definition is recommended.
 * `props`: Object containing key value pairs of properties to match on edge relationships
 * `depth`: Depth of edge traversals to make
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Returns
 * Returns an array containing all related vertices
@@ -474,7 +474,7 @@ Person.find({'name': 'John'}).findRelated(Knows, {}, 2, (err, result) => {
 ##### Arguments
 * `edge`: Edge model definition. If a string label is passed, no schema check will be done - edge model definition is recommended.
 * `props`: Object containing key value pairs of properties to match on edge relationships
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Returns
 * Returns an array containing all related vertices
@@ -498,7 +498,7 @@ Person.find({'name': 'John'}).findImplicit('created', {}, (err, result) => {
 * `out`: Vertex instance or find/findAll method call
 * `in`: Vertex instance or find/findAll method call
 * `props`: Object containing key value pairs of properties to add on the new edge
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Returns
 * Returns newly created edge object
@@ -529,7 +529,7 @@ Person.find({'name': 'Joe'}, (err, result) => {
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Returns
 * Returns the first matching edge as an object
@@ -557,7 +557,7 @@ Person.find({'name': 'Joe'}, (err, result) => {
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Returns
 * Returns an array containing all edges matching props as objects
@@ -588,20 +588,21 @@ Person.find({'name': 'Joe'}, (err, result) => {
 ```
 
 <a name="findVertex"></a>
-### findVertex({props}, [callback])
+### findVertex(vertexModel, {props}, [callback])
 
 `.findVertex` finds the all vertices with properties matching props object connected by the relevant edge(s)
 
 ##### Arguments
+* `vertexModel`: vertexModel that corresponds to the vertex
 * `props`: Object containing key value pairs of properties to find on vertices
-* `callback`: Some callback function with (err, result) arguments.
+* `callback`: Some callback function with (err, result) arguments
 
 ##### Returns
 * Returns an array containing all vertices connected by current edge(s)
 
 ##### Example
 ```javascript
-Knows.find({'through': 'school'}).findVertex({'occupation': 'developer'}, (err, result) => {
+Knows.find({'through': 'school'}).findVertex(Person, {'occupation': 'developer'}, (err, result) => {
   // Result is array of people who are developers who know other people through school
 });
 ```
