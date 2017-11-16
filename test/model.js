@@ -252,7 +252,7 @@ describe('Model', () => {
       g.queryRaw("g.addV('person').property('name','Bobby').property('age', 22)", () => {
         g.queryRaw("g.addV('person').property('name','Bobby').property('age', 33)", () => {
           g.queryRaw("g.addV('person').property('name','Harry').property('age', 28)", () => {
-            let knowsProps = ".property('duration', 3).property('how', 'cooking class')";
+            let knowsProps = ".property('how', 'cooking class')";
             knowsProps += ".property('anniversary', 1458901167000).property('duration', 1)";
             let bobby33 = "g.V().has('name','Bobby').has('age', 33)"
             g.queryRaw(`${bobby33}.addE('knows')${knowsProps}.to(g.V().has('name','Harry'))`, () => {
@@ -335,6 +335,51 @@ describe('Model', () => {
           done();
         });
       }); 
+    });
+  });
+
+  describe('Limit', () => {
+     beforeEach(done => {
+      g.queryRaw("g.addV('person').property('name','Bobby').property('age', 22)", () => {
+        g.queryRaw("g.addV('person').property('name','Bobby').property('age', 33)", () => {
+          g.queryRaw("g.addV('person').property('name','Harry').property('age', 28)", () => {
+            let knowsProps = ".property('duration', 1).property('how', 'cooking class')";
+            knowsProps += ".property('anniversary', 1458901167000)";
+            let bobby = "g.V().has('name','Bobby')"
+            g.queryRaw(`${bobby}.addE('knows')${knowsProps}.to(g.V().has('name','Harry'))`, () => {
+              done();
+            });      
+          });    
+        });
+      });  
+    });
+    it('Should be available on Vertex and Edge Models', () => {
+      expect(Person.limit).to.be.a('function');
+      expect(Knows.limit).to.be.a('function');
+    });
+    it('Should limit result set of vertices to num provided', (done) => {
+      Person.findAll({}).limit(1, (err, result) => {
+        expect(result.length).to.equal(1);    
+        Person.findAll({}).limit(2, (err, result) => {
+          expect(result.length).to.equal(2);    
+          Person.findAll({}).limit(3, (err, result) => {
+            expect(result.length).to.equal(3);    
+            done();
+          });
+        });
+      });
+    });
+    it('Should limit result set of edges to num provided', (done) => {
+      Knows.findAll({}).limit(1, (err, result) => {
+        expect(result.length).to.equal(1);    
+        Knows.findAll({}).limit(2, (err, result) => {
+          expect(result.length).to.equal(2);    
+          Knows.findAll({}).limit(3, (err, result) => {
+            expect(result.length).to.equal(3);    
+            done();
+          });
+        });
+      });
     });
   });
 });
