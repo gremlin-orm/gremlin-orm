@@ -9,6 +9,11 @@
     "build": "babel src --presets babel-preset-es2015 --out-dir dist",
     "prepublish": "npm run build"
   },
+  "config": {
+    "blanket": {
+      "pattern": "/test"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gremlin-orm/gremlin-orm.git"
