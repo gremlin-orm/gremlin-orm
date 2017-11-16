@@ -12,4 +12,4 @@ before_install:
 - docker pull gremlinorm/gremlin-server-neo4j
 
 script:
-- docker run -p 8182:8182 gremlinorm/gremlin-server-neo4j:latest & sleep 30; npm run build; NODE_ENV=test YOURPACKAGE_COVERAGE=1 ./node_modules/.bin/mocha -t 10000 test/index.js test/helpers.js test/vertex.js test/edge.js test/model.js --require blanket --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js --exit
+- docker run -p 8182:8182 gremlinorm/gremlin-server-neo4j:latest & sleep 30; npm run build; NODE_ENV=test YOURPACKAGE_COVERAGE=1 ./node_modules/.bin/mocha -t 10000 --require blanket --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js test/index.js test/helpers.js test/vertex.js test/edge.js test/model.js --exit

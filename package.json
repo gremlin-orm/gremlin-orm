@@ -11,7 +11,13 @@
   },
   "config": {
     "blanket": {
-      "pattern": "dist"
+      "pattern": "dist",
+        "data-cover-never": [
+          "/node_modules/",
+          "/test/",
+          "/src/"
+        ],
+        "data-cover-ecmaVersion": 6
     }
   },
   "repository": {
