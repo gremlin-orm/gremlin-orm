@@ -94,6 +94,7 @@ describe('Model', () => {
     });
     it('Should update properties on the database for a specific instance of Vertex Model', (done) => {
       Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+        expect(result.name).to.equal('John');
         result.update({age: 14}, (err, result) => {
           expect(result[0].age).to.equal(14);
           Person.find({name: 'Victoria'}, (err, result) => {
@@ -189,6 +190,59 @@ describe('Model', () => {
       Knows.findAll({duration: 1}).update({employer: false}, (err, result) => {
         expect(err).to.not.equal(null);
         done();
+      });
+    });
+  });
+
+  describe('Delete', () => {
+    it('Should be available on Vertex and Edge Models', () => {
+      expect(Person.delete).to.be.a('function');
+      expect(Knows.delete).to.be.a('function');
+    });
+    it('Should delete vertices from the database for Vertex Model', (done) => {
+      Person.findAll({}).delete((err, result) => {
+        Person.findAll({}, (err, result) => {
+          expect(result.length).to.equal(0);
+          done();
+        });  
+      });
+    });
+    it('Should delete vertices on the database for a specific instance of Vertex Model', (done) => {
+      Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+        expect(result.name).to.equal('John');
+        result.delete((err, result) => {
+          Person.find({name: 'John'}, (err, result) => {
+            expect(result.length).to.equal(0);
+            Person.findAll({}, (err, result) => {
+              expect(result.length).to.equal(2);
+              done();
+            });
+          });
+        });     
+      });
+    });
+    it('Should delete edges from the database for Edge Model', (done) => {
+      g.queryRaw("g.addV('person').property('name','Peter').property('age', 22)", () => {
+        g.queryRaw("g.V().has('name','Victoria').addE('knows').property('duration', 2).to(g.V().has('name','Peter'))", () => {
+          Knows.findAll({}).delete((err, result) => {
+            expect(result.length).to.equal(0);  
+            done();
+          });      
+        });      
+      });
+    });
+    it('Should delete edges on the database for a specific instance of Edge Model', (done) => {
+      g.queryRaw("g.addV('person').property('name','Peter').property('age', 22)", () => {
+        g.queryRaw("g.V().has('name','Victoria').addE('knows').property('duration', 2).to(g.V().has('name','Peter'))", () => {
+          Knows.find({duration: 1}, (err, result) => {
+            result.delete((err, result) => {
+              Knows.findAll({}, (err, result) => {
+                expect(result.length).to.equal(1);
+                done();
+              });
+            });
+          });
+        });
       });
     });
   });
