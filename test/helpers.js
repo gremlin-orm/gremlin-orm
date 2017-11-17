@@ -333,10 +333,20 @@ describe('Helpers', () => {
       let props = Person.parseProps(properties);
       expect(props.developer).to.equal(false);
     });
+    it('Should cast an incorrect boolean type to null', () => {
+      let properties = {'name': 'John', 'age': 20, 'dob': '12/18/1999', 'developer': 13};
+      let props = Person.parseProps(properties);
+      expect(props.developer).to.equal(null);
+    });
     it('Should cast a string date into an integer date if the schema type is date', () => {
       let properties = {'name': 'John', 'age': 20, 'dob': '12/18/1999', 'developer': 'false'};
       let props = Person.parseProps(properties);
       expect(typeof props.dob).to.equal('number');
+    });
+    it('Should cast an incorrect date type into null', () => {
+      let properties = {'name': 'John', 'age': 20, 'dob': 'hello', 'developer': 'false'};
+      let props = Person.parseProps(properties);
+      expect(props.dob).to.equal(null);
     });
     it('Should return a string value if schema type is string', () => {
       let properties = {'name': true, 'age': 20, 'dob': '12/18/1999', 'developer': 'false'};

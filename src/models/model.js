@@ -249,7 +249,7 @@ class Model {
          case 'date':
            let millis = this.dateGetMillis(properties[key]);
            if (Number.isNaN(millis)) {
-             millis = 666;
+             millis = null;
            }
            props[key] = millis;
            break;
