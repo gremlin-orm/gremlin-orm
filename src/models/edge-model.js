@@ -1,5 +1,4 @@
 const Model = require('./model');
-const VertexModel = require('./vertex-model');
 
 /**
 * @param {string} label
@@ -67,7 +66,7 @@ class EdgeModel extends Model {
     if (typeof vertexModel === 'string') {
       label = vertexModel;
       props = properties;
-      model = new VertexModel('fake', {}, this.g)
+      model = new this.g.vertexModel('fake', {}, this.g)
     }
     else {
       props = this.parseProps(properties, vertexModel);

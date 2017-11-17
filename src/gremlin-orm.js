@@ -1,12 +1,10 @@
 const Gremlin = require('gremlin');
 const VertexModel = require('./models/vertex-model');
 const EdgeModel = require('./models/edge-model');
-// const QueryBuilders = require('./query-builders');
 
 class Gorm {
   constructor(dialect, port, url, options) {
-    //Constants
-
+    // Constants
     this.DIALECTS = {AZURE: 'azure'};
     this.STRING = 'string';
     this.NUMBER = 'number';
@@ -32,7 +30,8 @@ class Gorm {
     }
     this.definedVertices = {};
     this.definedEdges = {};
-
+    this.vertexModel = VertexModel;
+    this.edgeModel = EdgeModel;
   }
 
   /**
