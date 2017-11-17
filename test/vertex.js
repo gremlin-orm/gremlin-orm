@@ -103,6 +103,38 @@ describe('Vertex Model', () => {
         });
       });
     });
+    it('Should create an edge with a not yet defined edge model label', (done) => {
+      Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+        let john = result;
+        Person.create({'name': 'Jane', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+          john.createEdge('likes', {'duration': 'abc'}, result, (err, results) => {
+            expect(results).to.have.lengthOf(1);
+            expect(results[0].findVertex).to.be.a('function');
+            expect(results[0].label).to.equal('likes');
+            expect(results[0].duration).to.equal('abc');
+            done();
+          });
+        });
+      });
+    });
+    it('Should not create an edge when no Out vertex gremlinStr', (done) => {
+      Person.create({'name': 'Jane', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+        Person.createEdge(Knows, {}, result, (err, result) => {
+          expect(err).to.not.equal(null);
+          expect(err).to.not.equal(undefined);
+          done();
+        })
+      });
+    });
+    it('Should not create an edge when no In vertex gremlinStr', (done) => {
+      Person.create({'name': 'Jane', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+        result.createEdge(Knows, {}, Person, (err, result) => {
+          expect(err).to.not.equal(null);
+          expect(err).to.not.equal(undefined);
+          done();
+        })
+      });
+    });
   });
 
   describe('Find', () => {
@@ -184,6 +216,20 @@ describe('Vertex Model', () => {
         });
       });
     });
+    it('Should find related vertices with non-defined edge label', (done) => {
+      Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+        let john = result;
+        Person.create({'name': 'Jane', 'age': 20, 'dob': '12/18/1998', developer: true}, (err, result) => {
+          let jane = result;
+          john.createEdge('likes', {}, jane, (err, results) => {
+            john.findRelated('likes', {}, 1, (err, results) => {
+              expect(results[0].name).to.equal('Jane');
+              done();
+            });
+          });
+        });
+      });
+    });
   });
 
   describe('FindEdge', () => {
@@ -223,6 +269,21 @@ describe('Vertex Model', () => {
         });
       });
     });
+    it('Should find edges with non-defined label', (done) => {
+      Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+        let john = result;
+        Person.create({'name': 'Jane', 'age': 20, 'dob': '12/18/1998', developer: true}, (err, result) => {
+          let jane = result;
+          john.createEdge('likes', {}, jane, (err, results) => {
+            john.findEdge('likes', {}, (err, results) => {
+              expect(results).to.have.lengthOf(1);
+              expect(results[0].label).to.equal('likes');
+              done();
+            });
+          });
+        });
+      });
+    });
   });
 
   describe('FindImplicit', () => {
@@ -244,7 +305,6 @@ describe('Vertex Model', () => {
         });
       });
     });
-
     it('Should find only implicit vertices with matching properties', (done) => {
       Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
         let john = result;
@@ -286,6 +346,44 @@ describe('Vertex Model', () => {
               });
             });
           });
+        });
+      });
+    });
+    it('Should find implicitly related by non-defined edge label', (done) => {
+      Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+        let john = result;
+        Person.create({'name': 'Jane', 'age': 20, 'dob': '12/18/1998', developer: true}, (err, result) => {
+          let jane = result;
+          john.createEdge('likes', {}, jane, (err, results) => {
+            Person.create({'name': 'Joe', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+              result.createEdge('likes', {}, jane, (err, results) => {
+                john.findImplicit('likes', {}, (err, results) => {
+                  expect(results[0].name).to.equal('Joe');
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+  describe('Azure Create', () => {
+    const ag = new gremlinOrm(['azure', 'partitionName']);
+    const User = ag.define('user', {
+      'name': {
+        type: g.STRING,
+        required: true
+      }
+    });
+    beforeEach(done => {
+      ag.queryRaw('g.V().drop()', () => {done()});
+    });
+    it('Should add partition name to gremlin query', done => {
+      User.create({'name': 'John'}, (err, result) => {
+        User.find({'partitionName': 'John'}, (err, result) => {
+          expect(result.name).to.equal('John');
+          done();
         });
       });
     });

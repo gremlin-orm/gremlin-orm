@@ -210,7 +210,7 @@ The following options are available when defining model schemas:
 ##### Arguments
 * `queryString`: Gremlin query as a string
 * `raw` (optional, default = false): If true, will return the raw data from the graph database instead of normally formatted JSON
-* `callback` (optional): Some callback function with (err, result) arguments.
+* `callback` (optional, required if raw is true): Some callback function with (err, result) arguments.
 
 ##### Example
 ```javascript
