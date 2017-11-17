@@ -24,7 +24,6 @@ class Model {
     this.checkModels = true;
     let gremlinStr = this.getGremlinStr();
     gremlinStr += string;
-    if (!cb) return this.executeOrPass(gremlinStr, cb);
     if (returnRawData) {
       this.checkModels = false;
       this.g.client.execute(gremlinStr, (err, result) => {
@@ -35,7 +34,7 @@ class Model {
         cb(null, result);
       });
     }
-    else return this.executeOrPass(gremlinStr, cb);
+    return this.executeOrPass(gremlinStr, cb);
   }
 
   /**
@@ -207,14 +206,14 @@ class Model {
   */
   getRandomVariable(numVars, currentVarsArr) {
     const variables = currentVarsArr ? Array.from(currentVarsArr) : [];
-    const variablesRequired = numVars ? numVars : 1;
     const possibleChars = 'abcdefghijklmnopqrstuvwxyz';
+    let variablesRequired = numVars ? numVars : 1;
     function getRandomChars() {
-      let result = '';
-      for(let i = 0; i < 3; i += 1) {
-        result += possibleChars[Math.floor(Math.random() * possibleChars.length)];
-      }
+      let result = possibleChars[Math.floor(Math.random() * possibleChars.length)];
       return result;
+    }
+    if(variables.length + variablesRequired > 26) {
+      variablesRequired = 26 - variables.length; 
     }
     for (let i = 0; i < variablesRequired; i += 1) {
       let newVariable = getRandomChars();
