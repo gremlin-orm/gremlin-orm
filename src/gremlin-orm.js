@@ -15,7 +15,7 @@ class Gorm {
 
     const argLength = arguments.length;
     if (argLength === 0) {
-      return null;
+      this.client = null;
     } else if (argLength === 1) {
       this.client = Gremlin.createClient();
     } else if (argLength === 3) {
@@ -71,11 +71,7 @@ class Gorm {
   */
   queryRaw(string, callback) {
     this.client.execute(string, (err, result) => {
-      if (err) {
-        callback({'error': err});
-        return;
-      }
-      callback(null, result);
+      callback(err, result);
     });
   }
 
@@ -105,7 +101,7 @@ class Gorm {
         Object.keys(grem.properties).forEach((propKey) => {
           if (propKey != currentPartition) {
             let property;
-            if (this.constructor.name === 'EdgeModel') {
+            if (grem.type === 'edge') {
               property = grem.properties[propKey];
             } else {
               property = grem.properties[propKey][0].value;
