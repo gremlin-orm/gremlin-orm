@@ -1,4 +1,4 @@
-const gremlinOrm = require('./../src/gremlin-orm');
+const gremlinOrm = require('./../dist/gremlin-orm');
 const g = new gremlinOrm('neo4j');
 
 const { assert, expect } = require('chai');
@@ -257,10 +257,10 @@ describe('Model', () => {
             let bobby33 = "g.V().has('name','Bobby').has('age', 33)"
             g.queryRaw(`${bobby33}.addE('knows')${knowsProps}.to(g.V().has('name','Harry'))`, () => {
               done();
-            });
-          });
+            });      
+          });    
         });
-      });
+      });  
     });
     it('Should be available on Vertex and Edge Models', () => {
       expect(Person.order).to.be.a('function');
@@ -310,33 +310,34 @@ describe('Model', () => {
           expect(result[0].age).to.equal(33);
           expect(result[1].age).to.equal(22);
           done();
-        });
+        });  
       });
     });
     it('Should order edges in ascending order', (done) => {
       Knows.findAll({}).order('anniversary', 'ASC', (err, result) => {
-        expect(result[0].anniversary.getTime()).to.equal(1458101167000);
+        expect(result[0].anniversary.getTime()).to.equal(1458101167000);  
         done();
-      });
+      });      
     });
     it('Should order edges in decscending order', (done) => {
       Knows.findAll({}).order('anniversary', 'DESC', (err, result) => {
-        expect(result[0].anniversary.getTime()).to.equal(1458901167000);
+        expect(result[0].anniversary.getTime()).to.equal(1458901167000);  
         done();
-      });
+      });    
     });
     it('Should be able to chain order() methods for different props on edges', (done) => {
       Knows.findAll({}).order('duration', 'ASC').order('how', 'ASC', (err, result) => {
-        expect(result[0].duration).to.equal(1);
-        expect(result[0].how).to.equal('cooking class');
+        expect(result[0].duration).to.equal(1);  
+        expect(result[0].how).to.equal('cooking class');  
         Knows.findAll({}).order('duration', 'ASC').order('how', 'DESC', (err, result) => {
-          expect(result[0].duration).to.equal(1);
-          expect(result[0].how).to.equal('golf days');
+          expect(result[0].duration).to.equal(1);  
+          expect(result[0].how).to.equal('golf days');  
           done();
         });
-      });
+      }); 
     });
   });
+
 
   describe('Limit', () => {
      beforeEach(done => {
@@ -348,10 +349,10 @@ describe('Model', () => {
             let bobby = "g.V().has('name','Bobby')"
             g.queryRaw(`${bobby}.addE('knows')${knowsProps}.to(g.V().has('name','Harry'))`, () => {
               done();
-            });
-          });
+            });      
+          });    
         });
-      });
+      });  
     });
     it('Should be available on Vertex and Edge Models', () => {
       expect(Person.limit).to.be.a('function');
@@ -359,11 +360,11 @@ describe('Model', () => {
     });
     it('Should limit result set of vertices to num provided', (done) => {
       Person.findAll({}).limit(1, (err, result) => {
-        expect(result.length).to.equal(1);
+        expect(result.length).to.equal(1);    
         Person.findAll({}).limit(2, (err, result) => {
-          expect(result.length).to.equal(2);
+          expect(result.length).to.equal(2);    
           Person.findAll({}).limit(3, (err, result) => {
-            expect(result.length).to.equal(3);
+            expect(result.length).to.equal(3);    
             done();
           });
         });
@@ -371,15 +372,16 @@ describe('Model', () => {
     });
     it('Should limit result set of edges to num provided', (done) => {
       Knows.findAll({}).limit(1, (err, result) => {
-        expect(result.length).to.equal(1);
+        expect(result.length).to.equal(1);    
         Knows.findAll({}).limit(2, (err, result) => {
-          expect(result.length).to.equal(2);
+          expect(result.length).to.equal(2);    
           Knows.findAll({}).limit(3, (err, result) => {
-            expect(result.length).to.equal(3);
+            expect(result.length).to.equal(3);    
             done();
           });
         });
       });
     });
   });
+
 });

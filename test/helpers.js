@@ -30,6 +30,7 @@ describe('Helpers', () => {
   beforeEach(done => {
     g.queryRaw('g.V().drop()', () => {done()});
   });
+
   describe('familiarizeAndPrototype', () => {
     it('Should return array with vertex methods', done => {
       g.queryRaw(`g.addV('person').property('name','John').property('age', 24)`, (err, result) => {
@@ -80,6 +81,7 @@ describe('Helpers', () => {
       });
     });
   });
+
   describe('executeQuery', () => {
     it('Should be available on Vertex and Edge models', () => {
       expect(Person.executeQuery).to.be.a('function');
@@ -108,6 +110,7 @@ describe('Helpers', () => {
       });
     });
   });
+
   describe('executeOrPass', () => {
     it('Should be available on Vertex and Edge models', () => {
       expect(Person.executeOrPass).to.be.a('function');
@@ -134,6 +137,7 @@ describe('Helpers', () => {
       });
     });
   });
+
   describe('actionBuilder', () => {
     it('Should be available on Vertex and Edge models', () => {
       expect(Person.actionBuilder).to.be.a('function');
@@ -160,6 +164,7 @@ describe('Helpers', () => {
       expect(string).to.equal(`.property('name',within('John','Jane'))`);
     });
   });
+
   describe('addArrayMethods', () => {
     it('Should be available on Vertex and Edge models', () => {
       expect(Person.addArrayMethods).to.be.a('function');
@@ -183,6 +188,7 @@ describe('Helpers', () => {
       expect(arr.findEdge).to.equal(undefined);
     });
   });
+
   describe('getGremlinStr', () => {
     it('Should be available on Vertex and Edge models', () => {
       expect(Person.getGremlinStr).to.be.a('function');
@@ -211,6 +217,7 @@ describe('Helpers', () => {
       });
     });
   });
+
   describe('getIdFromProps', () => {
     it('Should be available on Vertex and Edge models', () => {
       expect(Person.getIdFromProps).to.be.a('function');
@@ -245,6 +252,7 @@ describe('Helpers', () => {
       expect(string).to.equal("'1,2,3'");
     });
   });
+
   describe('getRandomVariable', () => {
     it('Should be available on Vertex and Edge models', () => {
       expect(Person.getRandomVariable).to.be.a('function');
@@ -266,7 +274,15 @@ describe('Helpers', () => {
       expect(arr[0]).to.equal('abc');
       expect(arr[1]).to.not.equal('abc');
     });
+    it('Should never return two of the same variables', () => {
+      let arr = [];
+      for(let i = 0; i < 30; i += 5 ) {
+        arr = Person.getRandomVariable(5, arr);
+      }
+      expect(arr.length).to.equal(26);
+    });
   });
+
   describe('dateGetMillis', () => {
     it('Should be available on Vertex and Edge models', () => {
       expect(Person.dateGetMillis).to.be.a('function');
@@ -285,6 +301,7 @@ describe('Helpers', () => {
       expect(Number.isNaN(Person.dateGetMillis('hello'))).to.equal(true);
     });
   });
+
   describe('parseProps', () => {
     it('Should be available on Vertex and Edge models', () => {
       expect(Person.parseProps).to.be.a('function');
@@ -327,6 +344,7 @@ describe('Helpers', () => {
       expect(props.name).to.equal('true');
     });
   });
+
   describe('stringifyValue', () => {
     it('Should be available on Vertex and Edge models', () => {
       expect(Person.stringifyValue).to.be.a('function');
@@ -342,6 +360,7 @@ describe('Helpers', () => {
       expect(Person.stringifyValue(true)).to.equal("true");
     });
   });
+
   describe('checkSchema', () => {
     it('Should be available on Vertex and Edge models', () => {
       expect(Person.checkSchema).to.be.a('function');
@@ -397,6 +416,7 @@ describe('Helpers', () => {
       expect(Object.keys(obj)).to.have.lengthOf(4);
     });
   });
+
   describe('interpretCheckSchema', () => {
     it('Should be available on Vertex and Edge models', () => {
       expect(Person.interpretCheckSchema).to.be.a('function');
