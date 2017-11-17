@@ -51,12 +51,12 @@ class VertexModel extends Model {
     }
 
     let outGremlinStr = this.getGremlinStr();
-    if (outGremlinStr === '') {
-      callback({'error': 'Gremlin Query has not been initialised for out Vertex'});
-    }
     let inGremlinStr = vertex.getGremlinStr();
-    if (inGremlinStr === '') {
-      callback({'error': 'Gremlin Query has not been initialised for in Vertex'});
+    if (outGremlinStr === '') {
+      return callback({'error': 'Gremlin Query has not been initialised for out Vertex'});
+    }
+    else if (inGremlinStr === '') {
+      return callback({'error': 'Gremlin Query has not been initialised for in Vertex'});
     }
     if (typeof edgeModel !== 'string') {
       const checkSchemaResponse = this.checkSchema(edgeModel.schema, props, true);
