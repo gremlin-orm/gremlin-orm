@@ -26,7 +26,7 @@ class Model {
     gremlinStr += string;
     if (returnRawData) {
       this.checkModels = false;
-      this.g.client.execute(gremlinStr, (err, result) => {
+      return this.g.client.execute(gremlinStr, (err, result) => {
         if (err) {
           cb({'error': err});
           return;
@@ -213,7 +213,7 @@ class Model {
       return result;
     }
     if(variables.length + variablesRequired > 26) {
-      variablesRequired = 26 - variables.length; 
+      variablesRequired = 26 - variables.length;
     }
     for (let i = 0; i < variablesRequired; i += 1) {
       let newVariable = getRandomChars();
