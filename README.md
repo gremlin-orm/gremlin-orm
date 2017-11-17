@@ -32,8 +32,8 @@ const Person = g.define('person', {
 });
 
 Person.create(req.body, (error, result) => {
-  if (err) {
-    res.send(err);
+  if (error) {
+    res.send(error);
   }
   else {
     res.send(result);
