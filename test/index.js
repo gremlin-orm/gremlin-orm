@@ -14,6 +14,21 @@ describe('Database', () => {
         done();
       })
     });
+    it('Should connect with port and host', (done) => {
+      const g2 = new gremlinOrm('neo4j', '8182', 'localhost');
+      expect(g2.client.port).to.equal('8182');
+      done();
+    });
+    it('Should connect with port and host and options', (done) => {
+      const g3 = new gremlinOrm('neo4j', '8182', 'localhost', {ssl: false});
+      expect(g3.client.port).to.equal('8182');
+      done();
+    });
+    it('Should not connect no parameters', (done) => {
+      const g4 = new gremlinOrm();
+      expect(g4.client).to.equal(null);
+      done();
+    });
   });
 });
 describe('gremlin-orm', () => {

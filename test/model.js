@@ -71,6 +71,12 @@ describe('Model', () => {
         });
       });
     });
+    it("Should return edge model instances for edge queries if 'raw' is false", (done) => {
+      Person.query("g.E()", (err, result) => {
+        expect(result[0].findVertex).to.be.a('function');
+        done();
+      });
+    })
     it("Should return the results in JSON format if 'raw' is true", (done) => {
       Person.query("g.V().hasLabel('person').has('name', 'Victoria')", true, (err, result) => {
         expect(result[0]).to.not.be.an.instanceof(Person.constructor);

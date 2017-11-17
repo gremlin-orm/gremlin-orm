@@ -27,11 +27,7 @@ class Model {
     if (returnRawData) {
       this.checkModels = false;
       return this.g.client.execute(gremlinStr, (err, result) => {
-        if (err) {
-          cb({'error': err});
-          return;
-        }
-        cb(null, result);
+        cb(err, result);
       });
     }
     return this.executeOrPass(gremlinStr, cb);
