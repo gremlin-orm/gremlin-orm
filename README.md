@@ -1,12 +1,10 @@
 # gremlin-orm
 
 [![Build Status](https://travis-ci.org/gremlin-orm/gremlin-orm.svg?branch=master)](https://travis-ci.org/gremlin-orm/gremlin-orm)
-[![Coverage Status](https://coveralls.io/repos/github/gremlin-orm/gremlin-orm/badge.svg?branch=master)](https://coveralls.io/github/gremlin-orm/gremlin-orm?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/gremlin-orm/gremlin-orm/badge.svg?branch=master&update)](https://coveralls.io/github/gremlin-orm/gremlin-orm?branch=master)
 
 gremlin-orm is an ORM for graph databases in Node.js.  Currently working on Neo4j and Microsoft
 Azure Cosmos DB with more to come in the future.
-
-**_This project is currently under development_**
 
 ## Installation
 
