@@ -34,8 +34,7 @@ describe('Helpers', () => {
   describe('familiarizeAndPrototype', () => {
     it('Should return array with vertex methods', done => {
       g.queryRaw(`g.addV('person').property('name','John').property('age', 24)`, (err, result) => {
-        let executeBoundFamiliar = g.familiarizeAndPrototype.bind(Person);
-        let response = executeBoundFamiliar(result);
+        let response = g.familiarizeAndPrototype.call(Person, result);
         expect(response.constructor.name).to.equal('Array');
         expect(response.createEdge).to.be.a('function');
         done();
@@ -43,8 +42,7 @@ describe('Helpers', () => {
     });
     it('Should return array of vertex objects with vertex methods', done => {
       g.queryRaw(`g.addV('person').property('name','John').property('age', 24)`, (err, result) => {
-        let executeBoundFamiliar = g.familiarizeAndPrototype.bind(Person);
-        let response = executeBoundFamiliar(result);
+        let response = g.familiarizeAndPrototype.call(Person, result);
         expect(response[0].name).to.equal('John');
         expect(response[0].createEdge).to.be.a('function');
         done();
@@ -56,8 +54,7 @@ describe('Helpers', () => {
         g.queryRaw(`g.addV('person').property('name','Jane').property('age', 24)`, (err, result) => {
           let janeID = result[0].id;
           g.queryRaw(`g.V(${johnID}).addE('knows').property('duration', 1).to(g.V(${janeID}))`, (err, result) => {
-            let executeBoundFamiliar = g.familiarizeAndPrototype.bind(Knows);
-            let response = executeBoundFamiliar(result);
+            let response = g.familiarizeAndPrototype.call(Knows, result);
             expect(response.constructor.name).to.equal('Array');
             expect(response.findVertex).to.be.a('function');
             done();
@@ -71,8 +68,7 @@ describe('Helpers', () => {
         g.queryRaw(`g.addV('person').property('name','Jane').property('age', 24)`, (err, result) => {
           let janeID = result[0].id;
           g.queryRaw(`g.V(${johnID}).addE('knows').property('duration', 1).to(g.V(${janeID}))`, (err, result) => {
-            let executeBoundFamiliar = g.familiarizeAndPrototype.bind(Knows);
-            let response = executeBoundFamiliar(result);
+            let response = g.familiarizeAndPrototype.call(Knows, result);
             expect(response[0].duration).to.equal(1);
             expect(response[0].findVertex).to.be.a('function');
             done();
@@ -142,6 +138,10 @@ describe('Helpers', () => {
     it('Should be available on Vertex and Edge models', () => {
       expect(Person.actionBuilder).to.be.a('function');
       expect(Knows.actionBuilder).to.be.a('function');
+    });
+    it('Should ignore id property from props object', () => {
+      let string = Person.actionBuilder('property', {'id': 123, 'name': 'John'});
+      expect(string).to.equal(`.property('name','John')`);
     });
     it('Should return query string with action and props', () => {
       let string = Person.actionBuilder('property', {'name': 'John'});
@@ -228,13 +228,6 @@ describe('Helpers', () => {
       let originalPropsLength = Object.keys(props).length;
       Person.getIdFromProps(props);
       expect(Object.keys(props)).to.have.lengthOf(originalPropsLength);
-    });
-    it('Should remove id property from props object', () => {
-      let props = {'id': 1, 'name': 'John', 'age': 20};
-      let originalPropsLength = Object.keys(props).length;
-      Person.getIdFromProps(props);
-      expect(Object.keys(props)).to.have.lengthOf(originalPropsLength - 1);
-      expect(props.id).to.equal(undefined);
     });
     it('Should return a empty string if no id key is present', () => {
       let props = {'name': 'John', 'age': 20};
@@ -427,18 +420,18 @@ describe('Helpers', () => {
     });
   });
 
-  describe('interpretCheckSchema', () => {
+  describe('checkSchemaFailed', () => {
     it('Should be available on Vertex and Edge models', () => {
-      expect(Person.interpretCheckSchema).to.be.a('function');
-      expect(Knows.interpretCheckSchema).to.be.a('function');
+      expect(Person.checkSchemaFailed).to.be.a('function');
+      expect(Knows.checkSchemaFailed).to.be.a('function');
     });
     it('Should return true if there are errors', () => {
       let response = {'name': ['should be a string']};
-      expect(Person.interpretCheckSchema(response)).to.equal(true);
+      expect(Person.checkSchemaFailed(response)).to.equal(true);
     });
     it('Should return false if there are no errors', () => {
       let response = {};
-      expect(Person.interpretCheckSchema(response)).to.equal(false);
+      expect(Person.checkSchemaFailed(response)).to.equal(false);
     });
   });
 });

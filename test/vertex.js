@@ -37,6 +37,9 @@ describe('Vertex Model', () => {
   });
 
   describe('Create', () => {
+    it('Should throw error if no callback is passed', () => {
+      assert.throw(() => {Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true})}, Error, 'Callback is required');
+    });
     it('Should create a new vertex with valid parameters', (done) => {
       Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
         expect(result).to.have.property('name');
@@ -80,6 +83,9 @@ describe('Vertex Model', () => {
   });
 
   describe('CreateEdge', () => {
+    it('Should throw error if no callback is passed', () => {
+      assert.throw(() => {Person.createEdge(Knows, {}, {})}, Error, 'Callback is required');
+    });
     it('Should create an edge between two vertices', (done) => {
       Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
         let john = result;

@@ -14,11 +14,13 @@ class VertexModel extends Model {
 
   /**
   * Creates a new vertex
+  * Returns single vertex model object
   * @param {object} props
   */
   create(props, callback) {
+    if (!callback) throw new Error('Callback is required');
     const checkSchemaResponse = this.checkSchema(this.schema, props, true);
-    if (this.interpretCheckSchema(checkSchemaResponse)) {
+    if (this.checkSchemaFailed(checkSchemaResponse)) {
       callback(checkSchemaResponse);
       return;
     }
@@ -37,11 +39,12 @@ class VertexModel extends Model {
   * @param {object} vertex
   */
   createEdge(edgeModel, properties, vertex, callback) {
+    if (!callback) throw new Error('Callback is required');
     let label, props, model;
     if (typeof edgeModel === 'string') {
       label = edgeModel;
       props = properties;
-      model = new this.g.edgeModel('fake', {}, this.g)
+      model = new this.g.edgeModel('null', {}, this.g)
     }
     else {
       label = edgeModel.label;
@@ -59,19 +62,19 @@ class VertexModel extends Model {
     }
     if (typeof edgeModel !== 'string') {
       const checkSchemaResponse = this.checkSchema(edgeModel.schema, props, true);
-      if (this.interpretCheckSchema(checkSchemaResponse)) {
+      if (this.checkSchemaFailed(checkSchemaResponse)) {
         callback(checkSchemaResponse);
         return;
       }
     }
 
+    // Remove 'g' from 'g.V()...'
     inGremlinStr = inGremlinStr.slice(1);
 
     const [ a ] = this.getRandomVariable();
     let gremlinQuery = outGremlinStr + `.as('${a}')` + inGremlinStr;
     gremlinQuery += `.addE('${label}')${this.actionBuilder('property', props)}.from('${a}')`;
-    let executeBound = this.executeOrPass.bind(model);
-    return executeBound(gremlinQuery, callback);
+    return this.executeOrPass.call(model, gremlinQuery, callback);
   }
 
   /**
@@ -130,7 +133,7 @@ class VertexModel extends Model {
     if (typeof edgeModel === 'string') {
       label = edgeModel;
       props = properties;
-      model = new this.g.edgeModel('fake', {}, this.g)
+      model = new this.g.edgeModel('null', {}, this.g)
     }
     else {
       label = edgeModel.label;
@@ -139,8 +142,7 @@ class VertexModel extends Model {
     }
     let gremlinStr = this.getGremlinStr();
     gremlinStr += `.bothE('${label}')${this.actionBuilder('has', props)}`;
-    let executeBound = this.executeOrPass.bind(model);
-    return executeBound(gremlinStr, callback);
+    return this.executeOrPass.call(model, gremlinStr, callback);
   }
 
   /**

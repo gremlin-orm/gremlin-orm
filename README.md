@@ -90,7 +90,7 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 * [queryRaw](#queryRaw) - perform a raw query on the gremlin-orm root and return raw data
 * [update](#update) - update specific props on an existing vertex or edge
 * [delete](#delete) - delete an existing vertex or edge
-* [order](#order) - order the results by property and asc/dsc
+* [order](#order) - order the results by property and asc/desc
 * [limit](#limit) - limit the number of results returned
 
 #### Vertex Methods
@@ -103,7 +103,7 @@ const g = new gremlinOrm(['azure', 'partitionName'], '443', 'example.com', {ssl:
 * [findImplicit](#findImplicit) - find all vertices which have the same edge relations `in` that the current vertex(es) has `out` to another vertex
 
 #### Edge Methods
-* [create](#edge-model-create) - create a new edge relationship by passing in two vertices or sets of vertices
+* [create](#edge-model-create) - create new edge relationship(s) by passing in two vertices or sets of vertices
 * [find](#edge-model-find) - find first edge with matching properties
 * [findAll](#edge-model-findAll) - find all edges with matching properties
 * [findVertex](#findVertex) - find all vertices that are connected by the relevant edges
@@ -210,9 +210,12 @@ The following options are available when defining model schemas:
 * `raw` (optional, default = false): If true, will return the raw data from the graph database instead of normally formatted JSON
 * `callback` (optional, required if raw is true): Some callback function with (error, result) arguments.
 
+##### Returns
+* If callback is given, returns **array** where 0th index is array of Vertex results and 1th index is array of Edge results (even if either is empty) -- this helps expose the correct model methods if the query returns edges from a query on a vertex or vis versa.
+
 ##### Example
 ```javascript
-  let query = ".as('a').out('created').as('b').in('created').as('c').dedup('a','b').select('a','b','c')"
+  let query =  ".as('a').out('created').as('b').in('created').as('c').dedup('a','b').select('a','b','c')"
   Person.find({'name': 'John'}).query(query, true, (error, result) => {
     // send raw data to client
   });
@@ -276,12 +279,12 @@ The following options are available when defining model schemas:
 
 ##### Arguments
 * `property`: Name of property to order by
-* `order`: Order to sort - 'ASC' or 'DSC'
+* `order`: Order to sort - 'ASC' or 'DESC'
 * `callback`: Some callback function with (error, result) arguments
 
 ##### Example
 ```javascript
-  Person.findAll({'occupation': 'developer'}).order('age', 'DSC', (error, result) => {
+  Person.findAll({'occupation': 'developer'}).order('age', 'DESC', (error, result) => {
     // Return oldest developers first
   });
 ```
@@ -494,8 +497,8 @@ Person.find({'name': 'John'}).findImplicit('created', {}, (error, result) => {
 `.create` creates an index from `out` vertex(es) to the `in` vertex(es)
 
 ##### Arguments
-* `out`: Vertex instance or find/findAll method call
-* `in`: Vertex instance or find/findAll method call
+* `out`: Vertex instance(s) or find/findAll method call
+* `in`: Vertex instance(s) or find/findAll method call
 * `props`: Object containing key value pairs of properties to add on the new edge
 * `callback`: Some callback function with (error, result) arguments
 
