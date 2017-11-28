@@ -57,23 +57,23 @@ describe('Model', () => {
     });
     it('Should run a query on the database', (done) => {
       Person.query("g.V().hasLabel('person').has('name', 'Victoria')", (err, result) => {
-        expect(result[0].name).to.equal('Victoria');
+        expect(result[0][0].name).to.equal('Victoria');
         done();
       });
     });
     it("Should return the results parsed into Model Objects if 'raw' is false or not provided", (done) => {
       Person.query("g.V().hasLabel('person').has('name', 'Victoria')", false, (err, result) => {
-        expect(result[0]).to.be.an.instanceof(Person.constructor);
+        expect(result[0][0]).to.be.an.instanceof(Person.constructor);
         Person.query("g.V().hasLabel('person').has('name', 'Victoria')", (err, result) => {
-          expect(result[0]).to.be.an.instanceof(Person.constructor);
-          expect(result[0].name).to.equal('Victoria');
+          expect(result[0][0]).to.be.an.instanceof(Person.constructor);
+          expect(result[0][0].name).to.equal('Victoria');
           done();
         });
       });
     });
     it("Should return edge model instances for edge queries if 'raw' is false", (done) => {
       Person.query("g.E()", (err, result) => {
-        expect(result[0].findVertex).to.be.a('function');
+        expect(result[1][0].findVertex).to.be.a('function');
         done();
       });
     })
@@ -90,6 +90,9 @@ describe('Model', () => {
     it('Should be available on Vertex and Edge Models', () => {
       expect(Person.update).to.be.a('function');
       expect(Knows.update).to.be.a('function');
+    });
+    it('Should throw error if no callback is passed', () => {
+      assert.throw(() => {Person.find({name: 'John'}).update({name: 'Tommy'})}, Error, 'Callback is required');
     });
     it('Should update properties on the database for Vertex Model', (done) => {
       Person.findAll({}).update({name: 'Tommy'}, (err, result) => {
@@ -204,6 +207,9 @@ describe('Model', () => {
     it('Should be available on Vertex and Edge Models', () => {
       expect(Person.delete).to.be.a('function');
       expect(Knows.delete).to.be.a('function');
+    });
+    it('Should throw error if no callback is passed', () => {
+      assert.throw(() => {Person.find({name: 'John'}).delete()}, Error, 'Callback is required');
     });
     it('Should delete vertices from the database for Vertex Model', (done) => {
       Person.findAll({}).delete((err, result) => {

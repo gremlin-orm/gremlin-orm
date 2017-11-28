@@ -26,9 +26,7 @@ class Model {
     gremlinStr += string;
     if (returnRawData) {
       this.checkModels = false;
-      return this.g.client.execute(gremlinStr, (err, result) => {
-        cb(err, result);
-      });
+      return this.g.client.execute(gremlinStr, cb);
     }
     return this.executeOrPass(gremlinStr, cb);
   }
@@ -37,10 +35,11 @@ class Model {
   * Updates specific props on an existing vertex or edge
   */
   update(props, callback) {
+    if (!callback) throw new Error('Callback is required');
     let gremlinStr = this.getGremlinStr();
     const schema = this.schema;
     const checkSchemaResponse = this.checkSchema(schema, props);
-    if (this.interpretCheckSchema(checkSchemaResponse)) return callback(checkSchemaResponse); // should it throw an error?
+    if (this.checkSchemaFailed(checkSchemaResponse)) return callback(checkSchemaResponse); // should it throw an error?
     gremlinStr += this.actionBuilder('property', props);
     return this.executeOrPass(gremlinStr, callback);
   }
@@ -50,6 +49,7 @@ class Model {
   * @param {string} id id of the vertex or edge to be deleted
   */
   delete(callback) {
+    if (!callback) throw new Error('Callback is required');
     let gremlinStr = this.getGremlinStr();
     gremlinStr += '.drop()';
     this.executeOrPass(gremlinStr, callback);
@@ -95,8 +95,7 @@ class Model {
         return;
       }
       // Create nicer Object
-      let executeBoundFamiliar = this.g.familiarizeAndPrototype.bind(this);
-      let response = executeBoundFamiliar(result);
+      let response = this.g.familiarizeAndPrototype.call(this, result);
       if(singleObject && response.length > 0) {
         callback(null, response[0]);
         return;
@@ -128,18 +127,20 @@ class Model {
 
     const keys = Object.keys(props);
     keys.forEach(key => {
-      if (Array.isArray(props[key])) {
-        ifArr = `within(`;
-        for (let i = 0; i < props[key].length; i += 1) {
-          if (i === props[key].length - 1) {
-            ifArr += `${this.stringifyValue(props[key][i])}))`;
-          } else {
-            ifArr += `${this.stringifyValue(props[key][i])},`;
+      if (key !== 'id') {
+        if (Array.isArray(props[key])) {
+          ifArr = `within(`;
+          for (let i = 0; i < props[key].length; i += 1) {
+            if (i === props[key].length - 1) {
+              ifArr += `${this.stringifyValue(props[key][i])}))`;
+            } else {
+              ifArr += `${this.stringifyValue(props[key][i])},`;
+            }
           }
+          propsStr += `.${action}('${key}',${ifArr}`;
+        } else {
+          propsStr += `.${action}('${key}',${this.stringifyValue(props[key])})`;
         }
-        propsStr += `.${action}('${key}',${ifArr}`;
-      } else {
-        propsStr += `.${action}('${key}',${this.stringifyValue(props[key])})`;
       }
     });
     return propsStr;
@@ -192,13 +193,14 @@ class Model {
       } else {
         idString = `'${props.id}'`;
       }
-      delete props.id;
     }
     return idString;
   }
 
   /**
-  *
+  * Returns an array of random variables
+  * @param {number} numVars desired number of variables returned
+  * @param {array} currentVarsArr array of variables that already exist
   */
   getRandomVariable(numVars, currentVarsArr) {
     const variables = currentVarsArr ? Array.from(currentVarsArr) : [];
@@ -208,7 +210,7 @@ class Model {
       let result = possibleChars[Math.floor(Math.random() * possibleChars.length)];
       return result;
     }
-    if(variables.length + variablesRequired > 26) {
+    if (variables.length + variablesRequired > 26) {
       variablesRequired = 26 - variables.length;
     }
     for (let i = 0; i < variablesRequired; i += 1) {
@@ -223,7 +225,9 @@ class Model {
 
  /**
  * Parses properties into their known types from schema model
+ * Will remove keys which do not exist in schema
  * @param {object} properties - properties object to parse
+ * @param {object} model - model to check schema against
  */
   parseProps(properties, model) {
     let schema = model ? model.schema : this.schema;
@@ -232,7 +236,7 @@ class Model {
       if (properties[key]) {
        switch (schema[key].type) {
          case 'number':
-           props[key] = parseInt(properties[key]);
+           props[key] = parseFloat(properties[key]);
            if(Number.isNaN(props[key])) props[key] = null;
            break;
          case 'boolean':
@@ -338,7 +342,7 @@ class Model {
    * returns true if response is an empty object and false if it contains any error message
    * @param {object} response return value from checkSchema
   */
-  interpretCheckSchema(response) {
+  checkSchemaFailed(response) {
     if (Object.keys(response).length === 0) return false;
     return true;
   }

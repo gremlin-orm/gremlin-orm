@@ -49,8 +49,12 @@ describe('Edge Model', () => {
   });
 
   describe('Create', () => {
+    it('Should throw error if no callback is passed', () => {
+      assert.throw(() => {Knows.create(john, bob, {duration: 5})}, Error, 'Callback is required');
+    });
     it('Should create a new edge with valid properties', (done) => {
-      Knows.create(john, bob, {duration: 5}, (err, result) => {
+      Knows.create(john, bob, {duration: 5}, (err, results) => {
+        let result = results[0];
         expect(result).to.have.property('id');
         expect(result.label).to.equal('knows');
         expect(result.duration).to.equal(5);
@@ -77,7 +81,8 @@ describe('Edge Model', () => {
     it('Should find and return the first edge with matching properties', (done) => {
       Person.create({'name': 'Sam', 'age': 38, 'dob': '12/18/1979', developer: true}, (err, result) => {
         sam = result;
-        Knows.create(john, bob, {duration: 3}, (err, result) => {
+        Knows.create(john, bob, {duration: 3}, (err, results) => {
+          let result = results[0];
           const id = result.id;
           const outV = result.outV;
           const inV = result.inV;
@@ -101,7 +106,8 @@ describe('Edge Model', () => {
     it('Should return an empty array if no match is found', (done) => {
       Person.create({'name': 'Sam', 'age': 38, 'dob': '12/18/1979', developer: true}, (err, result) => {
         sam = result;
-        Knows.create(john, bob, {duration: 3}, (err, result) => {
+        Knows.create(john, bob, {duration: 3}, (err, results) => {
+          let result = results[0];
           const id = result.id;
           const outV = result.outV;
           const inV = result.inV;
@@ -122,11 +128,11 @@ describe('Edge Model', () => {
       Person.create({'name': 'Sam', 'age': 38, 'dob': '12/18/1979', developer: true}, (err, result) => {
         sam = result;
         Knows.create(john, bob, {duration: 3}, (err, result) => {
-          const id1 = result.id;
+          const id1 = result[0].id;
           Knows.create(bob, sam, {duration: 3}, (err, result) => {
-            const id2 = result.id;
+            const id2 = result[0].id;
             Knows.create(john, sam, {duration: 5}, (err, result) => {
-              const id3 = result.id;
+              const id3 = result[0].id;
               Knows.findAll({'duration': 3}, (err, result) => {
                 expect(Array.isArray(result)).to.equal(true);
                 expect(result.length).to.equal(2);
@@ -142,7 +148,8 @@ describe('Edge Model', () => {
     it('Should return an empty array if no match is found', (done) => {
       Person.create({'name': 'Sam', 'age': 38, 'dob': '12/18/1979', developer: true}, (err, result) => {
         sam = result;
-        Knows.create(john, bob, {duration: 3}, (err, result) => {
+        Knows.create(john, bob, {duration: 3}, (err, results) => {
+          let result = results[0];
           const id = result.id;
           const outV = result.outV;
           const inV = result.inV;
@@ -169,29 +176,17 @@ describe('Edge Model', () => {
             Person.create({'name': 'Sasha', 'age': 27, 'dob': '01/03/1990', 'developer': true}, (err, result) => {
               sasha = result;
               Knows.create(john, bob, {duration: 1}, (err, result) => {
-                const id1 = result.id;
                 Knows.create(john, sam, {duration: 2}, (err, result) => {
-                  const id2 = result.id;
                   Knows.create(john, steven, {duration: 3}, (err, result) => {
-                    const id3 = result.id;
                     Knows.create(john, susan, {duration: 4}, (err, result) => {
-                      const id4 = result.id;
                       Knows.create(john, sasha, {duration: 5}, (err, result) => {
-                        const id5 = result.id;
                         Knows.create(sasha, john, {duration: 5}, (err, result) => {
-                          const id5 = result.id;
                           Knows.create(bob, sam, {duration: 5}, (err, result) => {
-                            const id6 = result.id;
                             Knows.create(bob, steven, {duration: 5}, (err, result) => {
-                              const id7 = result.id;
                               Knows.create(sam, steven, {duration: 4}, (err, result) => {
-                                const id8 = result.id;
                                 Knows.create(sam, susan, {duration: 3}, (err, result) => {
-                                  const id9 = result.id;
                                   Knows.create(steven, susan, {duration: 2}, (err, result) => {
-                                    const id10 = result.id;
                                     Knows.create(steven, sasha, {duration: 1}, (err, result) => {
-                                      const id11 = result.id;
                                       Knows.findAll({duration: 5}).findVertex(Person, {developer: true}, (err, result) => {
                                         expect(Array.isArray(result)).to.equal(true);
                                         expect(result.length).to.equal(5);

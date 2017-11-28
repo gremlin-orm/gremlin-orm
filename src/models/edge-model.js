@@ -19,19 +19,25 @@ class EdgeModel extends Model {
   * @param {object} props object containing key value pairs of properties to add on the new edge
   */
   create(outV, inV, props, callback) {
+    if (!callback) throw new Error('Callback is required');
     if (!(outV && inV)) {
       callback({'error': 'Need both an inV and an outV.'});
       return;
     }
     const checkSchemaResponse = this.checkSchema(this.schema, props, true);
-    if (this.interpretCheckSchema(checkSchemaResponse)) {
+    if (this.checkSchemaFailed(checkSchemaResponse)) {
       callback(checkSchemaResponse);
       return;
     }
-    let gremlinStr = outV.getGremlinStr();
-    gremlinStr += `.addE('${this.label}')` + this.actionBuilder('property', props);
-    gremlinStr += `.to(${inV.getGremlinStr()})`;
-    return this.executeQuery(gremlinStr, callback, true);
+
+    let outGremlinStr = outV.getGremlinStr();
+    let inGremlinStr = inV.getGremlinStr().slice(1);
+
+    const [ a ] = this.getRandomVariable();
+    let gremlinQuery = outGremlinStr + `.as('${a}')` + inGremlinStr;
+    gremlinQuery += `.addE('${this.label}')${this.actionBuilder('property', props)}.from('${a}')`;
+
+    return this.executeQuery(gremlinQuery, callback);
   }
 
   /**
@@ -66,7 +72,7 @@ class EdgeModel extends Model {
     if (typeof vertexModel === 'string') {
       label = vertexModel;
       props = properties;
-      model = new this.g.vertexModel('fake', {}, this.g)
+      model = new this.g.vertexModel('null', {}, this.g)
     }
     else {
       props = this.parseProps(properties, vertexModel);
@@ -75,8 +81,7 @@ class EdgeModel extends Model {
     }
     let gremlinStr = this.getGremlinStr();
     gremlinStr += `.bothV()${this.actionBuilder('has', props)}`;
-    let executeBound = this.executeOrPass.bind(model);
-    return executeBound(gremlinStr, callback);
+    return this.executeOrPass.call(model, gremlinStr, callback);
   }
 }
 

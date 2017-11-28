@@ -75,16 +75,30 @@ class Gorm {
   }
 
   /**
+  * Converts raw gremlin data into familiar JavaScript objects
+  * Adds prototype methods onto objects for further queries - each object is an instance of its Model class
   * @param {array} gremlinResponse
   */
   familiarizeAndPrototype(gremlinResponse) {
     let data = [];
+    let VERTEX, EDGE;
+    if (this.checkModels) {
+      data = [[], []];
+      VERTEX = new VertexModel('null', {}, this.g);
+      EDGE = new EdgeModel('null', {}, this.g);
+    }
+
     gremlinResponse.forEach((grem) => {
       let object;
-      if (!this.checkModels) object = Object.create(this);
+
+      if (this.checkModels) {
+        // if checkModels is true (running .query with raw set to false), this may refer to a VertexModel objects
+        // but data returned could be EdgeModel
+        if (grem.type === 'vertex') object = Object.create(VERTEX);
+        else if (grem.type === 'edge') object = Object.create(EDGE);
+      }
       else {
-        if (grem.type === 'vertex') object = Object.create(new VertexModel('string', {}, this.g));
-        else if (grem.type === 'edge') object = Object.create(new EdgeModel('string', {}, this.g));
+        object = Object.create(this);
       }
       object.id = grem.id;
       object.label = grem.label;
@@ -98,7 +112,7 @@ class Gorm {
       let currentPartition = this.g.partition ? this.g.partition : '';
       if (grem.properties) {
         Object.keys(grem.properties).forEach((propKey) => {
-          if (propKey != currentPartition) {
+          if (propKey !== currentPartition) {
             let property;
             if (grem.type === 'edge') {
               property = grem.properties[propKey];
@@ -106,6 +120,9 @@ class Gorm {
               property = grem.properties[propKey][0].value;
             }
 
+            // If property is defined in schema as a Date type, convert it from
+            // integer date into a JavaScript Date object.
+            // Otherwise, no conversion necessary for strings, numbers, or booleans
             if (this.g.definedVertices[grem.label]) {
               if (this.g.definedVertices[grem.label][propKey].type === this.g.DATE) {
                 object[propKey] = new Date(property);
@@ -125,13 +142,20 @@ class Gorm {
             else {
               object[propKey] = property;
             }
-
           }
         });
       }
-      data.push(object);
-    })
-    this.addArrayMethods(data);
+      if (this.checkModels) {
+        if (grem.type === 'vertex') data[0].push(object);
+        else data[1].push(object);
+      }
+      else data.push(object);
+    });
+    if (this.checkModels) {
+      VERTEX.addArrayMethods(data[0]);
+      EDGE.addArrayMethods(data[1]);
+    }
+    else this.addArrayMethods(data);
     this.checkModels = false;
     return data;
   }
