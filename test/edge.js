@@ -69,6 +69,32 @@ describe('Edge Model', () => {
         done();
       });
     });
+    it('Should create new edges both ways if bothWays set to true', (done) => {
+      Knows.create(john, bob, {duration: 5}, true, (err, results) => {
+        expect(results).to.have.lengthOf(2);
+        bob.findRelated(Knows, {}, 1, (err, results) => {
+          expect(results).to.have.lengthOf(1);
+          expect(results[0].name).to.equal('John');
+          john.findRelated(Knows, {}, 1, (err, results) => {
+            expect(results).to.have.lengthOf(1);
+            expect(results[0].name).to.equal('Bob');
+            done();
+          });
+        });
+      });
+    });
+    it('Should not create new edges both ways if bothWays set to false', (done) => {
+      Knows.create(john, bob, {duration: 5}, false, (err, results) => {
+        bob.findRelated(Knows, {}, 1, (err, results) => {
+          expect(results).to.have.lengthOf(0);
+          john.findRelated(Knows, {}, 1, (err, results) => {
+            expect(results).to.have.lengthOf(1);
+            expect(results[0].name).to.equal('Bob');
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('Find', () => {

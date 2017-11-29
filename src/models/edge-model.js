@@ -18,15 +18,24 @@ class EdgeModel extends Model {
   * @param {object} inV object with properties to find 'in' vertex
   * @param {object} props object containing key value pairs of properties to add on the new edge
   */
-  create(outV, inV, props, callback) {
-    if (!callback) throw new Error('Callback is required');
+  create(outV, inV, props, bothWays, callback) {
+    let both, cb;
+    if (typeof arguments[3] === 'function' || arguments.length < 4) {
+      both = false;
+      cb = arguments[3]
+    }
+    else {
+      both = arguments[3];
+      cb = arguments[4];
+    }
+    if (!cb) throw new Error('Callback is required');
     if (!(outV && inV)) {
-      callback({'error': 'Need both an inV and an outV.'});
+      cb({'error': 'Need both an inV and an outV.'});
       return;
     }
     const checkSchemaResponse = this.checkSchema(this.schema, props, true);
     if (this.checkSchemaFailed(checkSchemaResponse)) {
-      callback(checkSchemaResponse);
+      cb(checkSchemaResponse);
       return;
     }
 
@@ -37,7 +46,23 @@ class EdgeModel extends Model {
     let gremlinQuery = outGremlinStr + `.as('${a}')` + inGremlinStr;
     gremlinQuery += `.addE('${this.label}')${this.actionBuilder('property', props)}.from('${a}')`;
 
-    return this.executeQuery(gremlinQuery, callback);
+    if (both === true) {
+      const [ b ] = this.getRandomVariable(1, [a]);
+      let extraGremlinQuery = `${inV.getGremlinStr()}.as('${b}')${outV.getGremlinStr().slice(1)}` +
+                      `.addE('${this.label}')${this.actionBuilder('property', props)}.from('${b}')`;
+      let intermediate = (err, results) => {
+        let resultsSoFar = results.slice(0);
+        const concater = (err, results) => {
+          resultsSoFar = resultsSoFar.concat(results);
+          cb(err, resultsSoFar);
+        }
+        this.executeQuery(extraGremlinQuery, concater);
+      }
+      return this.executeQuery(gremlinQuery, intermediate);
+    }
+    else {
+      return this.executeQuery(gremlinQuery, cb);
+    }
   }
 
   /**
@@ -72,7 +97,7 @@ class EdgeModel extends Model {
     if (typeof vertexModel === 'string') {
       label = vertexModel;
       props = properties;
-      model = new this.g.vertexModel('null', {}, this.g)
+      model = new this.g.vertexModel(label, {}, this.g)
     }
     else {
       props = this.parseProps(properties, vertexModel);
