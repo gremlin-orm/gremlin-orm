@@ -280,7 +280,7 @@ The following options are available when defining model schemas:
 ##### Arguments
 * `property`: Name of property to order by
 * `order`: Order to sort - 'ASC' or 'DESC'
-* `callback`: Some callback function with (error, result) arguments
+* `callback` (optional): Some callback function with (error, result) arguments
 
 ##### Example
 ```javascript
@@ -296,7 +296,7 @@ The following options are available when defining model schemas:
 
 ##### Arguments
 * `num`: Max number of results to return
-* `callback`: Some callback function with (error, result) arguments
+* `callback` (optional): Some callback function with (error, result) arguments
 
 ##### Example
 ```javascript
@@ -341,7 +341,7 @@ The following options are available when defining model schemas:
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties
-* `callback`: Some callback function with (error, result) arguments
+* `callback` (optional): Some callback function with (error, result) arguments
 
 ##### Returns
 * Returns the first matching vertex as an object
@@ -368,7 +368,7 @@ The following options are available when defining model schemas:
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties
-* `callback`: Some callback function with (error, result) arguments
+* `callback` (optional): Some callback function with (error, result) arguments
 
 ##### Returns
 * Returns an array containing all vertices matching props as objects
@@ -397,14 +397,15 @@ The following options are available when defining model schemas:
 ```
 
 <a name="createEdge"></a>
-### createEdge(edge, {props}, vertex, callback)
+### createEdge(edge, {props}, vertex, [both,] callback)
 
 `.createEdge` creates new edge relationships from starting vertex(es) to vertex(es) passed in.
 
 ##### Arguments
-* `edge`: Edge model
+* `edge`: Edge model. If a string label is passed, no schema check will be done - edge model is recommended
 * `props`: Object containing key value pairs of properties to place on new edges
 * `vertex`: Vertex model instances or vertex model query
+* `both` (optional, default = false): If true, will create edges in both directions
 * `callback`: Some callback function with (error, result) arguments
 
 ##### Returns
@@ -414,16 +415,29 @@ The following options are available when defining model schemas:
 ```javascript
   // Chaining vertex methods
   Person.findAll({'age': 20}).createEdge(Uses, {'frequency': 'daily'}, Website.find({'name': 'Facebook'}), (error, result) => {
-    // Result is array of newly created edges between everyone with age 20 and the website 'Facebook'
+    // Result is array of newly created edges from everyone with age 20 to the website 'Facebook'
   });
 
   // Calling .createEdge on model instances
-  let developers, languages;
-  Person.find({'occupation': 'web developer'}, (error, result) => developers = result);
-  Language.find({'occupation': ['Javascript', 'HTML', 'CSS']}, (error, result) => languages = result);
-  developers.createEdge(Knows, {}, languages, (error, result) => {
-    // Result is array of newly created edge objects between all the web developers and 3 important components of web development
+  Person.findAll({'occupation': 'web developer'}, (error, results) => {
+    let developers = results;
+    Language.findAll({'name': ['Javascript', 'HTML', 'CSS']}, (error, results) => {
+      let languages = results;
+      developers.createEdge(Uses, {}, languages, (error, result) => {
+        // Result is array of newly created edge objects from each web developers
+        // to each of the 3 important components of web development
+      });
+    });
   });
+
+
+  // Creating edges both ways
+  let jane;
+  Person.find({'name': 'Jane'}, (error, result) => jane = result);
+  Person.find({'name' : 'John'}).createEdge(Knows, {since: '1999'}, jane, true, (error, result) => {
+    // Creates two edges so that John knows Jane and Jane also knows John
+  })
+
 ```
 
 <a name="findEdge"></a>
@@ -432,9 +446,9 @@ The following options are available when defining model schemas:
 `.findEdge` finds edges directly connected to the relevant vertex(es)
 
 ##### Arguments
-* `edge`: Edge model. If a string label is passed, no schema check will be done - edge model is recommended.
+* `edge`: Edge model. If a string label is passed, no schema check will be done - edge model is recommended
 * `props`: Object containing key value pairs of properties to match on edge relationships
-* `callback`: Some callback function with (error, result) arguments
+* `callback` (optional): Some callback function with (error, result) arguments
 
 ##### Returns
 * Returns an array containing all connected edges
@@ -448,7 +462,7 @@ Person.find({'name': 'John'}).findEdge(Knows, {'from': 'school'}, (error, result
 ```
 
 <a name="findRelated"></a>
-### findRelated(edge, {props}, depth, [callback])
+### findRelated(edge, {props}, depth, [inModel, callback])
 
 `.findRelated` finds vertices related through the desired edge relationship.
 
@@ -456,7 +470,8 @@ Person.find({'name': 'John'}).findEdge(Knows, {'from': 'school'}, (error, result
 * `edge`: Edge model. If a string label is passed, no schema check will be done - edge model is recommended.
 * `props`: Object containing key value pairs of properties to match on edge relationships
 * `depth`: Depth of edge traversals to make
-* `callback`: Some callback function with (error, result) arguments
+* `inModel` (optional, default = `this`): Vertex model of results to find. Can pass a vertex model (`Person`) or label string (`'person'`) -- vertex model is recommended.
+* `callback` (optional): Some callback function with (error, result) arguments
 
 ##### Returns
 * Returns an array containing all related vertices
@@ -464,7 +479,11 @@ Person.find({'name': 'John'}).findEdge(Knows, {'from': 'school'}, (error, result
 ##### Examples
 ```javascript
 Person.find({'name': 'John'}).findRelated(Knows, {}, 2, (error, result) => {
-  // Result is array of vertex objects representing John's friends of friends
+  // Result is array of Person records representing John's friends of friends
+});
+
+Person.find({'name': 'John'}).findRelated(Likes, {}, 1, Movie, (error, result) => {
+  // Result is array of Movie records that John likes.
 });
 ```
 
@@ -476,7 +495,7 @@ Person.find({'name': 'John'}).findRelated(Knows, {}, 2, (error, result) => {
 ##### Arguments
 * `edge`: Edge model. If a string label is passed, no schema check will be done - edge model is recommended.
 * `props`: Object containing key value pairs of properties to match on edge relationships
-* `callback`: Some callback function with (error, result) arguments
+* `callback` (optional): Some callback function with (error, result) arguments
 
 ##### Returns
 * Returns an array containing all related vertices
@@ -500,6 +519,7 @@ Person.find({'name': 'John'}).findImplicit('created', {}, (error, result) => {
 * `out`: Vertex instance(s) or find/findAll method call
 * `in`: Vertex instance(s) or find/findAll method call
 * `props`: Object containing key value pairs of properties to add on the new edge
+* `both` (optional, default = false): If true, will create edges in both directions
 * `callback`: Some callback function with (error, result) arguments
 
 ##### Returns
@@ -531,7 +551,7 @@ Person.find({'name': 'Joe'}, (error, result) => {
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties
-* `callback`: Some callback function with (error, result) arguments
+* `callback` (optional): Some callback function with (error, result) arguments
 
 ##### Returns
 * Returns the first matching edge as an object
@@ -559,7 +579,7 @@ Person.find({'name': 'Joe'}, (error, result) => {
 
 ##### Arguments
 * `props`: Object containing key value pairs of properties
-* `callback`: Some callback function with (error, result) arguments
+* `callback` (optional): Some callback function with (error, result) arguments
 
 ##### Returns
 * Returns an array containing all edges matching props as objects
@@ -597,7 +617,7 @@ Person.find({'name': 'Joe'}, (error, result) => {
 ##### Arguments
 * `vertexModel`: Vertex model. If a string label is passed, no schema check will be done - vertex model is recommended.
 * `props`: Object containing key value pairs of properties to find on vertices
-* `callback`: Some callback function with (error, result) arguments
+* `callback` (optional): Some callback function with (error, result) arguments
 
 ##### Returns
 * Returns an array containing all vertices connected by current edge(s)

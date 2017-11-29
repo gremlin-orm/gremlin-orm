@@ -19,6 +19,16 @@ const Person = g.define('person', {
   }
 });
 
+const Animal = g.define('animal', {
+  'name': {
+    type: g.STRING,
+    required: true
+  },
+  'species' : {
+    type: g.STRING
+  }
+});
+
 const Knows = g.defineEdge('knows', {
   'duration': {
     type: g.NUMBER,
@@ -141,6 +151,44 @@ describe('Vertex Model', () => {
         })
       });
     });
+    it('Should create edges both ways when bothWays set to true', (done) => {
+      Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+        let john = result;
+        Person.create({'name': 'Jane', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+          let jane = result;
+          john.createEdge(Knows, {'duration': 1}, result, true, (err, results) => {
+            expect(results).to.have.lengthOf(2);
+            jane.findRelated(Knows, {}, 1, (err, results) => {
+              expect(results).to.have.lengthOf(1);
+              expect(results[0].name).to.equal('John');
+              john.findRelated(Knows, {}, 1, (err, results) => {
+                expect(results).to.have.lengthOf(1);
+                expect(results[0].name).to.equal('Jane');
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+    it('Should not create edges both ways when bothWays set to false', (done) => {
+      Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+        let john = result;
+        Person.create({'name': 'Jane', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+          let jane = result;
+          john.createEdge(Knows, {'duration': 1}, result, false, (err, results) => {
+            jane.findRelated(Knows, {}, 1, (err, results) => {
+              expect(results).to.have.lengthOf(0);
+              john.findRelated(Knows, {}, 1, (err, results) => {
+                expect(results).to.have.lengthOf(1);
+                expect(results[0].name).to.equal('Jane');
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
   });
 
   describe('Find', () => {
@@ -204,6 +252,25 @@ describe('Vertex Model', () => {
         });
       });
     });
+    it('Should find only related vertices with correct edge label', (done) => {
+      Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+        let john = result;
+        Person.create({'name': 'Jane', 'age': 20, 'dob': '12/18/1998', developer: true}, (err, result) => {
+          let jane = result;
+          john.createEdge(Knows, {'duration': 1}, jane, (err, results) => {
+            Person.create({'name': 'Jack', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+              john.createEdge('likes', {'duration': 1}, result, (err, results) => {
+                john.findRelated(Knows, {'duration': 1}, 1, (err, results) => {
+                  expect(results[0].name).to.equal('Jane');
+                  expect(results).to.have.lengthOf(1);
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+    });
     it('Should find related vertices at specified depth', (done) => {
       Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
         let john = result;
@@ -214,6 +281,44 @@ describe('Vertex Model', () => {
               jane.createEdge(Knows, {'duration': 2}, result, (err, results) => {
                 john.findRelated(Knows, {}, 2, (err, results) => {
                   expect(results[0].name).to.equal('Jack');
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+    it('Should find related vertices of different model', (done) => {
+      Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+        let john = result;
+        Animal.create({'name': 'Fido', 'species': 'dog'}, (err, result) => {
+          let fido = result;
+          john.createEdge(Knows, {'duration': 2}, fido, (err, results) => {
+            Person.create({'name': 'Jack', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+              john.createEdge(Knows, {'duration': 2}, result, (err, results) => {
+                john.findRelated(Knows, {}, 1, Animal, (err, results) => {
+                  expect(results[0].name).to.equal('Fido');
+                  expect(results).to.have.lengthOf(1);
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+    it('Should find related vertices of different model using string label', (done) => {
+      Person.create({'name': 'John', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+        let john = result;
+        Animal.create({'name': 'Fido', 'species': 'dog'}, (err, result) => {
+          let fido = result;
+          john.createEdge(Knows, {'duration': 2}, fido, (err, results) => {
+            Person.create({'name': 'Jack', 'age': 20, 'dob': '12/18/1999', developer: true}, (err, result) => {
+              john.createEdge(Knows, {'duration': 2}, result, (err, results) => {
+                john.findRelated(Knows, {}, 1, 'animal', (err, results) => {
+                  expect(results[0].name).to.equal('Fido');
+                  expect(results).to.have.lengthOf(1);
                   done();
                 });
               });
