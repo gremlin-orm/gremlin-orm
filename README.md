@@ -629,6 +629,19 @@ Knows.find({'through': 'school'}).findVertex(Person, {'occupation': 'developer'}
 });
 ```
 
+## Contributing
+
+Please submit issues/pull requests if you have feedback or message the gremlin-orm team to be added as a contributor: gremlin.orm@gmail.com
+
+## Authors
+
+Freeman Chen (https://github.com/freemanchen)
+Gordon Farquharson (https://github.com/godronus)
+Jeremy Lee (https://github.com/jeremyslee)
+
+## License
+
+This project is licensed under the MIT License
 
 ## Resources
 [Apache TinkerPop Gremlin Reference](http://tinkerpop.apache.org/docs/3.3.0/reference/)
