@@ -119,7 +119,7 @@ query and instead pass its Gremlin query string to the next method in the chain 
 
 ```javascript
   // Only makes one call to the database
-  Person.find({'name': 'John'}).findEdge('knows', {'since': '2015'}, (error, result) => {
+  Person.find({'name': 'John'}).findRelated('knows', {'since': '2015'}, (error, result) => {
     // Send people John knows to client
   })
 ```
@@ -130,7 +130,7 @@ Additionally, results returned in the form of JSON objects will retain their rel
   // Makes two calls to the database
   Person.find({'name': 'John'}), (error, result) => {
     let john = result;
-    john.findEdge('knows', {'since': '2015'}, (error, result) => {
+    john.findRelated('knows', {'since': '2015'}, (error, result) => {
       // Send people John knows to client
     })
   })
