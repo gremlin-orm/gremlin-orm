@@ -346,6 +346,18 @@ describe('Helpers', () => {
       let props = Person.parseProps(properties);
       expect(props.name).to.equal('true');
     });
+    it('Should return a array value if array is passed in', () => {
+      let properties = {'name': ['John', 'Jane']};
+      let props = Person.parseProps(properties);
+      expect(Array.isArray(props.name)).to.equal(true);
+    });
+    it('Should cast values within arrays', () => {
+      let properties = {'name': [18, 19]};
+      let props = Person.parseProps(properties);
+      expect(Array.isArray(props.name)).to.equal(true);
+      expect(props.name[0]).to.equal('18');
+      expect(props.name[1]).to.equal('19');
+    });
   });
 
   describe('stringifyValue', () => {
