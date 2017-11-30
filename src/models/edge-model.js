@@ -72,7 +72,6 @@ class EdgeModel extends Model {
   */
   find(props, callback) {
     let gremlinStr = `g.E(${this.getIdFromProps(props)}).hasLabel('${this.label}')` + this.actionBuilder('has', props);
-    gremlinStr += ".limit(1)";
     return this.executeOrPass(gremlinStr, callback, true);
   }
 

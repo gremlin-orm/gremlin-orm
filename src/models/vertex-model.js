@@ -112,7 +112,6 @@ class VertexModel extends Model {
   find(properties, callback) {
     const props = this.parseProps(properties);
     let gremlinStr = `g.V(${this.getIdFromProps(props)}).hasLabel('${this.label}')` + this.actionBuilder('has', props);
-    gremlinStr += ".limit(1)";
     return this.executeOrPass(gremlinStr, callback, true);
   }
 

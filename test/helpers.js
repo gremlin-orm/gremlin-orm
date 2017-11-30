@@ -196,7 +196,7 @@ describe('Helpers', () => {
     });
     it('Should return gremlinStr from Gremlin string object', () => {
       let str = Person.find({'name': 'John'}).getGremlinStr();
-      expect(str).to.equal(`g.V().hasLabel('person').has('name','John').limit(1)`);
+      expect(str).to.equal(`g.V().hasLabel('person').has('name','John')`);
     });
     it('Should return gremlinStr from familiarized object', done => {
       Person.create({'name': 'John', 'age': 20}, (err, result) => {
