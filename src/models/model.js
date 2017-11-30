@@ -124,7 +124,6 @@ class Model {
   actionBuilder(action, props) {
     let propsStr = '';
     let ifArr = '';
-
     const keys = Object.keys(props);
     keys.forEach(key => {
       if (key !== 'id') {
@@ -240,30 +239,43 @@ class Model {
   parseProps(properties, model) {
     let schema = model ? model.schema : this.schema;
     const props = {};
+
+    function changeTypes(key, input, that) {
+      let value;
+      switch (schema[key].type) {
+        case 'number':
+          value = parseFloat(input);
+          if(Number.isNaN(value)) value = null;
+          break;
+        case 'boolean':
+          if (input.toString() === 'true' || input.toString() === 'false') {
+            value = input.toString() === 'true';
+          } else {
+            value = null;
+          }
+          break;
+        case 'date':
+          let millis = that.dateGetMillis(input);
+          if (Number.isNaN(millis)) {
+            millis = null;
+          }
+          value = millis;
+          break;
+        default:  //string
+          value = input.toString();
+      }
+      return value;
+    }
+
+    const that = this;
     Object.keys(schema).forEach((key) => {
       if (properties[key]) {
-       switch (schema[key].type) {
-         case 'number':
-           props[key] = parseFloat(properties[key]);
-           if(Number.isNaN(props[key])) props[key] = null;
-           break;
-         case 'boolean':
-           if (properties[key].toString() === 'true' || properties[key].toString() === 'false') {
-             props[key] = properties[key].toString() === 'true';
-           } else {
-             props[key] = null;
-           }
-           break;
-         case 'date':
-           let millis = this.dateGetMillis(properties[key]);
-           if (Number.isNaN(millis)) {
-             millis = null;
-           }
-           props[key] = millis;
-           break;
-         default:  //string
-           props[key] = properties[key].toString();
-       }
+        if (Array.isArray(properties[key])) {
+          props[key] = [];
+          properties[key].forEach(arrValue => props[key].push(changeTypes(key, arrValue, that)));
+        } else {
+          props[key] = changeTypes(key, properties[key], that);  
+        }
       }
     });
     return props;
