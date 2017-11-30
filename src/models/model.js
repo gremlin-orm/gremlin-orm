@@ -132,12 +132,12 @@ class Model {
           ifArr = `within(`;
           for (let i = 0; i < props[key].length; i += 1) {
             if (i === props[key].length - 1) {
-              ifArr += `${this.stringifyValue(props[key][i])}))`;
+              ifArr += `${this.stringifyValue(props[key][i])})`;
             } else {
               ifArr += `${this.stringifyValue(props[key][i])},`;
             }
           }
-          propsStr += `.${action}('${key}',${ifArr}`;
+          propsStr += `.${action}('${key}',${ifArr})`;
         } else {
           propsStr += `.${action}('${key}',${this.stringifyValue(props[key])})`;
         }
@@ -163,6 +163,13 @@ class Model {
     arr.delete = this.delete;
     arr.query = this.query;
     arr.getGremlinStr = this.getGremlinStr;
+    arr.getIdFromProps = this.getIdFromProps;
+    arr.parseProps = this.parseProps.bind(this);
+    arr.dateGetMillis = this.dateGetMillis;
+    arr.getRandomVariable = this.getRandomVariable;
+    arr.stringifyValue = this.stringifyValue;
+    arr.checkSchema = this.checkSchema.bind(this);
+    arr.checkSchemaFailed = this.checkSchemaFailed;
     arr.executeOrPass = this.executeOrPass.bind(this);
   }
 
