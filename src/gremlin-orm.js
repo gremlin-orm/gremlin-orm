@@ -124,7 +124,7 @@ class Gorm {
             // integer date into a JavaScript Date object.
             // Otherwise, no conversion necessary for strings, numbers, or booleans
             if (this.g.definedVertices[grem.label]) {
-              if (this.g.definedVertices[grem.label][propKey].type === this.g.DATE) {
+              if (this.g.definedVertices[grem.label][propKey] && this.g.definedVertices[grem.label][propKey].type === this.g.DATE) {
                 object[propKey] = new Date(property);
               }
               else {
@@ -132,7 +132,7 @@ class Gorm {
               }
             }
             else if (this.g.definedEdges[grem.label]) {
-              if (this.g.definedEdges[grem.label][propKey].type === this.g.DATE) {
+              if (this.g.definedEdges[grem.label][propKey] && this.g.definedEdges[grem.label][propKey].type === this.g.DATE) {
                 object[propKey] = new Date(property);
               }
               else {
