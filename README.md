@@ -636,7 +636,9 @@ Please submit issues/pull requests if you have feedback or message the gremlin-o
 ## Authors
 
 Freeman Chen (https://github.com/freemanchen)
+
 Gordon Farquharson (https://github.com/godronus)
+
 Jeremy Lee (https://github.com/jeremyslee)
 
 ## License
