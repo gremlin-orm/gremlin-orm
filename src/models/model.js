@@ -162,6 +162,7 @@ class Model {
     arr.limit = this.limit;
     arr.delete = this.delete;
     arr.query = this.query;
+    arr.actionBuilder = this.actionBuilder;
     arr.getGremlinStr = this.getGremlinStr;
     arr.getIdFromProps = this.getIdFromProps;
     arr.parseProps = this.parseProps.bind(this);
