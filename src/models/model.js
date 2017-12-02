@@ -239,8 +239,9 @@ class Model {
   parseProps(properties, model) {
     let schema = model ? model.schema : this.schema;
     const props = {};
+    const that = this;
 
-    function changeTypes(key, input, that) {
+    function changeTypes(key, input) {
       let value;
       switch (schema[key].type) {
         case 'number':
@@ -267,14 +268,13 @@ class Model {
       return value;
     }
 
-    const that = this;
     Object.keys(schema).forEach((key) => {
       if (properties[key]) {
         if (Array.isArray(properties[key])) {
           props[key] = [];
-          properties[key].forEach(arrValue => props[key].push(changeTypes(key, arrValue, that)));
+          properties[key].forEach(arrValue => props[key].push(changeTypes(key, arrValue)));
         } else {
-          props[key] = changeTypes(key, properties[key], that);  
+          props[key] = changeTypes(key, properties[key]);  
         }
       }
     });
