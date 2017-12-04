@@ -432,12 +432,12 @@ The following options are available when defining model schemas:
 
 
   // Creating edges both ways
-  let jane;
-  Person.find({'name': 'Jane'}, (error, result) => jane = result);
-  Person.find({'name' : 'John'}).createEdge(Knows, {since: '1999'}, jane, true, (error, result) => {
-    // Creates two edges so that John knows Jane and Jane also knows John
-  })
-
+  Person.find({'name': 'Jane'}, (error, result) => {
+    let jane = result;
+    Person.find({'name' : 'John'}).createEdge(Knows, {since: '1999'}, jane, true, (error, result) => {
+      // Creates two edges so that John knows Jane and Jane also knows John
+    })
+  });
 ```
 
 <a name="findEdge"></a>
